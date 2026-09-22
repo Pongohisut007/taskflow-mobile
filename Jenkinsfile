@@ -44,14 +44,36 @@ pipeline {
         dir('backend') { sh 'npm test' }
       }
     }
+
+    stage('Deploy — Staging') {
+      when { branch 'develop' }
+      steps {
+        script { env.FAILED_STAGE = env.STAGE_NAME }
+        sh 'echo deploying to staging...'
+      }
+    }
+
+    stage('Deploy — Production') {
+      when {
+        beforeInput true
+        branch 'main'
+      }
+      input {
+        message 'Deploy to production?'
+      }
+      steps {
+        script { env.FAILED_STAGE = env.STAGE_NAME }
+        sh 'echo deploying to production...'
+      }
+    }
   }
 
   post {
     success {
-      echo "✅ ${env.APP_NAME} passed on ${env.NODE_ENV}"
+      echo "${env.APP_NAME} passed on ${env.NODE_ENV}"
     }
     failure {
-      echo "❌ Failed at stage: ${env.FAILED_STAGE ?: env.STAGE_NAME}"
+      echo "Failed at stage: ${env.FAILED_STAGE ?: env.STAGE_NAME}"
     }
     always {
       archiveArtifacts artifacts: 'backend/npm-debug.log*', allowEmptyArchive: true
