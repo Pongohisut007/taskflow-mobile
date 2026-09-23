@@ -1,4 +1,4 @@
-# flutter_application_1
+<!-- # flutter_application_1
 
 A new Flutter project.
 
@@ -31,4 +31,4 @@ order and payment, grants recipe access, and removes that recipe from the cart.
 The backend always rejects mock purchases when `NODE_ENV=production`. Set
 `IAP_MOCK_ENABLED=false` to disable them in another environment. Flutter release
 builds hide the successful mock path by default; for a non-production release
-test build, pass `--dart-define=ENABLE_MOCK_IAP=true` explicitly.
+test build, pass `--dart-define=ENABLE_MOCK_IAP=true` explicitly. -->
