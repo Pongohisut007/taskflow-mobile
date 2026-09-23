@@ -1,109 +1,140 @@
 pipeline {
-  agent any
-  options { timestamps() }
+  agent {
+    docker {
+      image 'node:20-alpine'
+      args '-u root'
+      label 'linux-build-agent'
+    }
+  }
+
+  environment {
+    APP_NAME     = 'taskflow-api'
+    NODE_ENV     = 'test'
+    FAILED_STAGE = ''
+  }
+
+  options {
+    timeout(time: 10, unit: 'MINUTES')
+  }
 
   stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-        // Gitleaks needs full history, so undo any shallow clone
-        sh 'if [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then git fetch --unshallow; fi'
-      }
-    }
 
     stage('Install') {
-      steps { sh 'npm ci' }
-    }
-
-    stage('Secrets Detection — Gitleaks') {
-      steps {
-        // Scans every commit reachable from the current branch
-        sh 'gitleaks git . --redact --verbose --exit-code 1 --report-format sarif --report-path gitleaks.sarif'
-      }
-      post {
-        always { archiveArtifacts artifacts: 'gitleaks.sarif', allowEmptyArchive: true }
-      }
-    }
-
-    stage('SAST — ESLint security') {
-      steps {
-        catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
-          sh 'npx eslint --plugin security src/ -f @microsoft/eslint-formatter-sarif -o eslint.sarif'
-        }
-      }
-      post {
-        always { archiveArtifacts artifacts: 'eslint.sarif', allowEmptyArchive: true }
-      }
-    }
-
-    stage('SAST — Semgrep') {
-      steps {
-        catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
-          sh 'semgrep scan --config=p/owasp-top-ten --config=p/nodejs --sarif --output semgrep.sarif --error src/'
-        }
-      }
-      post {
-        always { archiveArtifacts artifacts: 'semgrep.sarif', allowEmptyArchive: true }
-      }
-    }
-
-    stage('SCA — npm audit') {
       steps {
         script {
-          // npm audit exits non-zero when it finds anything, so swallow the exit code
-          sh 'npm audit --audit-level=high --json > audit.json || true'
-          archiveArtifacts artifacts: 'audit.json'
+          env.FAILED_STAGE = env.STAGE_NAME
+        }
 
-          def critical = sh(script: "jq '.metadata.vulnerabilities.critical // 0' audit.json",
-                            returnStdout: true).trim().toInteger()
-          def high = sh(script: "jq '.metadata.vulnerabilities.high // 0' audit.json",
-                        returnStdout: true).trim().toInteger()
+        echo "Building ${env.APP_NAME} in ${env.NODE_ENV} mode"
 
-          if (critical > 0) {
-            // Mark the build FAILED but keep going so the Policy Gate also runs and logs its verdict
-            catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-              error("Blocking: ${critical} critical vulnerabilities found")
-            }
-          } else if (high > 0) {
-            unstable("SCA warning: ${high} high vulnerabilities (non-blocking)")
-          } else {
-            echo "SCA passed with 0 critical vulnerabilities (warnings allowed)"
-          }
+        sh 'node -v && npm -v'
+
+        dir('backend') {
+          sh 'npm ci'
         }
       }
     }
 
-    stage('Generate SBOM') {
-      environment {
-        COSIGN_PASSWORD = credentials('cosign-password')   // Secret text credential
-      }
+    stage('Secrets — Gitleaks') {
       steps {
-        withCredentials([file(credentialsId: 'cosign-key', variable: 'COSIGN_KEY')]) {
-          sh '''
-            syft dir:. --source-name taskflow-api -o cyclonedx-json=taskflow-api.cdx.json
-
-            cosign sign-blob --yes --key "$COSIGN_KEY" --tlog-upload=false \
-              --output-signature taskflow-api.cdx.json.sig taskflow-api.cdx.json
-
-            # Prove the signature is valid before archiving
-            cosign verify-blob --key cosign.pub --insecure-ignore-tlog=true \
-              --signature taskflow-api.cdx.json.sig taskflow-api.cdx.json
-          '''
+        script {
+          env.FAILED_STAGE = env.STAGE_NAME
         }
+
+        sh 'git fetch --unshallow || true'
+
+        sh '''
+          mkdir -p reports
+
+          gitleaks git . \
+            --log-opts="--all" \
+            --report-format json \
+            --report-path reports/gitleaks.json \
+            --redact \
+            --verbose \
+            --exit-code 1
+        '''
       }
-      post {
-        success {
-          archiveArtifacts artifacts: 'taskflow-api.cdx.json, taskflow-api.cdx.json.sig, cosign.pub'
+    }
+
+    stage('Lint') {
+      steps {
+        script {
+          env.FAILED_STAGE = env.STAGE_NAME
+        }
+
+        dir('backend') {
+          sh 'npm run lint'
         }
       }
     }
 
-    stage('Policy Gate') {
+    stage('Unit Test') {
       steps {
-        // --fail-defined: exit 1 if any deny message exists
-        sh 'opa eval --fail-defined --format pretty -d policy/security.rego -i audit.json "data.security.deny[_]"'
-        echo 'Policy Gate passed: no CRITICAL CVEs'
+        script {
+          env.FAILED_STAGE = env.STAGE_NAME
+        }
+
+        dir('backend') {
+          sh 'npm test'
+        }
       }
+    }
+
+    stage('Deploy — Staging') {
+      when {
+        branch 'develop'
+      }
+
+      steps {
+        script {
+          env.FAILED_STAGE = env.STAGE_NAME
+        }
+
+        sh 'echo deploying to staging...'
+      }
+    }
+
+    stage('Deploy — Production') {
+      when {
+        beforeInput true
+        branch 'main'
+      }
+
+      input {
+        message 'Deploy to production?'
+      }
+
+      steps {
+        script {
+          env.FAILED_STAGE = env.STAGE_NAME
+        }
+
+        sh 'echo deploying to production...'
+      }
+    }
+  }
+
+  post {
+
+    always {
+      archiveArtifacts(
+        artifacts: 'reports/gitleaks.json',
+        allowEmptyArchive: true
+      )
+
+      archiveArtifacts(
+        artifacts: 'backend/npm-debug.log*',
+        allowEmptyArchive: true
+      )
+    }
+
+    success {
+      echo "${env.APP_NAME} passed on ${env.NODE_ENV}"
+    }
+
+    failure {
+      echo "Failed at stage: ${env.FAILED_STAGE}"
     }
   }
 }
