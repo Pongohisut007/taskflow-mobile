@@ -44,7 +44,7 @@ pipeline {
         sh 'git fetch --unshallow || true'
 
         sh '''
-          apk add --no-cache curl
+          apk add --no-cache curl git
 
           VERSION=8.24.2
           curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz \
