@@ -54,7 +54,7 @@ pipeline {
           mkdir -p reports
 
           ./gitleaks git . \
-            --log-opts="--all" \
+
             --report-format json \
             --report-path reports/gitleaks.json \
             --redact \
