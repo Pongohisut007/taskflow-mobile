@@ -135,6 +135,7 @@ pipeline {
 
     failure {
       echo "Failed at stage: ${env.FAILED_STAGE}"
+      echo "hi"
     }
   }
 }
