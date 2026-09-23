@@ -44,9 +44,16 @@ pipeline {
         sh 'git fetch --unshallow || true'
 
         sh '''
+          apk add --no-cache curl
+
+          VERSION=8.24.2
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz \
+            | tar -xz gitleaks
+          chmod +x gitleaks
+
           mkdir -p reports
 
-          gitleaks git . \
+          ./gitleaks git . \
             --log-opts="--all" \
             --report-format json \
             --report-path reports/gitleaks.json \
