@@ -13,7 +13,7 @@ pipeline {
   options {
     timeout(time: 30, unit: 'MINUTES')
   }
-  
+
     stages {
     stage('Secrets') {
       agent {
@@ -46,7 +46,7 @@ pipeline {
         }
       }
     }
-
+    }
   stages {
     stage('Install') {
       agent {
