@@ -1,82 +1,128 @@
 pipeline {
-  agent {
-    docker {
-      image 'node:20-alpine'
-      args  '-u root'
-      label 'linux-build-agent'
-    }
-  }
+  agent { label 'linux-build-agent' }
 
   environment {
-    APP_NAME     = 'taskflow-api'
-    NODE_ENV     = 'test'
-    FAILED_STAGE = ''
+    // One compose project per build so the E2E container can join its network.
+    COMPOSE_PROJECT_NAME = "taskflow-ci-${env.BUILD_NUMBER}"
+    // Host ports published by backend/docker-compose.yaml; kept off the dev defaults.
+    API_PORT      = '13000'
+    POSTGRES_PORT = '15432'
+    PLAYWRIGHT_IMAGE = 'mcr.microsoft.com/playwright:v1.63.0-noble' // must match @playwright/test in e2e/package.json
   }
 
   options {
-    // ทุก build ยึด executor ของ agent ไว้หนึ่งช่องตลอดเวลาที่รัน
-    // ถ้า npm ci ค้างรอ network หรือ jest hang เพราะ handle ที่ไม่ถูกปิด
-    // stage นั้นจะไม่มีวันจบเอง executor ไม่ถูกคืน และ build ที่ต่อคิวอยู่จะตันตาม
-    // timeout บังคับให้ build ที่ค้างถูก abort แล้วคืนทรัพยากรให้ระบบโดยไม่ต้องรอคนมา kill
-    timeout(time: 10, unit: 'MINUTES')
+    timeout(time: 30, unit: 'MINUTES')
   }
 
   stages {
     stage('Install') {
+      agent {
+        docker { image 'node:22-alpine'; reuseNode true }
+      }
       steps {
-        script { env.FAILED_STAGE = env.STAGE_NAME }
-        echo "Building ${env.APP_NAME} in ${env.NODE_ENV} mode"
-        sh 'node -v && npm -v'
         dir('backend') { sh 'npm ci' }
       }
     }
 
-    stage('Lint') {
-      steps {
-        script { env.FAILED_STAGE = env.STAGE_NAME }
-        dir('backend') { sh 'npm run lint' }
-      }
-    }
-
     stage('Unit Test') {
+      agent {
+        docker { image 'node:22-alpine'; reuseNode true }
+      }
       steps {
-        script { env.FAILED_STAGE = env.STAGE_NAME }
-        dir('backend') { sh 'npm test' }
+        dir('backend') {
+          sh 'npm test -- --ci --coverage --reporters=default --reporters=jest-junit'
+        }
+      }
+      post {
+        always {
+          junit 'backend/reports/junit.xml'
+          recordCoverage(tools: [[parser: 'COBERTURA', pattern: 'backend/coverage/cobertura-coverage.xml']])
+        }
       }
     }
 
-    stage('Deploy — Staging') {
-      when { branch 'develop' }
+    stage('SonarQube Analysis') {
+      // The JS/TS analyzer needs Node.js next to the scanner, which this image provides.
+      agent {
+        docker {
+          image 'sonarsource/sonar-scanner-cli:11'
+          args '--network jenkins-net --entrypoint='
+          reuseNode true
+        }
+      }
       steps {
-        script { env.FAILED_STAGE = env.STAGE_NAME }
-        sh 'echo deploying to staging...'
+        dir('backend') {
+          withSonarQubeEnv('SonarQube') {
+            // Project settings live in backend/sonar-project.properties.
+            sh 'sonar-scanner -Dsonar.projectKey=taskflow-api -Dsonar.login=$SONAR_AUTH_TOKEN'
+          }
+        }
       }
     }
 
-    stage('Deploy — Production') {
-      when {
-        beforeInput true
-        branch 'main'
+    stage('Quality Gate') {
+      steps {
+        timeout(time: 5, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+        }
       }
-      input {
-        message 'Deploy to production?'
+    }
+
+    stage('Start API') {
+      steps {
+        // The agent image ships the docker CLI without the compose plugin.
+        sh '''
+          if ! docker compose version >/dev/null 2>&1; then
+            mkdir -p ~/.docker/cli-plugins
+            curl -fsSL https://github.com/docker/compose/releases/download/v2.39.4/docker-compose-linux-x86_64 \
+              -o ~/.docker/cli-plugins/docker-compose
+            chmod +x ~/.docker/cli-plugins/docker-compose
+          fi
+        '''
+        dir('backend') {
+          sh 'docker compose up -d --build --wait'
+        }
+      }
+    }
+
+    stage('E2E') {
+      agent {
+        docker {
+          image "${PLAYWRIGHT_IMAGE}"
+          args "--network ${COMPOSE_PROJECT_NAME}_default --ipc=host"
+          reuseNode true
+        }
+      }
+      environment {
+        BASE_URL = 'http://api:3000'
+        CI = 'true'
       }
       steps {
-        script { env.FAILED_STAGE = env.STAGE_NAME }
-        sh 'echo deploying to production...'
+        dir('e2e') {
+          sh 'npm ci'
+          sh 'npx playwright test'
+        }
+      }
+      post {
+        always {
+          junit 'e2e/reports/e2e-junit.xml'
+          archiveArtifacts artifacts: 'e2e/playwright-report/**', allowEmptyArchive: true
+          publishHTML(target: [
+            reportDir: 'e2e/playwright-report', reportFiles: 'index.html',
+            reportName: 'Playwright Report', keepAll: true,
+            alwaysLinkToLastBuild: true, allowMissing: false
+          ])
+        }
       }
     }
   }
 
   post {
-    success {
-      echo "${env.APP_NAME} passed on ${env.NODE_ENV}"
-    }
-    failure {
-      echo "Failed at stage: ${env.FAILED_STAGE ?: env.STAGE_NAME}"
-    }
     always {
-      archiveArtifacts artifacts: 'backend/npm-debug.log*', allowEmptyArchive: true
+      dir('backend') {
+        sh 'docker compose logs api --tail 100 || true'
+        sh 'docker compose down -v || true'
+      }
     }
   }
 }

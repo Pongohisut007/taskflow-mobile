@@ -18,6 +18,7 @@ import { RecipeAccessModule } from './recipe-access/recipe-access.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { UploadsModule } from './uploads/uploads.module';
+import { TasksModule } from './tasks/tasks.module';
 import { UsersModule } from './users/users.module';
 import r2ClientConfig from '../config/r2.client.config';
 
@@ -43,6 +44,7 @@ import r2ClientConfig from '../config/r2.client.config';
     FavoritesModule,
     CartModule,
     UploadsModule,
+    TasksModule,
     // FoodsModule,
   ],
   controllers: [AppController],
