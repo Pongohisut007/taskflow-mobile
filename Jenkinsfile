@@ -14,7 +14,7 @@ pipeline {
     timeout(time: 30, unit: 'MINUTES')
   }
 
-    stages {
+  stages {
     stage('Secrets') {
       agent {
         docker {
