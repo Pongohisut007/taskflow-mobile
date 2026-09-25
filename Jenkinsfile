@@ -13,6 +13,39 @@ pipeline {
   options {
     timeout(time: 30, unit: 'MINUTES')
   }
+  
+    stages {
+    stage('Secrets') {
+      agent {
+        docker {
+          // Pin the version; the image ships git, which gitleaks needs to scan history.
+          image 'ghcr.io/gitleaks/gitleaks:v8.21.2'
+          args '--entrypoint='
+          reuseNode true
+        }
+      }
+      environment {
+        // Avoid git's "dubious ownership" error inside the container without needing a writable HOME.
+        GIT_CONFIG_COUNT   = '1'
+        GIT_CONFIG_KEY_0   = 'safe.directory'
+        GIT_CONFIG_VALUE_0 = '*'
+      }
+      steps {
+        // Exits 1 when leaks are found, which fails the stage; the report is written first.
+        sh '''
+          gitleaks git . \
+            --redact \
+            --verbose \
+            --report-format sarif \
+            --report-path gitleaks.sarif
+        '''
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'gitleaks.sarif', allowEmptyArchive: true
+        }
+      }
+    }
 
   stages {
     stage('Install') {
