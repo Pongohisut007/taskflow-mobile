@@ -126,7 +126,10 @@ pipeline {
             echo "npm audit: critical=${v.critical}, high=${v.high}, moderate=${v.moderate}, low=${v.low}, total=${v.total}"
 
             if (v.critical > 0) {
-              error "SCA gate FAILED: ${v.critical} critical vulnerabilities"
+              // Mark SCA and the build as failed, but keep going so the Policy Gate records its own decision.
+              catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                error "SCA gate FAILED: ${v.critical} critical vulnerabilities"
+              }
             } else if (v.high > 0) {
               unstable "SCA WARNING: ${v.high} high vulnerabilities (no critical)"
             } else {
