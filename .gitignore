@@ -32,3 +32,5 @@ Thumbs.db
 node_modules/
 
 cosign.key
+
+eslint.sarif
