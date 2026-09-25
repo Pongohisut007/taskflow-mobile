@@ -15,7 +15,6 @@ pipeline {
   }
 
   stages {
-    
     stage('Secrets') {
       agent {
         docker {
@@ -54,6 +53,59 @@ pipeline {
       }
       steps {
         dir('backend') { sh 'npm ci' }
+      }
+    }
+
+    stage('SAST') {
+      // Needs node_modules from Install; rules come from backend/eslint.security.config.mjs.
+      agent {
+        docker { image 'node:22-alpine'; reuseNode true }
+      }
+      steps {
+        dir('backend') {
+          // eslint-plugin-security rules are warnings, so findings do not fail the stage.
+          // Add --max-warnings 0 to turn this into a gate.
+          sh '''
+            npx eslint -c eslint.security.config.mjs src/ \
+              -f @microsoft/eslint-formatter-sarif \
+              -o eslint.sarif
+          '''
+        }
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'backend/eslint.sarif', allowEmptyArchive: true
+        }
+      }
+    }
+
+    stage('Semgrep') {
+      agent {
+        docker {
+          image 'semgrep/semgrep:1.95.0'
+          args '--entrypoint='
+          reuseNode true
+        }
+      }
+      environment {
+        SEMGREP_SEND_METRICS = 'off'
+      }
+      steps {
+        // Jenkins runs the container as the agent's uid, so give semgrep a writable HOME for its cache.
+        // Findings are reported without failing the stage; add --error to make it a gate.
+        sh '''
+          export HOME="$WORKSPACE/.semgrep-home"
+          semgrep scan \
+            --config=p/owasp-top-ten \
+            --config=p/nodejs \
+            --sarif --output semgrep.sarif \
+            backend/src
+        '''
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'semgrep.sarif', allowEmptyArchive: true
+        }
       }
     }
 
