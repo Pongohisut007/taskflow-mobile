@@ -140,7 +140,61 @@ pipeline {
         }
       }
     }
-
+    stage('Generate SBOM') {
+      environment {
+        SYFT_VERSION   = '1.18.1'
+        COSIGN_VERSION = '2.4.1'
+        TOOLS_DIR      = "${env.WORKSPACE}/.tools"
+      }
+      steps {
+        // Static binaries downloaded once per workspace, same pattern as the compose plugin in Start API.
+        sh '''
+          mkdir -p "$TOOLS_DIR"
+          if [ ! -x "$TOOLS_DIR/syft" ]; then
+            curl -fsSL "https://github.com/anchore/syft/releases/download/v${SYFT_VERSION}/syft_${SYFT_VERSION}_linux_amd64.tar.gz" \
+              | tar -xz -C "$TOOLS_DIR" syft
+          fi
+          if [ ! -x "$TOOLS_DIR/cosign" ]; then
+            curl -fsSL -o "$TOOLS_DIR/cosign" \
+              "https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-amd64"
+            chmod +x "$TOOLS_DIR/cosign"
+          fi
+        '''
+        sh '''
+          "$TOOLS_DIR/syft" scan dir:backend \
+            --source-name taskflow-api \
+            --source-version "$GIT_COMMIT" \
+            -o cyclonedx-json=sbom.cdx.json
+        '''
+        withCredentials([
+          file(credentialsId: 'cosign-key', variable: 'COSIGN_KEY'),
+          string(credentialsId: 'cosign-password', variable: 'COSIGN_PASSWORD')
+        ]) {
+          // Local keypair for the lab: keep the signature out of the public Rekor log.
+          sh '''
+            "$TOOLS_DIR/cosign" sign-blob --yes \
+              --key "$COSIGN_KEY" \
+              --tlog-upload=false \
+              --output-signature sbom.cdx.json.sig \
+              sbom.cdx.json
+          '''
+        }
+        // Prove the signature checks out against the public key committed in the repo.
+        sh '''
+          "$TOOLS_DIR/cosign" verify-blob \
+            --key keys/cosign.pub \
+            --signature sbom.cdx.json.sig \
+            --insecure-ignore-tlog=true \
+            sbom.cdx.json
+        '''
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'sbom.cdx.json, sbom.cdx.json.sig', allowEmptyArchive: true
+        }
+      }
+    }
+    
     stage('Unit Test') {
       agent {
         docker { image 'node:22-alpine'; reuseNode true }
