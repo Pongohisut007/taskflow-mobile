@@ -30,3 +30,5 @@ Thumbs.db
 
 #backend
 node_modules/
+
+cosign.key
