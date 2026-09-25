@@ -108,6 +108,38 @@ pipeline {
         }
       }
     }
+    stage('SCA') {
+      agent {
+        docker { image 'node:22-alpine'; reuseNode true }
+      }
+      steps {
+        dir('backend') {
+          // npm audit exits non-zero on findings; ignore that and let the gate below decide.
+          sh 'npm audit --audit-level=high --json > npm-audit.json || true'
+          script {
+            def report = readJSON file: 'npm-audit.json'
+            if (report.error) {
+              error "npm audit could not run: ${report.error.summary ?: report.error}"
+            }
+            def v = report.metadata.vulnerabilities
+            echo "npm audit: critical=${v.critical}, high=${v.high}, moderate=${v.moderate}, low=${v.low}, total=${v.total}"
+
+            if (v.critical > 0) {
+              error "SCA gate FAILED: ${v.critical} critical vulnerabilities"
+            } else if (v.high > 0) {
+              unstable "SCA WARNING: ${v.high} high vulnerabilities (no critical)"
+            } else {
+              echo 'SCA gate passed: no high or critical vulnerabilities'
+            }
+          }
+        }
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'backend/npm-audit.json', allowEmptyArchive: true
+        }
+      }
+    }
 
     stage('Unit Test') {
       agent {
