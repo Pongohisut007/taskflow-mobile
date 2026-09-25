@@ -108,6 +108,7 @@ pipeline {
         }
       }
     }
+
     stage('SCA') {
       agent {
         docker { image 'node:22-alpine'; reuseNode true }
@@ -140,6 +141,7 @@ pipeline {
         }
       }
     }
+
     stage('Generate SBOM') {
       environment {
         SYFT_VERSION   = '1.18.1'
@@ -194,7 +196,49 @@ pipeline {
         }
       }
     }
-    
+
+    stage('Policy Gate') {
+      environment {
+        OPA_VERSION = '1.0.0'
+        TOOLS_DIR   = "${env.WORKSPACE}/.tools"
+      }
+      steps {
+        sh '''
+          mkdir -p "$TOOLS_DIR"
+          if [ ! -x "$TOOLS_DIR/opa" ]; then
+            curl -fsSL -o "$TOOLS_DIR/opa" \
+              "https://github.com/open-policy-agent/opa/releases/download/v${OPA_VERSION}/opa_linux_amd64_static"
+            chmod +x "$TOOLS_DIR/opa"
+          fi
+          "$TOOLS_DIR/opa" check policy/security.rego
+        '''
+        // Input is the npm audit report written by the SCA stage.
+        // --fail-defined exits 1 when the query has any result, i.e. at least one deny message.
+        sh '''
+          set +e
+          "$TOOLS_DIR/opa" eval \
+            --data policy/security.rego \
+            --input backend/npm-audit.json \
+            --format pretty \
+            --fail-defined \
+            'data.taskflow.security.deny[msg]' > policy-result.txt
+          rc=$?
+          cat policy-result.txt
+          if [ "$rc" -eq 0 ]; then
+            echo "Policy Gate: ALLOW (no deny rule matched)"
+          else
+            echo "Policy Gate: DENY (see messages above)"
+          fi
+          exit $rc
+        '''
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'policy-result.txt', allowEmptyArchive: true
+        }
+      }
+    }
+
     stage('Unit Test') {
       agent {
         docker { image 'node:22-alpine'; reuseNode true }
