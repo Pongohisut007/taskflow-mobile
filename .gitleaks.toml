@@ -1,0 +1,9 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Intentional test fixtures"
+paths = [
+  '''backend/config/aws-leak\.js''',
+  '''config/fake-aws\.env''',
+]
