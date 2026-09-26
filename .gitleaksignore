@@ -1,0 +1,9 @@
+cd D:\taskflow-mobile
+
+@"
+db514a991ca66ee70b8f5a4469581f4a0fda3b27:backend/config/aws-leak.js:generic-api-key:3
+2f636df1de74b02b8b01ffc923a2e3638107d044:backend/config/aws-leak.js:generic-api-key:3
+f32caab6ccf8fc95314f25d983c1151b78fc7773:config/fake-aws.env:aws-access-token:1
+8cdf7a25537e98059023cf5a145c04bf24408b85:config/fake-aws.env:aws-access-token:1
+08a0c08fe8894ef004b5b730b65af42afc32ab71:backend/README.md:generic-api-key:5
+"@ | Set-Content -Encoding ascii .gitleaksignore
