@@ -575,6 +575,71 @@ pipeline {
       }
     }
 
+    stage('Configure with Ansible') {
+      // After Container Scan: only an image that passed the scan is pulled onto the host.
+      stages {
+        stage('Inventory from Terraform') {
+          agent {
+            docker {
+              image 'hashicorp/terraform:1.15.8'
+              args '--network jenkins-net --entrypoint='
+              reuseNode true
+            }
+          }
+          environment {
+            TF_IN_AUTOMATION   = '1'
+            CHECKPOINT_DISABLE = '1'
+          }
+          steps {
+            dir('infra/terraform') {
+              // Reads state only, so this works even when Terraform Apply was skipped (no changes).
+              sh 'terraform init -input=false -reconfigure -backend-config=ci.s3.tfbackend'
+              sh 'terraform output -json > tf-outputs.json'
+            }
+          }
+        }
+        stage('Run Playbook') {
+          agent {
+            docker {
+              image 'python:3.12-slim'
+              args '--network jenkins-net'
+              reuseNode true
+            }
+          }
+          environment {
+            ANSIBLE_CORE_VERSION = '2.21.4'
+            // LocalStack EC2 is a mock with unreachable IPs; connect to the stand-in
+            // host from infra/ansible/docker-compose.yml instead. Unset this on real AWS.
+            ANSIBLE_HOST_OVERRIDE = 'taskflow-target'
+            // The stand-in is rebuilt with new host keys; don't do this against real hosts.
+            ANSIBLE_HOST_KEY_CHECKING = 'False'
+            // Fail instead of silently running against an empty inventory.
+            ANSIBLE_INVENTORY_UNPARSED_FAILED = 'True'
+          }
+          steps {
+            sh '''
+              apt-get update -qq && apt-get install -y -qq --no-install-recommends openssh-client >/dev/null
+              python -m venv "$WORKSPACE/.tools/ansible-core-venv"
+              "$WORKSPACE/.tools/ansible-core-venv/bin/pip" install -q "ansible-core==${ANSIBLE_CORE_VERSION}"
+            '''
+            withCredentials([sshUserPrivateKey(credentialsId: 'taskflow-ssh', keyFileVariable: 'SSH_KEY')]) {
+              sh '''
+                export PATH="$WORKSPACE/.tools/ansible-core-venv/bin:$PATH"
+                ansible-inventory -i infra/ansible/inventory/terraform.py --graph --vars
+                # docker_manage_service=false: the stand-in has no systemd and uses the host Docker daemon.
+                ansible-playbook \
+                  -i infra/ansible/inventory/terraform.py \
+                  --private-key "$SSH_KEY" \
+                  -e app_image="$IMAGE_REPO:$IMAGE_TAG" \
+                  -e docker_manage_service=false \
+                  infra/ansible/playbook.yml
+              '''
+            }
+          }
+        }
+      }
+    }
+
     stage('Blue/Green Deploy') {
       environment {
         KUBECTL_VERSION = 'v1.37.0'

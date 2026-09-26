@@ -17,3 +17,8 @@ output "app_url" {
 output "security_group_id" {
   value = aws_security_group.app.id
 }
+
+output "ssh_user" {
+  description = "Login user for the AMI (read by infra/ansible/inventory/terraform.py)"
+  value       = "ubuntu"
+}

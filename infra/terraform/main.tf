@@ -16,13 +16,31 @@ resource "aws_security_group" "app" {
     cidr_blocks = var.app_ingress_cidrs
   }
 
-  # HTTPS only, for pulling images and OS packages. Registries and mirrors
-  # have no fixed IP range, so this one public egress rule is accepted.
+  # SSH for Ansible, only from the network the CI runner connects from.
+  ingress {
+    description = "SSH for Ansible from trusted networks"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = var.ssh_ingress_cidrs
+  }
+
+  # HTTP/HTTPS only, for pulling images and OS packages (Ubuntu apt mirrors use
+  # port 80). Registries and mirrors have no fixed IP range, so public egress is accepted.
   #tfsec:ignore:aws-ec2-no-public-egress-sgr
   egress {
     description = "HTTPS to the internet for image and package downloads"
     from_port   = 443
     to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  #tfsec:ignore:aws-ec2-no-public-egress-sgr
+  egress {
+    description = "HTTP to the internet for Ubuntu apt mirrors"
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -60,6 +78,7 @@ resource "aws_instance" "app" {
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.app.id]
   iam_instance_profile   = aws_iam_instance_profile.app.name
+  key_name               = var.key_name
   ebs_optimized          = true
 
   # IMDSv2 only: blocks SSRF-style credential theft through the metadata service.

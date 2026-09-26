@@ -1,0 +1,18 @@
+# Target host for the Configure with Ansible stage (see target/Dockerfile).
+# No ports are published: it is reachable only from containers on jenkins-net.
+services:
+  target:
+    build: ./target
+    image: taskflow-target:local
+    container_name: taskflow-target
+    volumes:
+      # "Docker" on this host is the host daemon, so `docker pull localhost:5001/...`
+      # reaches the Lab 07 registry the same way the Build Image stage does.
+      # Anyone who can SSH in effectively has root on the Docker host: lab use only.
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - jenkins-net
+
+networks:
+  jenkins-net:
+    external: true

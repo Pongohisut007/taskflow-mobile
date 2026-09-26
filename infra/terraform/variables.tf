@@ -29,3 +29,15 @@ variable "app_ingress_cidrs" {
   type        = list(string)
   default     = ["172.31.0.0/16"]
 }
+
+variable "ssh_ingress_cidrs" {
+  description = "CIDRs allowed to SSH in (the CI runner / bastion that runs Ansible)"
+  type        = list(string)
+  default     = ["172.31.0.0/16"]
+}
+
+variable "key_name" {
+  description = "Existing EC2 key pair for Ansible SSH access (null = none)"
+  type        = string
+  default     = null
+}

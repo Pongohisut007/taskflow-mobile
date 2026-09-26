@@ -1,47 +1,65 @@
 ---
-# Companion to infra/terraform: configures the instance it provisions to run
-# taskflow-api on port 8080 (the port its security group opens).
-- name: Deploy taskflow-api to the Terraform-provisioned instance
+# Configures the host Terraform provisions (infra/terraform): Node.js, Docker,
+# and the taskflow-api image built by the Lab 07 Build Image stage.
+# Inventory: inventory/terraform.py (built from `terraform output -json`).
+- name: Configure the taskflow-api host
   hosts: taskflow_app
   become: true
   vars:
+    node_major: 22
+    # Jenkins passes the exact tag it built: -e app_image=$IMAGE_REPO:$IMAGE_TAG
     app_image: localhost:5001/taskflow-api:latest
-    app_port: 8080
-    container_port: 3000
+    # Set false on hosts without systemd (e.g. a container stand-in).
+    docker_manage_service: true
 
   tasks:
-    - name: Install Docker
+    - name: Install repository prerequisites
       ansible.builtin.apt:
-        name: docker.io
+        name:
+          - ca-certificates
+          - python3-debian
         state: present
         update_cache: true
         cache_valid_time: 3600
+
+    - name: Add NodeSource repository for Node.js {{ node_major }}
+      ansible.builtin.deb822_repository:
+        name: nodesource
+        types: deb
+        uris: https://deb.nodesource.com/node_{{ node_major }}.x
+        suites: nodistro
+        components: main
+        signed_by: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
+
+    - name: Install Node.js and Docker
+      ansible.builtin.apt:
+        name:
+          - nodejs
+          - docker.io
+        state: present
+        update_cache: true
 
     - name: Enable and start Docker
       ansible.builtin.systemd_service:
         name: docker
         state: started
         enabled: true
+      when: docker_manage_service | bool
 
-    - name: Install taskflow-api systemd unit
-      ansible.builtin.template:
-        src: taskflow-api.service.j2
-        dest: /etc/systemd/system/taskflow-api.service
-        owner: root
-        group: root
-        mode: "0644"
-      notify: Restart taskflow-api
+    - name: Pull the taskflow-api image
+      ansible.builtin.command: docker pull {{ app_image }}
+      register: docker_pull
+      changed_when: "'Downloaded newer image' in docker_pull.stdout"
 
-    - name: Enable and start taskflow-api
-      ansible.builtin.systemd_service:
-        name: taskflow-api
-        state: started
-        enabled: true
-        daemon_reload: true
+    - name: Read installed versions
+      ansible.builtin.command: "{{ item }}"
+      loop:
+        - node --version
+        - docker --version
+        - docker image inspect --format '{{ '{{' }}.Id{{ '}}' }}' {{ app_image }}
+      register: versions
+      changed_when: false
 
-  handlers:
-    - name: Restart taskflow-api
-      ansible.builtin.systemd_service:
-        name: taskflow-api
-        state: restarted
-        daemon_reload: true
+    - name: Show installed versions
+      ansible.builtin.debug:
+        msg: "{{ versions.results | map(attribute='stdout') | list }}"
