@@ -17,6 +17,16 @@ pipeline {
             image: node:20-alpine
             command: ['cat']
             tty: true
+            volumeMounts:
+            - name: npm-cache
+              mountPath: /root/.npm
+          volumes:
+          # Pods are thrown away after each build; keep the npm download cache on the kind
+          # node so the next pod (and a burst of 10 in the load test) doesn't refetch everything.
+          - name: npm-cache
+            hostPath:
+              path: /var/cache/jenkins-npm
+              type: DirectoryOrCreate
       '''
     }
   }
@@ -41,7 +51,10 @@ pipeline {
 
     stage('Install') {
       steps {
-        dir('backend') { sh 'npm ci' }
+        dir('backend') {
+          // Retry flaky registry connections instead of failing on the first idle timeout.
+          sh 'npm ci --prefer-offline --fetch-retries=5 --fetch-timeout=120000'
+        }
       }
     }
 
