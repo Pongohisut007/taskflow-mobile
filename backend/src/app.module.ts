@@ -4,6 +4,7 @@ import databaseConfig from '../config/database.config';
 import jwtConfig from '../config/jwt.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { HealthController } from './health/health.controller';
 import { AuthModule } from './auth/auth.module';
 import { BannerModule } from './banner/banner.module';
 import { CartModule } from './cart/cart.module';
@@ -47,7 +48,7 @@ import r2ClientConfig from '../config/r2.client.config';
     TasksModule,
     // FoodsModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, HealthController],
   providers: [AppService],
 })
 export class AppModule {}

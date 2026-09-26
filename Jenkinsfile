@@ -8,6 +8,9 @@ pipeline {
     API_PORT      = '13000'
     POSTGRES_PORT = '15432'
     PLAYWRIGHT_IMAGE = 'mcr.microsoft.com/playwright:v1.63.0-noble' // must match @playwright/test in e2e/package.json
+    // Lab 07: local registry (registry:2) reachable through the host Docker daemon via docker.sock.
+    REGISTRY   = 'localhost:5001'
+    IMAGE_REPO = 'localhost:5001/taskflow-api'
   }
 
   options {
@@ -330,6 +333,117 @@ pipeline {
             reportName: 'Playwright Report', keepAll: true,
             alwaysLinkToLastBuild: true, allowMissing: false
           ])
+        }
+      }
+    }
+
+    // ===================== Lab 07 =====================
+
+    stage('Build Image') {
+      steps {
+        script {
+          env.IMAGE_TAG = env.GIT_COMMIT.take(7)
+          // Immutable tag only: must be a 7-char commit SHA, never 'latest'.
+          if (!(env.IMAGE_TAG ==~ /[0-9a-f]{7}/)) {
+            error "Refusing to build: invalid image tag '${env.IMAGE_TAG}'"
+          }
+          echo "Building ${env.IMAGE_REPO}:${env.IMAGE_TAG}"
+        }
+        sh 'docker build -t "$IMAGE_REPO:$IMAGE_TAG" backend'
+        sh 'docker push "$IMAGE_REPO:$IMAGE_TAG"'
+      }
+    }
+
+    stage('Container Scan') {
+      environment {
+        // Pinned; never use 0.69.5/0.69.6 (compromised March 2026).
+        TRIVY_IMAGE = 'aquasec/trivy:0.72.0'
+      }
+      steps {
+        // Full report for the deliverable; never fails the build.
+        // SARIF goes to stdout (logs go to stderr), so no workspace mount is needed.
+        sh '''
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v trivy-cache:/root/.cache/trivy \
+            "$TRIVY_IMAGE" image --format sarif "$IMAGE_REPO:$IMAGE_TAG" > trivy.sarif
+        '''
+        // The actual gate: exit 1 on any HIGH or CRITICAL finding.
+        sh '''
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v trivy-cache:/root/.cache/trivy \
+            "$TRIVY_IMAGE" image --skip-db-update --exit-code 1 --severity HIGH,CRITICAL "$IMAGE_REPO:$IMAGE_TAG"
+        '''
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'trivy.sarif', allowEmptyArchive: true
+        }
+      }
+    }
+
+    stage('Blue/Green Deploy') {
+      environment {
+        KUBECTL_VERSION = 'v1.37.0'
+        TOOLS_DIR       = "${env.WORKSPACE}/.tools"
+      }
+      steps {
+        sh '''
+          mkdir -p "$TOOLS_DIR"
+          if [ ! -x "$TOOLS_DIR/kubectl" ]; then
+            curl -fsSL -o "$TOOLS_DIR/kubectl" \
+              "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+            chmod +x "$TOOLS_DIR/kubectl"
+          fi
+        '''
+        withCredentials([file(credentialsId: 'kind-kubeconfig', variable: 'KUBECONFIG')]) {
+          script {
+            def k = "${env.TOOLS_DIR}/kubectl"
+
+            env.LIVE_COLOR = sh(
+              script: "${k} get svc taskflow -o jsonpath='{.spec.selector.color}'",
+              returnStdout: true
+            ).trim()
+            env.NEXT_COLOR = (env.LIVE_COLOR == 'blue') ? 'green' : 'blue'
+            echo "Live: ${env.LIVE_COLOR} -> deploying ${env.IMAGE_TAG} to: ${env.NEXT_COLOR}"
+
+            sh "${k} set image deployment/taskflow-${env.NEXT_COLOR} app=${env.IMAGE_REPO}:${env.IMAGE_TAG}"
+            sh "${k} rollout status deployment/taskflow-${env.NEXT_COLOR} --timeout=120s"
+
+            // Smoke test the new colour directly, before any user traffic reaches it.
+            sh """
+              ${k} delete pod smoke-${BUILD_NUMBER} --ignore-not-found
+              ${k} run smoke-${BUILD_NUMBER} --rm -i --restart=Never \
+                --image=curlimages/curl -- \
+                curl -sf --retry 3 --retry-delay 2 http://taskflow-${env.NEXT_COLOR}:8080/health
+            """
+
+            sh """${k} patch svc taskflow -p '{"spec":{"selector":{"color":"${env.NEXT_COLOR}"}}}'"""
+
+            // Verify again through the main Service after the switch.
+            sh """
+              ${k} delete pod verify-${BUILD_NUMBER} --ignore-not-found
+              ${k} run verify-${BUILD_NUMBER} --rm -i --restart=Never \
+                --image=curlimages/curl -- \
+                curl -sf --retry 3 --retry-delay 2 http://taskflow:8080/health
+            """
+            echo "Switched traffic from ${env.LIVE_COLOR} to ${env.NEXT_COLOR}"
+          }
+        }
+      }
+      post {
+        failure {
+          withCredentials([file(credentialsId: 'kind-kubeconfig', variable: 'KUBECONFIG')]) {
+            script {
+              if (env.LIVE_COLOR) {
+                def k = "${env.WORKSPACE}/.tools/kubectl"
+                echo "ROLLBACK: deploy failed, restoring Service selector to ${env.LIVE_COLOR}"
+                sh """${k} patch svc taskflow -p '{"spec":{"selector":{"color":"${env.LIVE_COLOR}"}}}'"""
+                sh "echo 'Service now points to:' && ${k} get svc taskflow -o jsonpath='{.spec.selector.color}'"
+              }
+            }
+          }
         }
       }
     }
