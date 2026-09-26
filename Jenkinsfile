@@ -90,12 +90,8 @@ pipeline {
             // and give ansible a writable HOME.
             sh '''
               export HOME="$WORKSPACE/.ansible-home"
-              VENV="$WORKSPACE/.tools/ansible-venv"
-              # Reuse the venv from earlier builds; only hit PyPI when the pinned version is missing.
-              if ! "$VENV/bin/ansible-lint" --version 2>/dev/null | grep -q "^ansible-lint ${ANSIBLE_LINT_VERSION} "; then
-                python -m venv "$VENV"
-                "$VENV/bin/pip" install -q --retries 10 --timeout 60 "ansible-lint==${ANSIBLE_LINT_VERSION}"
-              fi
+              python -m venv "$WORKSPACE/.tools/ansible-venv"
+              "$WORKSPACE/.tools/ansible-venv/bin/pip" install -q "ansible-lint==${ANSIBLE_LINT_VERSION}"
             '''
             sh '''
               export HOME="$WORKSPACE/.ansible-home"
@@ -623,12 +619,8 @@ pipeline {
           steps {
             sh '''
               apt-get update -qq && apt-get install -y -qq --no-install-recommends openssh-client >/dev/null
-              VENV="$WORKSPACE/.tools/ansible-core-venv"
-              # Reuse the venv from earlier builds; only hit PyPI when the pinned version is missing.
-              if ! "$VENV/bin/ansible" --version 2>/dev/null | grep -q "core ${ANSIBLE_CORE_VERSION}\\]"; then
-                python -m venv "$VENV"
-                "$VENV/bin/pip" install -q --retries 10 --timeout 60 "ansible-core==${ANSIBLE_CORE_VERSION}"
-              fi
+              python -m venv "$WORKSPACE/.tools/ansible-core-venv"
+              "$WORKSPACE/.tools/ansible-core-venv/bin/pip" install -q "ansible-core==${ANSIBLE_CORE_VERSION}"
             '''
             withCredentials([sshUserPrivateKey(credentialsId: 'taskflow-ssh', keyFileVariable: 'SSH_KEY')]) {
               sh '''
