@@ -1,0 +1,17 @@
+# Never commit state or provider caches
+.terraform/
+.terraform-validate/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+tfplan.txt
+tfplan-summary.txt
+crash.log
+crash.*.log
+*.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+tf-outputs.json

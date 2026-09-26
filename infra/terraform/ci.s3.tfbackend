@@ -1,0 +1,5 @@
+# Used by Jenkins: terraform init -backend-config=ci.s3.tfbackend
+# Stage containers run on jenkins-net, where LocalStack is reachable by name.
+endpoints = {
+  s3 = "http://taskflow-localstack:4566"
+}

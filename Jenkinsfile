@@ -14,7 +14,8 @@ pipeline {
   }
 
   options {
-    timeout(time: 30, unit: 'MINUTES')
+    // Includes up to 15 minutes waiting for Terraform approval.
+    timeout(time: 60, unit: 'MINUTES')
   }
 
   stages {
@@ -46,6 +47,197 @@ pipeline {
       post {
         always {
           archiveArtifacts artifacts: 'gitleaks.sarif', allowEmptyArchive: true
+        }
+      }
+    }
+
+    stage('IaC Lint & Validate') {
+      parallel {
+        stage('Terraform Validate') {
+          agent {
+            docker {
+              // Match the version pinned by required_version in infra/terraform/versions.tf.
+              image 'hashicorp/terraform:1.15.8'
+              args '--entrypoint='
+              reuseNode true
+            }
+          }
+          environment {
+            TF_IN_AUTOMATION   = '1'
+            CHECKPOINT_DISABLE = '1'
+            // Own data dir: .terraform keeps the S3 backend from Terraform Plan across builds,
+            // and this container is not on jenkins-net to reach it.
+            TF_DATA_DIR        = '.terraform-validate'
+          }
+          steps {
+            dir('infra/terraform') {
+              // -backend=false: no LocalStack or remote state needed just to validate.
+              sh 'terraform init -backend=false'
+              sh 'terraform validate'
+              sh 'terraform fmt -check -recursive'
+            }
+          }
+        }
+        stage('Ansible Lint') {
+          agent {
+            docker { image 'python:3.12-slim'; reuseNode true }
+          }
+          environment {
+            ANSIBLE_LINT_VERSION = '26.9.0'
+          }
+          steps {
+            // Jenkins runs the container as the agent's uid, so install into a workspace venv
+            // and give ansible a writable HOME.
+            sh '''
+              export HOME="$WORKSPACE/.ansible-home"
+              python -m venv "$WORKSPACE/.tools/ansible-venv"
+              "$WORKSPACE/.tools/ansible-venv/bin/pip" install -q "ansible-lint==${ANSIBLE_LINT_VERSION}"
+            '''
+            sh '''
+              export HOME="$WORKSPACE/.ansible-home"
+              export PATH="$WORKSPACE/.tools/ansible-venv/bin:$PATH"
+              ansible-lint infra/ansible/playbook.yml
+            '''
+          }
+        }
+      }
+    }
+
+    stage('IaC Security Scan') {
+      // Both tools exit non-zero on any unsuppressed finding, which fails the build.
+      // Accepted exceptions live next to the code as tfsec:ignore / checkov:skip comments with a reason.
+      parallel {
+        stage('tfsec') {
+          agent {
+            docker {
+              image 'aquasec/tfsec:v1.28.14'
+              args '--entrypoint='
+              reuseNode true
+            }
+          }
+          steps {
+            // SARIF report first (never fails), then the readable gate run.
+            sh 'tfsec infra/terraform --no-color --format sarif --out tfsec.sarif --soft-fail'
+            sh 'tfsec infra/terraform --no-color'
+          }
+          post {
+            always {
+              archiveArtifacts artifacts: 'tfsec.sarif', allowEmptyArchive: true
+            }
+          }
+        }
+        stage('checkov') {
+          agent {
+            docker {
+              image 'bridgecrew/checkov:3.2.495'
+              args '--entrypoint='
+              reuseNode true
+            }
+          }
+          steps {
+            // Writable HOME for checkov's cache when running as the agent's uid.
+            sh '''
+              export HOME="$WORKSPACE/.checkov-home"
+              checkov -d infra/terraform \
+                --framework terraform \
+                --skip-download \
+                --compact \
+                -o cli -o sarif --output-file-path console,checkov.sarif
+            '''
+          }
+          post {
+            always {
+              archiveArtifacts artifacts: 'checkov.sarif', allowEmptyArchive: true
+            }
+          }
+        }
+      }
+    }
+
+    stage('Terraform Plan') {
+      agent {
+        docker {
+          image 'hashicorp/terraform:1.15.8'
+          // jenkins-net: reach LocalStack as taskflow-localstack (see infra/terraform/docker-compose.yml).
+          args '--network jenkins-net --entrypoint='
+          reuseNode true
+        }
+      }
+      environment {
+        TF_IN_AUTOMATION           = '1'
+        CHECKPOINT_DISABLE         = '1'
+        TF_VAR_localstack_endpoint = 'http://taskflow-localstack:4566'
+      }
+      steps {
+        dir('infra/terraform') {
+          sh 'terraform init -input=false -reconfigure -backend-config=ci.s3.tfbackend'
+          script {
+            // -detailed-exitcode: 0 = no changes, 1 = error, 2 = changes present.
+            def rc = sh(script: 'terraform plan -input=false -detailed-exitcode -out=tfplan', returnStatus: true)
+            if (rc == 1) {
+              error 'terraform plan failed'
+            }
+            env.TF_PLAN_HAS_CHANGES = (rc == 2) ? 'true' : 'false'
+          }
+          sh '''
+            terraform show -no-color tfplan > tfplan.txt
+            grep -E '^ +# .* (will|must) be |^Plan:|^No changes' tfplan.txt > tfplan-summary.txt || true
+            cat tfplan-summary.txt
+          '''
+        }
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'infra/terraform/tfplan, infra/terraform/tfplan.txt, infra/terraform/tfplan-summary.txt',
+                           fingerprint: true, allowEmptyArchive: true
+        }
+      }
+    }
+
+    stage('Approval') {
+      when {
+        beforeAgent true
+        expression { env.TF_PLAN_HAS_CHANGES == 'true' }
+      }
+      steps {
+        script {
+          def summary = readFile('infra/terraform/tfplan-summary.txt').trim()
+          echo "Terraform plan summary:\n${summary}"
+          // Apply never runs unattended: nobody approves within 15 minutes -> build is aborted.
+          timeout(time: 15, unit: 'MINUTES') {
+            env.TF_APPROVER = input(
+              message: "Apply this Terraform plan?\n\n${summary}\n\nFull plan: ${env.BUILD_URL}artifact/infra/terraform/tfplan.txt",
+              ok: 'Apply',
+              submitterParameter: 'APPROVER'
+            )
+          }
+          echo "Terraform plan approved by ${env.TF_APPROVER}"
+        }
+      }
+    }
+
+    stage('Terraform Apply') {
+      when {
+        beforeAgent true
+        expression { env.TF_PLAN_HAS_CHANGES == 'true' }
+      }
+      agent {
+        docker {
+          image 'hashicorp/terraform:1.15.8'
+          args '--network jenkins-net --entrypoint='
+          reuseNode true
+        }
+      }
+      environment {
+        TF_IN_AUTOMATION           = '1'
+        CHECKPOINT_DISABLE         = '1'
+        TF_VAR_localstack_endpoint = 'http://taskflow-localstack:4566'
+      }
+      steps {
+        dir('infra/terraform') {
+          // Applies exactly the approved plan file; Terraform refuses it if state changed since the plan.
+          sh 'terraform apply -input=false tfplan'
+          sh 'terraform output'
         }
       }
     }
@@ -379,6 +571,71 @@ pipeline {
       post {
         always {
           archiveArtifacts artifacts: 'trivy.sarif', allowEmptyArchive: true
+        }
+      }
+    }
+
+    stage('Configure with Ansible') {
+      // After Container Scan: only an image that passed the scan is pulled onto the host.
+      stages {
+        stage('Inventory from Terraform') {
+          agent {
+            docker {
+              image 'hashicorp/terraform:1.15.8'
+              args '--network jenkins-net --entrypoint='
+              reuseNode true
+            }
+          }
+          environment {
+            TF_IN_AUTOMATION   = '1'
+            CHECKPOINT_DISABLE = '1'
+          }
+          steps {
+            dir('infra/terraform') {
+              // Reads state only, so this works even when Terraform Apply was skipped (no changes).
+              sh 'terraform init -input=false -reconfigure -backend-config=ci.s3.tfbackend'
+              sh 'terraform output -json > tf-outputs.json'
+            }
+          }
+        }
+        stage('Run Playbook') {
+          agent {
+            docker {
+              image 'python:3.12-slim'
+              args '--network jenkins-net'
+              reuseNode true
+            }
+          }
+          environment {
+            ANSIBLE_CORE_VERSION = '2.21.4'
+            // LocalStack EC2 is a mock with unreachable IPs; connect to the stand-in
+            // host from infra/ansible/docker-compose.yml instead. Unset this on real AWS.
+            ANSIBLE_HOST_OVERRIDE = 'taskflow-target'
+            // The stand-in is rebuilt with new host keys; don't do this against real hosts.
+            ANSIBLE_HOST_KEY_CHECKING = 'False'
+            // Fail instead of silently running against an empty inventory.
+            ANSIBLE_INVENTORY_UNPARSED_FAILED = 'True'
+          }
+          steps {
+            sh '''
+              apt-get update -qq && apt-get install -y -qq --no-install-recommends openssh-client >/dev/null
+              python -m venv "$WORKSPACE/.tools/ansible-core-venv"
+              "$WORKSPACE/.tools/ansible-core-venv/bin/pip" install -q "ansible-core==${ANSIBLE_CORE_VERSION}"
+            '''
+            withCredentials([sshUserPrivateKey(credentialsId: 'taskflow-ssh', keyFileVariable: 'SSH_KEY')]) {
+              sh '''
+                export PATH="$WORKSPACE/.tools/ansible-core-venv/bin:$PATH"
+                ansible-inventory -i infra/ansible/inventory/terraform.py --graph --vars
+                # docker_manage_service=false: the stand-in has no systemd and uses the host Docker daemon.
+                ansible-playbook \
+                  -i infra/ansible/inventory/terraform.py \
+                  --private-key "$SSH_KEY" \
+                  -e app_image="$IMAGE_REPO:$IMAGE_TAG" \
+                  -e docker_manage_service=false \
+                  infra/ansible/playbook.yml
+              '''
+            }
+          }
         }
       }
     }
