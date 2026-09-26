@@ -24,6 +24,10 @@ RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack 
 COPY --from=build /app/dist ./dist
 
 RUN mkdir -p /app/uploads && chown -R node:node /app
+
+# DEMO ONLY (Lab 07): deliberately broken release to exercise automatic rollback.
+ENV HEALTH_FORCE_FAIL=true
+
 USER node
 
 EXPOSE 3000
