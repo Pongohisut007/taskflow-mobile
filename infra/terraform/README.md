@@ -49,3 +49,15 @@ docker compose down
 
 > LocalStack Community mocks EC2, so the instance is not a real VM. It
 > gets an ID and IP addresses, but nothing actually listens on 8080.
+
+## In Jenkins
+
+`docker-compose.yml` attaches LocalStack to `jenkins-net`, so stage containers
+reach it as `http://taskflow-localstack:4566` (backend override:
+`ci.s3.tfbackend`, provider override: `TF_VAR_localstack_endpoint`).
+
+1. **Terraform Plan**: `plan -out=tfplan`, archives `tfplan`, `tfplan.txt`, `tfplan-summary.txt`.
+2. **Approval**: `input` step shows the plan summary; aborts after 15 minutes with no answer.
+3. **Terraform Apply**: applies exactly the approved `tfplan`.
+
+When the plan has no changes, Approval and Apply are skipped.

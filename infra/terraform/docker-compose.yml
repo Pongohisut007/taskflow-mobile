@@ -11,3 +11,11 @@ services:
     volumes:
       # Runs once LocalStack is ready: creates the S3 bucket used for remote state
       - ./localstack-init:/etc/localstack/init/ready.d
+    networks:
+      - default
+      # Lets Jenkins stage containers reach it as http://taskflow-localstack:4566
+      - jenkins-net
+
+networks:
+  jenkins-net:
+    external: true

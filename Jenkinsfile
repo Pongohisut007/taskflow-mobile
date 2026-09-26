@@ -14,7 +14,8 @@ pipeline {
   }
 
   options {
-    timeout(time: 30, unit: 'MINUTES')
+    // Includes up to 15 minutes waiting for Terraform approval.
+    timeout(time: 60, unit: 'MINUTES')
   }
 
   stages {
@@ -146,6 +147,94 @@ pipeline {
               archiveArtifacts artifacts: 'checkov.sarif', allowEmptyArchive: true
             }
           }
+        }
+      }
+    }
+
+    stage('Terraform Plan') {
+      agent {
+        docker {
+          image 'hashicorp/terraform:1.15.8'
+          // jenkins-net: reach LocalStack as taskflow-localstack (see infra/terraform/docker-compose.yml).
+          args '--network jenkins-net --entrypoint='
+          reuseNode true
+        }
+      }
+      environment {
+        TF_IN_AUTOMATION           = '1'
+        CHECKPOINT_DISABLE         = '1'
+        TF_VAR_localstack_endpoint = 'http://taskflow-localstack:4566'
+      }
+      steps {
+        dir('infra/terraform') {
+          sh 'terraform init -input=false -reconfigure -backend-config=ci.s3.tfbackend'
+          script {
+            // -detailed-exitcode: 0 = no changes, 1 = error, 2 = changes present.
+            def rc = sh(script: 'terraform plan -input=false -detailed-exitcode -out=tfplan', returnStatus: true)
+            if (rc == 1) {
+              error 'terraform plan failed'
+            }
+            env.TF_PLAN_HAS_CHANGES = (rc == 2) ? 'true' : 'false'
+          }
+          sh '''
+            terraform show -no-color tfplan > tfplan.txt
+            grep -E '^ +# .* (will|must) be |^Plan:|^No changes' tfplan.txt > tfplan-summary.txt || true
+            cat tfplan-summary.txt
+          '''
+        }
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'infra/terraform/tfplan, infra/terraform/tfplan.txt, infra/terraform/tfplan-summary.txt',
+                           fingerprint: true, allowEmptyArchive: true
+        }
+      }
+    }
+
+    stage('Approval') {
+      when {
+        beforeAgent true
+        expression { env.TF_PLAN_HAS_CHANGES == 'true' }
+      }
+      steps {
+        script {
+          def summary = readFile('infra/terraform/tfplan-summary.txt').trim()
+          echo "Terraform plan summary:\n${summary}"
+          // Apply never runs unattended: nobody approves within 15 minutes -> build is aborted.
+          timeout(time: 15, unit: 'MINUTES') {
+            env.TF_APPROVER = input(
+              message: "Apply this Terraform plan?\n\n${summary}\n\nFull plan: ${env.BUILD_URL}artifact/infra/terraform/tfplan.txt",
+              ok: 'Apply',
+              submitterParameter: 'APPROVER'
+            )
+          }
+          echo "Terraform plan approved by ${env.TF_APPROVER}"
+        }
+      }
+    }
+
+    stage('Terraform Apply') {
+      when {
+        beforeAgent true
+        expression { env.TF_PLAN_HAS_CHANGES == 'true' }
+      }
+      agent {
+        docker {
+          image 'hashicorp/terraform:1.15.8'
+          args '--network jenkins-net --entrypoint='
+          reuseNode true
+        }
+      }
+      environment {
+        TF_IN_AUTOMATION           = '1'
+        CHECKPOINT_DISABLE         = '1'
+        TF_VAR_localstack_endpoint = 'http://taskflow-localstack:4566'
+      }
+      steps {
+        dir('infra/terraform') {
+          // Applies exactly the approved plan file; Terraform refuses it if state changed since the plan.
+          sh 'terraform apply -input=false tfplan'
+          sh 'terraform output'
         }
       }
     }

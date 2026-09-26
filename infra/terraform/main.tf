@@ -77,4 +77,10 @@ resource "aws_instance" "app" {
   tags = {
     Name = "taskflow-app"
   }
+
+  # LocalStack does not store metadata_options and has no ModifyInstanceMetadataOptions,
+  # so every plan would show drift and every apply would fail. IMDSv2 is still set at creation.
+  lifecycle {
+    ignore_changes = [metadata_options]
+  }
 }
