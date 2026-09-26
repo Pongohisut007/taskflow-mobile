@@ -356,22 +356,25 @@ pipeline {
 
     stage('Container Scan') {
       environment {
-        TRIVY_VERSION   = '0.58.1'
-        TOOLS_DIR       = "${env.WORKSPACE}/.tools"
-        TRIVY_CACHE_DIR = "${env.WORKSPACE}/.trivy-cache"
+        // Pinned; never use 0.69.5/0.69.6 (compromised March 2026).
+        TRIVY_IMAGE = 'aquasec/trivy:0.72.0'
       }
       steps {
-        sh '''
-          mkdir -p "$TOOLS_DIR"
-          if [ ! -x "$TOOLS_DIR/trivy" ]; then
-            curl -fsSL "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" \
-              | tar -xz -C "$TOOLS_DIR" trivy
-          fi
-        '''
         // Full report for the deliverable; never fails the build.
-        sh '"$TOOLS_DIR/trivy" image --format sarif --output trivy.sarif "$IMAGE_REPO:$IMAGE_TAG"'
+        // SARIF goes to stdout (logs go to stderr), so no workspace mount is needed.
+        sh '''
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v trivy-cache:/root/.cache/trivy \
+            "$TRIVY_IMAGE" image --format sarif "$IMAGE_REPO:$IMAGE_TAG" > trivy.sarif
+        '''
         // The actual gate: exit 1 on any HIGH or CRITICAL finding.
-        sh '"$TOOLS_DIR/trivy" image --skip-db-update --exit-code 1 --severity HIGH,CRITICAL "$IMAGE_REPO:$IMAGE_TAG"'
+        sh '''
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v trivy-cache:/root/.cache/trivy \
+            "$TRIVY_IMAGE" image --skip-db-update --exit-code 1 --severity HIGH,CRITICAL "$IMAGE_REPO:$IMAGE_TAG"
+        '''
       }
       post {
         always {
