@@ -1,0 +1,33 @@
+# Lab 09: SLO for the pipeline itself.
+#
+# SLO: 95% of builds complete in under 6 minutes, over a rolling 7 days.
+# "95% of builds < 6 min" is the same statement as "p95 build duration < 6 min",
+# so the SLI is the p95 of jenkins_job_building_duration. The Jenkins Prometheus
+# plugin exposes build durations as a summary (quantiles), not histogram buckets.
+groups:
+  - name: jenkins-slo
+    rules:
+      # From the lab manual. Fires when builds have been waiting in the queue for
+      # 5 minutes straight: a capacity symptom, not a raw CPU/memory cause.
+      - alert: JenkinsQueueBacklog
+        expr: jenkins_queue_size_value > 0 and
+          avg_over_time(jenkins_queue_size_value[5m]) > 0
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Jenkins build queue backlog exceeds 2 minutes"
+
+      # SLI: p95 build duration in seconds (recent builds).
+      - record: jenkins:build_duration_seconds:p95
+        expr: jenkins_job_building_duration{quantile="0.95"}
+
+      # SLO compliance over the rolling 7-day window: 1 = met, 0 = breached.
+      - record: jenkins:build_duration_slo:met_7d
+        expr: (avg_over_time(jenkins:build_duration_seconds:p95[7d]) < bool 360)
+
+      - alert: JenkinsBuildDurationSLOBreach
+        expr: avg_over_time(jenkins:build_duration_seconds:p95[7d]) > 360
+        for: 15m
+        labels: { severity: warning }
+        annotations:
+          summary: "Pipeline SLO breached: p95 build duration over 7d is above 6 minutes"

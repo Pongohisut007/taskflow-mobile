@@ -17,6 +17,11 @@ pipeline {
             image: node:20-alpine
             command: ['cat']
             tty: true
+            # All agent pods share one laptop-sized Docker VM; cap each so a burst
+            # can't take the whole kind cluster down.
+            resources:
+              requests: { cpu: 500m, memory: 512Mi }
+              limits: { memory: 1Gi }
             volumeMounts:
             - name: npm-cache
               mountPath: /root/.npm
@@ -67,7 +72,8 @@ pipeline {
     stage('Unit Test') {
       steps {
         dir('backend') {
-          sh 'npm test -- --ci --coverage --reporters=default --reporters=jest-junit'
+          // Jest defaults to one worker per host CPU (15 here) in every pod; 2 is plenty per build.
+          sh 'npm test -- --ci --coverage --maxWorkers=2 --reporters=default --reporters=jest-junit'
         }
       }
       post {
