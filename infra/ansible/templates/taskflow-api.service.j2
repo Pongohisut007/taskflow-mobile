@@ -1,0 +1,13 @@
+[Unit]
+Description=taskflow-api container
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+ExecStartPre=-/usr/bin/docker rm -f taskflow-api
+ExecStart=/usr/bin/docker run --rm --name taskflow-api -p {{ app_port }}:{{ container_port }} -e PORT={{ container_port }} {{ app_image }}
+ExecStop=/usr/bin/docker stop taskflow-api
+
+[Install]
+WantedBy=multi-user.target

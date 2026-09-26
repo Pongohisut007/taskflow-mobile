@@ -50,6 +50,55 @@ pipeline {
       }
     }
 
+    stage('IaC Lint & Validate') {
+      parallel {
+        stage('Terraform Validate') {
+          agent {
+            docker {
+              // Match the version pinned by required_version in infra/terraform/versions.tf.
+              image 'hashicorp/terraform:1.15.8'
+              args '--entrypoint='
+              reuseNode true
+            }
+          }
+          environment {
+            TF_IN_AUTOMATION   = '1'
+            CHECKPOINT_DISABLE = '1'
+          }
+          steps {
+            dir('infra/terraform') {
+              // -backend=false: no LocalStack or remote state needed just to validate.
+              sh 'terraform init -backend=false'
+              sh 'terraform validate'
+              sh 'terraform fmt -check -recursive'
+            }
+          }
+        }
+        stage('Ansible Lint') {
+          agent {
+            docker { image 'python:3.12-slim'; reuseNode true }
+          }
+          environment {
+            ANSIBLE_LINT_VERSION = '26.9.0'
+          }
+          steps {
+            // Jenkins runs the container as the agent's uid, so install into a workspace venv
+            // and give ansible a writable HOME.
+            sh '''
+              export HOME="$WORKSPACE/.ansible-home"
+              python -m venv "$WORKSPACE/.tools/ansible-venv"
+              "$WORKSPACE/.tools/ansible-venv/bin/pip" install -q "ansible-lint==${ANSIBLE_LINT_VERSION}"
+            '''
+            sh '''
+              export HOME="$WORKSPACE/.ansible-home"
+              export PATH="$WORKSPACE/.tools/ansible-venv/bin:$PATH"
+              ansible-lint infra/ansible/playbook.yml
+            '''
+          }
+        }
+      }
+    }
+
     stage('Install') {
       agent {
         docker { image 'node:22-alpine'; reuseNode true }

@@ -1,0 +1,47 @@
+---
+# Companion to infra/terraform: configures the instance it provisions to run
+# taskflow-api on port 8080 (the port its security group opens).
+- name: Deploy taskflow-api to the Terraform-provisioned instance
+  hosts: taskflow_app
+  become: true
+  vars:
+    app_image: localhost:5001/taskflow-api:latest
+    app_port: 8080
+    container_port: 3000
+
+  tasks:
+    - name: Install Docker
+      ansible.builtin.apt:
+        name: docker.io
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Enable and start Docker
+      ansible.builtin.systemd_service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Install taskflow-api systemd unit
+      ansible.builtin.template:
+        src: taskflow-api.service.j2
+        dest: /etc/systemd/system/taskflow-api.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart taskflow-api
+
+    - name: Enable and start taskflow-api
+      ansible.builtin.systemd_service:
+        name: taskflow-api
+        state: started
+        enabled: true
+        daemon_reload: true
+
+  handlers:
+    - name: Restart taskflow-api
+      ansible.builtin.systemd_service:
+        name: taskflow-api
+        state: restarted
+        daemon_reload: true
