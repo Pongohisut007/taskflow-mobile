@@ -1,5 +1,6 @@
 # Never commit state or provider caches
 .terraform/
+.terraform-validate/
 *.tfstate
 *.tfstate.*
 *.tfplan

@@ -65,6 +65,9 @@ pipeline {
           environment {
             TF_IN_AUTOMATION   = '1'
             CHECKPOINT_DISABLE = '1'
+            // Own data dir: .terraform keeps the S3 backend from Terraform Plan across builds,
+            // and this container is not on jenkins-net to reach it.
+            TF_DATA_DIR        = '.terraform-validate'
           }
           steps {
             dir('infra/terraform') {
