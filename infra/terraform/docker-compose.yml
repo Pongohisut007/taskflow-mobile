@@ -1,0 +1,13 @@
+# LocalStack emulates AWS locally (EC2, S3, ...) on http://localhost:4566
+services:
+  localstack:
+    image: localstack/localstack:4.4
+    container_name: taskflow-localstack
+    ports:
+      - "127.0.0.1:4566:4566"
+    environment:
+      - SERVICES=s3,ec2,sts,iam
+      - AWS_DEFAULT_REGION=us-east-1
+    volumes:
+      # Runs once LocalStack is ready: creates the S3 bucket used for remote state
+      - ./localstack-init:/etc/localstack/init/ready.d
