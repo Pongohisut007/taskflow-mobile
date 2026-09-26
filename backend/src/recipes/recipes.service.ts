@@ -47,7 +47,7 @@ export class RecipesService {
       .leftJoinAndSelect('recipe.categories', 'category')
       .orderBy('recipe.createdAt', 'DESC');
 
-//system search 
+    //system search
     this.applyFilters(query, options);
 
     return query.getMany();
@@ -133,8 +133,8 @@ export class RecipesService {
         { category: options.category },
       );
     }
-    
-// system search
+
+    // system search
     if (options.categoryId) {
       // ใช้ alias คนละชุดกับ options.category กันชนกันเวลากรองพร้อมกัน
       query.andWhere(

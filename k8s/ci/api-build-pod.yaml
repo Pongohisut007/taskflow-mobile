@@ -1,0 +1,107 @@
+# Lab 10: the one pod every taskflow-api build runs in (Jenkins Kubernetes cloud
+# "kind", namespace jenkins-agents). Each tool gets its own container; all share
+# the workspace. The pod is created per build and deleted when the build ends.
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+    # Build, test, E2E, SBOM/OPA/kubectl binaries (static, downloaded with wget).
+    - name: node
+      image: node:22-alpine
+      command: ['cat']
+      tty: true
+      env:
+        # E2E: the API talks to the postgres container over the pod's localhost.
+        - { name: DB_HOST, value: localhost }
+        - { name: DB_PORT, value: '5432' }
+        - name: DB_NAME
+          valueFrom: { secretKeyRef: { name: taskflow-ci-db, key: database } }
+        - name: DB_USER
+          valueFrom: { secretKeyRef: { name: taskflow-ci-db, key: username } }
+        - name: DB_PASSWORD
+          valueFrom: { secretKeyRef: { name: taskflow-ci-db, key: password } }
+      resources:
+        requests: { cpu: 500m, memory: 512Mi }
+        limits: { memory: 2Gi }
+      volumeMounts:
+        - { name: npm-cache, mountPath: /root/.npm }
+
+    # E2E database; its password comes from a Kubernetes Secret, never the repo.
+    - name: postgres
+      image: postgres:16-alpine
+      env:
+        - name: POSTGRES_DB
+          valueFrom: { secretKeyRef: { name: taskflow-ci-db, key: database } }
+        - name: POSTGRES_USER
+          valueFrom: { secretKeyRef: { name: taskflow-ci-db, key: username } }
+        - name: POSTGRES_PASSWORD
+          valueFrom: { secretKeyRef: { name: taskflow-ci-db, key: password } }
+      resources:
+        requests: { cpu: 50m, memory: 64Mi }
+        limits: { memory: 256Mi }
+
+    - name: gitleaks
+      image: ghcr.io/gitleaks/gitleaks:v8.21.2
+      command: ['cat']
+      tty: true
+      resources: { requests: { cpu: 50m, memory: 64Mi }, limits: { memory: 512Mi } }
+
+    - name: semgrep
+      image: semgrep/semgrep:1.95.0
+      command: ['cat']
+      tty: true
+      resources: { requests: { cpu: 100m, memory: 128Mi }, limits: { memory: 1Gi } }
+
+    - name: sonar
+      image: sonarsource/sonar-scanner-cli:11
+      command: ['cat']
+      tty: true
+      resources: { requests: { cpu: 100m, memory: 128Mi }, limits: { memory: 1Gi } }
+
+    - name: terraform
+      image: hashicorp/terraform:1.15.8
+      command: ['cat']
+      tty: true
+      resources: { requests: { cpu: 50m, memory: 64Mi }, limits: { memory: 1Gi } }
+
+    - name: tfsec
+      image: aquasec/tfsec:v1.28.14
+      command: ['cat']
+      tty: true
+      resources: { requests: { cpu: 50m, memory: 64Mi }, limits: { memory: 512Mi } }
+
+    - name: checkov
+      image: bridgecrew/checkov:3.2.495
+      command: ['cat']
+      tty: true
+      resources: { requests: { cpu: 50m, memory: 128Mi }, limits: { memory: 1Gi } }
+
+    # ansible-lint and ansible-playbook (installed into a venv per build).
+    - name: python
+      image: python:3.12-slim
+      command: ['cat']
+      tty: true
+      resources: { requests: { cpu: 50m, memory: 64Mi }, limits: { memory: 1Gi } }
+
+    # Builds and pushes the image without a Docker daemon.
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:v1.23.2-debug
+      command: ['/busybox/cat']
+      tty: true
+      resources: { requests: { cpu: 250m, memory: 256Mi }, limits: { memory: 2Gi } }
+
+    # Pinned; never use 0.69.5/0.69.6 (compromised March 2026).
+    - name: trivy
+      image: aquasec/trivy:0.72.0
+      command: ['cat']
+      tty: true
+      resources: { requests: { cpu: 100m, memory: 128Mi }, limits: { memory: 1Gi } }
+      volumeMounts:
+        - { name: trivy-cache, mountPath: /root/.cache/trivy }
+
+  volumes:
+    # Download caches live on the kind node so fresh pods don't refetch everything.
+    - name: npm-cache
+      hostPath: { path: /var/cache/jenkins-npm, type: DirectoryOrCreate }
+    - name: trivy-cache
+      hostPath: { path: /var/cache/jenkins-trivy, type: DirectoryOrCreate }

@@ -16,6 +16,8 @@ services:
       - prometheus-data:/prometheus
     networks:
       - jenkins-net
+      # Lab 10: agent pods on the kind cluster reach this service by name.
+      - kind
 
   grafana:
     image: grafana/grafana:12.1.0
@@ -32,6 +34,8 @@ services:
       - grafana-data:/var/lib/grafana
     networks:
       - jenkins-net
+      # Lab 10: agent pods on the kind cluster reach this service by name.
+      - kind
 
 volumes:
   prometheus-data:
@@ -39,4 +43,6 @@ volumes:
 
 networks:
   jenkins-net:
+    external: true
+  kind:
     external: true

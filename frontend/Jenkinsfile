@@ -1,0 +1,130 @@
+// Lab 10: taskflow-mobile (Flutter/Android) pipeline. Jenkins job "taskflow/mobile"
+// uses this file (script path frontend/Jenkinsfile) on the same repository.
+//
+//   Pub Get -> [Analyze | Unit Test + Coverage | SCA (osv-scanner)]  (parallel, fail fast)
+//   -> Debug APK (every branch) -> Release AAB, signed + verified (main only)
+//
+// Runs in an ephemeral Kubernetes pod (frontend/ci/mobile-build-pod.yaml) on the
+// Lab 09 "kind" cloud. The upload keystore and its passwords are Jenkins credentials.
+pipeline {
+  agent {
+    kubernetes {
+      yamlFile 'frontend/ci/mobile-build-pod.yaml'
+      defaultContainer 'flutter'
+    }
+  }
+
+  environment {
+    OSV_SCANNER_VERSION = '2.6.0'
+    ANDROID_KEY_ALIAS   = 'taskflow-upload'
+  }
+
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '20'))
+    timeout(time: 60, unit: 'MINUTES')
+  }
+
+  stages {
+    stage('Pub Get') {
+      steps {
+        sh 'flutter --version'
+        // The project sets -Xmx8G for Gradle; Gradle user-home properties win, so
+        // cap the daemon to fit the 4Gi pod limit.
+        sh '''
+          mkdir -p "$GRADLE_USER_HOME"
+          printf 'org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m\\norg.gradle.daemon=false\\n' \
+            > "$GRADLE_USER_HOME/gradle.properties"
+        '''
+        dir('frontend') { sh 'flutter pub get' }
+      }
+    }
+
+    stage('Analyze, Test & SCA') {
+      failFast true
+      parallel {
+        stage('Analyze') {
+          steps {
+            dir('frontend') { sh 'flutter analyze' }
+          }
+        }
+
+        stage('Unit Test') {
+          steps {
+            dir('frontend') { sh 'flutter test --coverage' }
+          }
+          post {
+            always { archiveArtifacts artifacts: 'frontend/coverage/lcov.info', allowEmptyArchive: true }
+          }
+        }
+
+        stage('SCA') {
+          steps {
+            // osv-scanner exits 1 when pubspec.lock has a known vulnerability.
+            sh '''
+              curl -fsSL -o /tmp/osv-scanner \
+                "https://github.com/google/osv-scanner/releases/download/v${OSV_SCANNER_VERSION}/osv-scanner_linux_amd64"
+              chmod +x /tmp/osv-scanner
+              /tmp/osv-scanner scan source --format sarif --output osv.sarif -L frontend/pubspec.lock || true
+              /tmp/osv-scanner scan source -L frontend/pubspec.lock
+            '''
+          }
+          post {
+            always { archiveArtifacts artifacts: 'osv.sarif', allowEmptyArchive: true }
+          }
+        }
+      }
+    }
+
+    stage('Debug APK') {
+      steps {
+        dir('frontend') { sh 'flutter build apk --debug' }
+      }
+      post {
+        success { archiveArtifacts artifacts: 'frontend/build/app/outputs/flutter-apk/app-debug.apk', fingerprint: true }
+      }
+    }
+
+    stage('Release AAB') {
+      when { branch 'main' }
+      steps {
+        withCredentials([
+          file(credentialsId: 'android-upload-keystore', variable: 'ANDROID_KEYSTORE_PATH'),
+          string(credentialsId: 'android-keystore-password', variable: 'ANDROID_KEYSTORE_PASSWORD'),
+          string(credentialsId: 'android-key-password', variable: 'ANDROID_KEY_PASSWORD')
+        ]) {
+          // android/app/build.gradle.kts reads these env vars into the release signingConfig.
+          dir('frontend') {
+            sh 'flutter build appbundle --release --build-number "$BUILD_NUMBER"'
+          }
+        }
+        // Prove it is signed with the upload key, not the Android debug key.
+        sh '''
+          AAB=frontend/build/app/outputs/bundle/release/app-release.aab
+          jarsigner -verify -certs "$AAB" > verify.txt 2>&1 || { cat verify.txt; exit 1; }
+          grep -q "jar verified" verify.txt
+          keytool -printcert -jarfile "$AAB" | tee aab-signer.txt
+          if grep -q "CN=Android Debug" aab-signer.txt; then echo "Release AAB is debug-signed"; exit 1; fi
+        '''
+      }
+      post {
+        success {
+          archiveArtifacts artifacts: 'frontend/build/app/outputs/bundle/release/app-release.aab, aab-signer.txt', fingerprint: true
+        }
+      }
+    }
+  }
+
+  post {
+    // Recipients come from the Jenkins email-ext default list, not from this file.
+    success {
+      emailext to: '$DEFAULT_RECIPIENTS', mimeType: 'text/plain',
+        subject: "SUCCESS: taskflow-mobile ${env.BRANCH_NAME} #${env.BUILD_NUMBER}",
+        body: "Branch: ${env.BRANCH_NAME}\nCommit: ${env.GIT_COMMIT}\nBuild: ${env.BUILD_URL}"
+    }
+    failure {
+      emailext to: '$DEFAULT_RECIPIENTS', mimeType: 'text/plain',
+        subject: "FAILURE: taskflow-mobile ${env.BRANCH_NAME} #${env.BUILD_NUMBER}",
+        body: "Branch: ${env.BRANCH_NAME}\nCommit: ${env.GIT_COMMIT}\nBuild: ${env.BUILD_URL}\nConsole: ${env.BUILD_URL}console"
+    }
+  }
+}

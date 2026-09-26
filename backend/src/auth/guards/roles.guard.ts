@@ -10,7 +10,7 @@ import type { UserRole } from '../../users/entities/user.entity';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import type { AuthUser } from '../interfaces/jwt-payload.interface';
 
-// ใช้คู่กับ JwtAuthGuard เสมอ: @UseGuards(JwtAuthGuard, RolesGuard) 
+// ใช้คู่กับ JwtAuthGuard เสมอ: @UseGuards(JwtAuthGuard, RolesGuard)
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
