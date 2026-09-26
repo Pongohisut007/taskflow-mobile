@@ -1,0 +1,42 @@
+# Lab 09: Prometheus scrapes Jenkins (<jenkins>/prometheus/), Grafana charts it.
+# Both join jenkins-net so they reach the controller as http://jenkins:8080.
+services:
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    container_name: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      # The SLO is measured over 7 days, so keep at least that much history.
+      - --storage.tsdb.retention.time=15d
+      - --web.enable-lifecycle
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus:ro
+      - prometheus-data:/prometheus
+    networks:
+      - jenkins-net
+
+  grafana:
+    image: grafana/grafana:12.1.0
+    container_name: grafana
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    ports:
+      # 3000 is taken by the API in local dev, so Grafana is on 3001.
+      - "127.0.0.1:3001:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    networks:
+      - jenkins-net
+
+volumes:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  jenkins-net:
+    external: true
