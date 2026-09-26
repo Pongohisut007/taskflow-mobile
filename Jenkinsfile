@@ -99,6 +99,57 @@ pipeline {
       }
     }
 
+    stage('IaC Security Scan') {
+      // Both tools exit non-zero on any unsuppressed finding, which fails the build.
+      // Accepted exceptions live next to the code as tfsec:ignore / checkov:skip comments with a reason.
+      parallel {
+        stage('tfsec') {
+          agent {
+            docker {
+              image 'aquasec/tfsec:v1.28.14'
+              args '--entrypoint='
+              reuseNode true
+            }
+          }
+          steps {
+            // SARIF report first (never fails), then the readable gate run.
+            sh 'tfsec infra/terraform --no-color --format sarif --out tfsec.sarif --soft-fail'
+            sh 'tfsec infra/terraform --no-color'
+          }
+          post {
+            always {
+              archiveArtifacts artifacts: 'tfsec.sarif', allowEmptyArchive: true
+            }
+          }
+        }
+        stage('checkov') {
+          agent {
+            docker {
+              image 'bridgecrew/checkov:3.2.495'
+              args '--entrypoint='
+              reuseNode true
+            }
+          }
+          steps {
+            // Writable HOME for checkov's cache when running as the agent's uid.
+            sh '''
+              export HOME="$WORKSPACE/.checkov-home"
+              checkov -d infra/terraform \
+                --framework terraform \
+                --skip-download \
+                --compact \
+                -o cli -o sarif --output-file-path console,checkov.sarif
+            '''
+          }
+          post {
+            always {
+              archiveArtifacts artifacts: 'checkov.sarif', allowEmptyArchive: true
+            }
+          }
+        }
+      }
+    }
+
     stage('Install') {
       agent {
         docker { image 'node:22-alpine'; reuseNode true }

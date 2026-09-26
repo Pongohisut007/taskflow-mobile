@@ -10,7 +10,7 @@ variable "localstack_endpoint" {
 
 variable "instance_type" {
   type    = string
-  default = "t2.micro"
+  default = "t3.micro" # supports EBS optimization
 }
 
 variable "ami_id" {
@@ -22,4 +22,10 @@ variable "ami_id" {
 variable "app_port" {
   type    = number
   default = 8080
+}
+
+variable "app_ingress_cidrs" {
+  description = "CIDRs allowed to reach the app port (default: the default VPC range)"
+  type        = list(string)
+  default     = ["172.31.0.0/16"]
 }
