@@ -1,0 +1,39 @@
+=== Phase 1: 04:31:50 10 builds, cloud concurrency limit = 2
+queued build 1/10 (HOLD_SECONDS=60)
+queued build 2/10 (HOLD_SECONDS=60)
+queued build 3/10 (HOLD_SECONDS=60)
+queued build 4/10 (HOLD_SECONDS=60)
+queued build 5/10 (HOLD_SECONDS=60)
+queued build 6/10 (HOLD_SECONDS=60)
+queued build 7/10 (HOLD_SECONDS=60)
+queued build 8/10 (HOLD_SECONDS=60)
+queued build 9/10 (HOLD_SECONDS=60)
+queued build 10/10 (HOLD_SECONDS=60)
+04:31:52 jenkins_queue=10 running_pods=0 prom_queue_gauge=0 JenkinsQueueBacklog=inactive
+04:32:13 jenkins_queue=8 running_pods=2 prom_queue_gauge=0 JenkinsQueueBacklog=inactive
+04:32:42 jenkins_queue=8 running_pods=2 prom_queue_gauge=0 JenkinsQueueBacklog=inactive
+04:33:03 jenkins_queue=8 running_pods=2 prom_queue_gauge=8 JenkinsQueueBacklog=inactive
+04:33:24 jenkins_queue=8 running_pods=2 prom_queue_gauge=8 JenkinsQueueBacklog=pending
+04:33:45 jenkins_queue=8 running_pods=2 prom_queue_gauge=8 JenkinsQueueBacklog=pending
+04:34:06 jenkins_queue=8 running_pods=2 prom_queue_gauge=8 JenkinsQueueBacklog=pending
+04:34:28 jenkins_queue=8 running_pods=0 prom_queue_gauge=8 JenkinsQueueBacklog=pending
+04:34:49 jenkins_queue=6 running_pods=2 prom_queue_gauge=8 JenkinsQueueBacklog=pending
+04:35:11 jenkins_queue=6 running_pods=2 prom_queue_gauge=6 JenkinsQueueBacklog=pending
+04:35:32 jenkins_queue=6 running_pods=2 prom_queue_gauge=6 JenkinsQueueBacklog=pending
+04:35:53 jenkins_queue=6 running_pods=2 prom_queue_gauge=6 JenkinsQueueBacklog=pending
+04:36:15 jenkins_queue=6 running_pods=2 prom_queue_gauge=6 JenkinsQueueBacklog=pending
+04:36:36 jenkins_queue=6 running_pods=2 prom_queue_gauge=6 JenkinsQueueBacklog=pending
+04:36:57 jenkins_queue=6 running_pods=0 prom_queue_gauge=6 JenkinsQueueBacklog=pending
+04:37:20 jenkins_queue=4 running_pods=2 prom_queue_gauge=6 JenkinsQueueBacklog=pending
+04:37:41 jenkins_queue=4 running_pods=2 prom_queue_gauge=6 JenkinsQueueBacklog=pending
+04:38:03 jenkins_queue=4 running_pods=2 prom_queue_gauge=6 JenkinsQueueBacklog=pending
+04:38:24 jenkins_queue=4 running_pods=2 prom_queue_gauge=6 JenkinsQueueBacklog=firing
+=== Phase 2: 04:38:43 capacity fix: cloud + pod template concurrency limit 2 -> 4
+04:38:52 jenkins_queue=4 running_pods=4 prom_queue_gauge=4 JenkinsQueueBacklog=firing
+04:39:14 jenkins_queue=2 running_pods=4 prom_queue_gauge=4 JenkinsQueueBacklog=firing
+04:39:35 jenkins_queue=2 running_pods=2 prom_queue_gauge=4 JenkinsQueueBacklog=firing
+04:39:57 jenkins_queue=1 running_pods=4 prom_queue_gauge=4 JenkinsQueueBacklog=firing
+04:40:19 jenkins_queue=0 running_pods=4 prom_queue_gauge=4 JenkinsQueueBacklog=firing
+04:40:40 jenkins_queue=0 running_pods=4 prom_queue_gauge=4 JenkinsQueueBacklog=firing
+04:41:01 jenkins_queue=0 running_pods=4 prom_queue_gauge=0 JenkinsQueueBacklog=firing
+04:41:23 jenkins_queue=0 running_pods=4 prom_queue_gauge=0 JenkinsQueueBacklog=inactive
