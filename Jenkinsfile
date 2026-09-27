@@ -156,11 +156,7 @@ pipeline {
         stage('Ansible Lint') {
           steps {
             container('python') {
-              sh '''
-                python -m venv /tmp/ansible-lint
-                /tmp/ansible-lint/bin/pip install -q --retries 10 --timeout 60 "ansible-lint==26.9.0"
-                HOME=/tmp /tmp/ansible-lint/bin/ansible-lint infra/ansible/playbook.yml
-              '''
+              sh 'ansible-lint infra/ansible/playbook.yml'
             }
           }
         }
@@ -412,14 +408,8 @@ pipeline {
           dir('infra/terraform') { sh 'terraform output -json > tf-outputs.json' }
         }
         container('python') {
-          sh '''
-            apt-get update -qq && apt-get install -y -qq --no-install-recommends openssh-client >/dev/null
-            python -m venv /tmp/ansible
-            /tmp/ansible/bin/pip install -q --retries 10 --timeout 60 "ansible-core==2.21.4"
-          '''
           withCredentials([sshUserPrivateKey(credentialsId: 'taskflow-ssh', keyFileVariable: 'SSH_KEY')]) {
             sh '''
-              export PATH="/tmp/ansible/bin:$PATH"
               ansible-inventory -i infra/ansible/inventory/terraform.py --graph --vars
               ansible-playbook -i infra/ansible/inventory/terraform.py --private-key "$SSH_KEY" \
                 -e app_image="$IMAGE_REPO:$IMAGE_TAG" -e docker_manage_service=false infra/ansible/playbook.yml

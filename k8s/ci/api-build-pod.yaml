@@ -76,9 +76,10 @@ spec:
       tty: true
       resources: { requests: { cpu: 50m, memory: 128Mi }, limits: { memory: 1Gi } }
 
-    # ansible-lint and ansible-playbook (installed into a venv per build).
+    # ansible-lint + ansible-core + ssh, baked in (ci/images/ansible/Dockerfile) so no
+    # build depends on PyPI being reachable.
     - name: python
-      image: python:3.12-slim
+      image: localhost:5001/ci-ansible:26.9.0
       command: ['cat']
       tty: true
       resources: { requests: { cpu: 50m, memory: 64Mi }, limits: { memory: 1Gi } }
