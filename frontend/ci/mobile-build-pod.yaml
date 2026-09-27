@@ -18,6 +18,9 @@ spec:
         limits: { memory: 4Gi }
       volumeMounts:
         - { name: build-cache, mountPath: /cache }
+        # AGP installs the NDK (~1 GB) on first use; keep it across ephemeral pods.
+        - { name: build-cache, mountPath: /opt/android-sdk-linux/ndk, subPath: ndk }
+        - { name: build-cache, mountPath: /opt/android-sdk-linux/cmake, subPath: cmake }
   volumes:
     - name: build-cache
       hostPath: { path: /var/cache/jenkins-flutter, type: DirectoryOrCreate }
