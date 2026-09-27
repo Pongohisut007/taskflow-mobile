@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="1060" viewBox="0 0 1680 1060">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8c959f"/></marker></defs>
+<rect width="1680" height="1060" fill="#ffffff"/>
+<text x="40" y="44" font-size="24" font-weight="700" fill="#1f2328" text-anchor="start" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">TaskFlow — Lab 10 end-to-end pipeline (two Jenkinsfiles, every gate in order)</text>
+<text x="40" y="70" font-size="14" font-weight="normal" fill="#57606a" text-anchor="start" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Code → Commit → Build → Test → Stage → Deploy → Monitor · every stage runs in an ephemeral pod on the kind Kubernetes cloud (Lab 09)</text>
+<rect x="24" y="92" width="1632" height="560" rx="12" fill="#f6f8fa" stroke="#d0d7de"/>
+<text x="44" y="122" font-size="16" font-weight="700" fill="#1f2328" text-anchor="start" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">taskflow-api · Jenkinsfile · job taskflow/lab4 · pod k8s/ci/api-build-pod.yaml</text>
+<rect x="44" y="150" width="120" height="56" rx="8" fill="#ddeafb" stroke="#2f6fbd" stroke-width="1.5"/>
+<text x="104.0" y="174.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Checkout</text>
+<text x="104.0" y="191.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">git push / PR</text>
+<rect x="196" y="150" width="130" height="56" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="261.0" y="174.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Secrets</text>
+<text x="261.0" y="191.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">gitleaks</text>
+<rect x="358" y="150" width="120" height="56" rx="8" fill="#ddeafb" stroke="#2f6fbd" stroke-width="1.5"/>
+<text x="418.0" y="174.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Install</text>
+<text x="418.0" y="191.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">npm ci</text>
+<line x1="164" y1="178.0" x2="196" y2="178.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<line x1="326" y1="178.0" x2="358" y2="178.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<rect x="520" y="138" width="1116" height="196" rx="10" fill="none" stroke="#2f6fbd" stroke-dasharray="4 4"/>
+<text x="532" y="158" font-size="13" font-weight="700" fill="#2f6fbd" text-anchor="start" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Lint, Test &amp; Scan — parallel, failFast</text>
+<line x1="478" y1="178.0" x2="520" y2="178" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<rect x="534" y="172" width="204" height="60" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="636.0" y="198.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Lint</text>
+<text x="636.0" y="215.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">eslint</text>
+<rect x="754" y="172" width="204" height="60" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="856.0" y="198.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Unit Test</text>
+<text x="856.0" y="215.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">jest + coverage</text>
+<rect x="974" y="172" width="204" height="60" rx="8" fill="#ddeafb" stroke="#2f6fbd" stroke-width="1.5"/>
+<text x="1076.0" y="198.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">SAST</text>
+<text x="1076.0" y="215.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">eslint-security</text>
+<rect x="1194" y="172" width="204" height="60" rx="8" fill="#ddeafb" stroke="#2f6fbd" stroke-width="1.5"/>
+<text x="1296.0" y="198.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Semgrep</text>
+<text x="1296.0" y="215.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">OWASP rules</text>
+<rect x="1414" y="172" width="204" height="60" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="1516.0" y="198.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">SCA</text>
+<text x="1516.0" y="215.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">npm audit</text>
+<rect x="534" y="250" width="204" height="60" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="636.0" y="276.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Terraform</text>
+<text x="636.0" y="293.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">validate + fmt</text>
+<rect x="754" y="250" width="204" height="60" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="856.0" y="276.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Ansible Lint</text>
+<text x="856.0" y="293.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">production</text>
+<rect x="974" y="250" width="204" height="60" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="1076.0" y="276.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">tfsec</text>
+<text x="1076.0" y="293.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">IaC scan</text>
+<rect x="1194" y="250" width="204" height="60" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="1296.0" y="276.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">checkov</text>
+<text x="1296.0" y="293.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">IaC scan</text>
+<rect x="44" y="372" width="150" height="60" rx="8" fill="#ddeafb" stroke="#2f6fbd" stroke-width="1.5"/>
+<text x="119.0" y="398.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">SBOM &amp; Sign</text>
+<text x="119.0" y="415.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">syft + cosign</text>
+<rect x="226" y="372" width="140" height="60" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="296.0" y="398.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Policy Gate</text>
+<text x="296.0" y="415.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">OPA</text>
+<rect x="398" y="372" width="150" height="60" rx="8" fill="#ddeafb" stroke="#2f6fbd" stroke-width="1.5"/>
+<text x="473.0" y="398.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">SonarQube</text>
+<text x="473.0" y="415.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">analysis</text>
+<rect x="580" y="372" width="150" height="60" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="655.0" y="398.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Quality Gate</text>
+<text x="655.0" y="415.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">coverage ≥ 70%</text>
+<rect x="762" y="372" width="150" height="60" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="837.0" y="398.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">E2E</text>
+<text x="837.0" y="415.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">API + postgres pod</text>
+<rect x="944" y="372" width="150" height="60" rx="8" fill="#ddeafb" stroke="#2f6fbd" stroke-width="1.5"/>
+<text x="1019.0" y="398.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Build Image</text>
+<text x="1019.0" y="415.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">kaniko, tag = SHA</text>
+<rect x="1126" y="372" width="160" height="60" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="1206.0" y="398.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Container Scan</text>
+<text x="1206.0" y="415.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Trivy HIGH/CRIT</text>
+<rect x="1318" y="372" width="160" height="60" rx="8" fill="#ddeafb" stroke="#2f6fbd" stroke-width="1.5"/>
+<text x="1398.0" y="398.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Terraform Plan</text>
+<text x="1398.0" y="415.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">archive tfplan</text>
+<line x1="194" y1="402.0" x2="226" y2="402.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<line x1="366" y1="402.0" x2="398" y2="402.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<line x1="548" y1="402.0" x2="580" y2="402.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<line x1="730" y1="402.0" x2="762" y2="402.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<line x1="912" y1="402.0" x2="944" y2="402.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<line x1="1094" y1="402.0" x2="1126" y2="402.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<line x1="1286" y1="402.0" x2="1318" y2="402.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<path d="M 1078.0 334 L 1078.0 348 L 119 348 L 119 372" fill="none" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<text x="150" y="496" font-size="13" font-weight="700" fill="#b7791f" text-anchor="start" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">main branch only</text>
+<rect x="44" y="510" width="170" height="64" rx="8" fill="#fff4d6" stroke="#c62828" stroke-width="2.5" stroke-dasharray="6 3"/>
+<text x="129.0" y="538.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Approval</text>
+<text x="129.0" y="555.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">input · human, 15 min</text>
+<rect x="246" y="510" width="170" height="64" rx="8" fill="#fff4d6" stroke="#b7791f" stroke-width="1.5" stroke-dasharray="6 3"/>
+<text x="331.0" y="538.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Terraform Apply</text>
+<text x="331.0" y="555.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">approved tfplan</text>
+<rect x="448" y="510" width="190" height="64" rx="8" fill="#fff4d6" stroke="#b7791f" stroke-width="1.5" stroke-dasharray="6 3"/>
+<text x="543.0" y="538.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Configure w/ Ansible</text>
+<text x="543.0" y="555.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">dynamic inventory</text>
+<rect x="670" y="510" width="210" height="64" rx="8" fill="#fff4d6" stroke="#c62828" stroke-width="2.5" stroke-dasharray="6 3"/>
+<text x="775.0" y="538.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Pipeline Health Gate</text>
+<text x="775.0" y="555.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Prometheus: last 20 ≥ 90%</text>
+<rect x="912" y="510" width="250" height="64" rx="8" fill="#fff4d6" stroke="#c62828" stroke-width="2.5" stroke-dasharray="6 3"/>
+<text x="1037.0" y="538.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Deploy — Production</text>
+<text x="1037.0" y="555.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">blue/green + smoke test</text>
+<rect x="1194" y="510" width="190" height="64" rx="8" fill="#fff4d6" stroke="#b7791f" stroke-width="1.5" stroke-dasharray="6 3"/>
+<text x="1289.0" y="538.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Auto rollback</text>
+<text x="1289.0" y="555.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">post.failure → old colour</text>
+<rect x="1416" y="510" width="200" height="64" rx="8" fill="#ddeafb" stroke="#2f6fbd" stroke-width="1.5"/>
+<text x="1516.0" y="538.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Email</text>
+<text x="1516.0" y="555.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">success / failure</text>
+<line x1="214" y1="542.0" x2="246" y2="542.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<line x1="416" y1="542.0" x2="448" y2="542.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<line x1="638" y1="542.0" x2="670" y2="542.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<line x1="880" y1="542.0" x2="912" y2="542.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<line x1="1162" y1="542.0" x2="1194" y2="542.0" stroke="#c62828" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a)"/>
+<text x="1178" y="506" font-size="11" font-weight="normal" fill="#c62828" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">on failure</text>
+<path d="M 1398 432 L 1398 460 L 129 460 L 129 510" fill="none" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<text x="1516" y="598" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">post: every result emails branch + build URL</text>
+<rect x="24" y="676" width="1632" height="220" rx="12" fill="#f6f8fa" stroke="#d0d7de"/>
+<text x="44" y="706" font-size="16" font-weight="700" fill="#1f2328" text-anchor="start" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">taskflow-mobile · frontend/Jenkinsfile · job taskflow/mobile · pod ghcr.io/cirruslabs/flutter:stable</text>
+<rect x="44" y="766" width="120" height="60" rx="8" fill="#ddeafb" stroke="#2f6fbd" stroke-width="1.5"/>
+<text x="104.0" y="801.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Checkout</text>
+<rect x="196" y="766" width="130" height="60" rx="8" fill="#ddeafb" stroke="#2f6fbd" stroke-width="1.5"/>
+<text x="261.0" y="792.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Pub Get</text>
+<text x="261.0" y="809.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">flutter pub get</text>
+<line x1="164" y1="796.0" x2="196" y2="796.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<rect x="368" y="728" width="560" height="136" rx="10" fill="none" stroke="#2f6fbd" stroke-dasharray="4 4"/>
+<text x="380" y="748" font-size="13" font-weight="700" fill="#2f6fbd" text-anchor="start" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Analyze, Test &amp; SCA — parallel, failFast</text>
+<line x1="326" y1="796.0" x2="368" y2="796" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<rect x="382" y="772" width="168" height="64" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="466.0" y="800.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Analyze</text>
+<text x="466.0" y="817.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">flutter analyze</text>
+<rect x="564" y="772" width="168" height="64" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="648.0" y="800.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Unit Test</text>
+<text x="648.0" y="817.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">flutter test --coverage</text>
+<rect x="746" y="772" width="168" height="64" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="830.0" y="800.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">SCA</text>
+<text x="830.0" y="817.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">osv-scanner</text>
+<rect x="970" y="766" width="190" height="60" rx="8" fill="#ddeafb" stroke="#2f6fbd" stroke-width="1.5"/>
+<text x="1065.0" y="792.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Debug APK</text>
+<text x="1065.0" y="809.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">every branch</text>
+<rect x="1192" y="760" width="250" height="72" rx="8" fill="#fff4d6" stroke="#c62828" stroke-width="2.5" stroke-dasharray="6 3"/>
+<text x="1317.0" y="792.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Release AAB</text>
+<text x="1317.0" y="809.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">signed · jarsigner verified</text>
+<rect x="1474" y="766" width="140" height="60" rx="8" fill="#ddeafb" stroke="#2f6fbd" stroke-width="1.5"/>
+<text x="1544.0" y="792.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Email</text>
+<text x="1544.0" y="809.0" font-size="11" font-weight="normal" fill="#57606a" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">success / failure</text>
+<line x1="928" y1="796" x2="970" y2="796" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<line x1="1160" y1="796.0" x2="1192" y2="796.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<line x1="1442" y1="796.0" x2="1474" y2="796.0" stroke="#8c959f" stroke-width="2" marker-end="url(#a)"/>
+<rect x="40" y="918" width="150" height="40" rx="8" fill="#ddeafb" stroke="#2f6fbd" stroke-width="1.5"/>
+<text x="115.0" y="943.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Stage</text>
+<rect x="206" y="918" width="190" height="40" rx="8" fill="#fde2e1" stroke="#c62828" stroke-width="2.5"/>
+<text x="301.0" y="943.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Gate (fails the build)</text>
+<rect x="412" y="918" width="170" height="40" rx="8" fill="#fff4d6" stroke="#b7791f" stroke-width="1.5" stroke-dasharray="6 3"/>
+<text x="497.0" y="943.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">main branch only</text>
+<rect x="598" y="918" width="220" height="40" rx="8" fill="#fff4d6" stroke="#c62828" stroke-width="2.5" stroke-dasharray="6 3"/>
+<text x="708.0" y="943.0" font-size="13" font-weight="600" fill="#1f2328" text-anchor="middle" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Gate on main only</text>
+<text x="40" y="994" font-size="13" font-weight="normal" fill="#57606a" text-anchor="start" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Shared services (on Docker network kind): Jenkins controller · kind cluster (agent pods, blue/green taskflow) · registry kind-registry:5000 (= localhost:5001) · SonarQube · Prometheus + Grafana · LocalStack (Terraform state in S3) · taskflow-target (Ansible host)</text>
+<text x="40" y="1018" font-size="13" font-weight="normal" fill="#57606a" text-anchor="start" font-family="Segoe UI, Leelawadee UI, Arial, sans-serif">Secrets: Jenkins credentials only (cosign-key/password, SONAR_AUTH_TOKEN, kind-kubeconfig, taskflow-ssh, android-upload-keystore, android-keystore/key-password) + Kubernetes Secret taskflow-ci-db</text>
+</svg>
