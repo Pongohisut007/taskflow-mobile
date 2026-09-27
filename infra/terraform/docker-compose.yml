@@ -15,7 +15,11 @@ services:
       - default
       # Lets Jenkins stage containers reach it as http://taskflow-localstack:4566
       - jenkins-net
+      # Lab 10: agent pods on the kind cluster reach this service by name.
+      - kind
 
 networks:
   jenkins-net:
+    external: true
+  kind:
     external: true

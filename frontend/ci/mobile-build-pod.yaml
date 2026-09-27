@@ -1,0 +1,26 @@
+# Lab 10: pod for every taskflow-mobile (Flutter) build on the kind cloud.
+# One container with the Flutter + Android SDK; created per build, deleted after.
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+    - name: flutter
+      # Pinned, not :stable: the moving tag stays stale on nodes (IfNotPresent) and builds drift.
+      image: ghcr.io/cirruslabs/flutter:3.44.0
+      command: ['cat']
+      tty: true
+      env:
+        # Gradle and pub caches on the kind node: an Android build downloads ~1 GB otherwise.
+        - { name: GRADLE_USER_HOME, value: /cache/gradle }
+        - { name: PUB_CACHE, value: /cache/pub }
+      resources:
+        requests: { cpu: '1', memory: 2Gi }
+        limits: { memory: 4Gi }
+      volumeMounts:
+        - { name: build-cache, mountPath: /cache }
+        # AGP installs the NDK (~1 GB) on first use; keep it across ephemeral pods.
+        - { name: build-cache, mountPath: /opt/android-sdk-linux/ndk, subPath: ndk }
+        - { name: build-cache, mountPath: /opt/android-sdk-linux/cmake, subPath: cmake }
+  volumes:
+    - name: build-cache
+      hostPath: { path: /var/cache/jenkins-flutter, type: DirectoryOrCreate }

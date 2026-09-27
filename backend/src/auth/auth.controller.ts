@@ -35,7 +35,7 @@ export class AuthController {
     return this.authService.register(dto);
   }
 
-  // LocalAuthGuard ตรวจ email/password ให้ก่อนเข้ามาถึง handler 
+  // LocalAuthGuard ตรวจ email/password ให้ก่อนเข้ามาถึง handler
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
@@ -55,7 +55,6 @@ export class AuthController {
     return this.usersService.findProfile(user.id);
   }
 
-  
   // ตัวอย่างการจำกัดสิทธิ์เฉพาะ creator
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.CREATOR)
@@ -63,6 +62,4 @@ export class AuthController {
   creatorOnly(@CurrentUser() user: AuthUser): { message: string } {
     return { message: `สวัสดี creator ${user.displayName}` };
   }
-
-
 }
