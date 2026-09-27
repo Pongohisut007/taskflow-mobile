@@ -113,7 +113,7 @@ text(1516, y3 + 88, "post: every result emails branch + build URL", 11, fill=MUT
 # ---------------- Mobile pipeline ----------------
 my = 676
 out.append(f'<rect x="24" y="{my}" width="{W-48}" height="220" rx="12" fill="{PANEL}" stroke="#d0d7de"/>')
-text(44, my + 30, "taskflow-mobile · frontend/Jenkinsfile · job taskflow/mobile · pod ghcr.io/cirruslabs/flutter:stable", 16, "700", anchor="start")
+text(44, my + 30, "taskflow-mobile · frontend/Jenkinsfile · job taskflow/mobile · pod ghcr.io/cirruslabs/flutter:3.44.0", 16, "700", anchor="start")
 m1 = [box(44, my + 90, 120, 60, "Checkout"), box(196, my + 90, 130, 60, "Pub Get", "flutter pub get")]
 chain(m1)
 qx, qy, qw, qh = 368, my + 52, 560, 136

@@ -5,7 +5,8 @@ kind: Pod
 spec:
   containers:
     - name: flutter
-      image: ghcr.io/cirruslabs/flutter:stable
+      # Pinned, not :stable: the moving tag stays stale on nodes (IfNotPresent) and builds drift.
+      image: ghcr.io/cirruslabs/flutter:3.44.0
       command: ['cat']
       tty: true
       env:
