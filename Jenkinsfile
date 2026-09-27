@@ -216,6 +216,8 @@ pipeline {
           sh '"$TOOLS_DIR/cosign" sign-blob --yes --key "$COSIGN_KEY" --tlog-upload=false --output-signature sbom.cdx.json.sig sbom.cdx.json'
         }
         sh '"$TOOLS_DIR/cosign" verify-blob --key keys/cosign.pub --signature sbom.cdx.json.sig --insecure-ignore-tlog=true sbom.cdx.json'
+        // cosign writes the signature 0600 as root; the jnlp container (uid 1000) must read it to archive it.
+        sh 'chmod a+r sbom.cdx.json sbom.cdx.json.sig'
       }
       post {
         always { archiveArtifacts artifacts: 'sbom.cdx.json, sbom.cdx.json.sig', allowEmptyArchive: true }
@@ -342,6 +344,7 @@ pipeline {
               terraform show -no-color tfplan > tfplan.txt
               grep -E '^ +# .* (will|must) be |^Plan:|^No changes' tfplan.txt > tfplan-summary.txt || true
               cat tfplan-summary.txt
+              chmod a+r tfplan tfplan.txt tfplan-summary.txt   # readable by the jnlp container for archiving
             '''
           }
         }
