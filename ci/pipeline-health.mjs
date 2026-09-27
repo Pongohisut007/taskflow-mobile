@@ -1,13 +1,20 @@
 // Lab 10 Pipeline Health Gate.
 // Usage: PROMETHEUS_URL=http://prometheus:9090 node ci/pipeline-health.mjs <jenkins job full name>
 //
-// Reads the Lab 09 Prometheus metrics for one Jenkins job and exits 1 when the
-// success rate over its retained builds is below HEALTH_MIN_SUCCESS_RATE (0.90).
-// The Jenkinsfile keeps exactly 20 builds (buildDiscarder), so "retained builds"
-// is "the last 20 builds". Fails closed: if Prometheus can't be read, the deploy stops.
+// Exits 1 when the job's success rate over its last ~20 finished builds, read from
+// the Lab 09 Prometheus metrics, is below HEALTH_MIN_SUCCESS_RATE (0.90).
+//
+// The Jenkins Prometheus plugin's build counters start from zero whenever Jenkins
+// restarts, so the raw counter values are not "the last 20 builds". Prometheus keeps
+// the history, though, and increase() handles counter resets. The gate therefore
+// widens the look-back window until it covers at least 20 builds (or the whole
+// 15-day retention) and computes success / total inside that window.
+// Fails closed: if Prometheus can't be read, the deploy stops.
 const job = process.argv[2];
 const base = process.env.PROMETHEUS_URL ?? 'http://prometheus:9090';
 const minRate = Number(process.env.HEALTH_MIN_SUCCESS_RATE ?? '0.90');
+const wantBuilds = Number(process.env.HEALTH_WINDOW_BUILDS ?? '20');
+const windows = ['1h', '6h', '1d', '3d', '7d', '15d'];
 
 if (!job) {
   console.error('usage: node ci/pipeline-health.mjs <jenkins job full name>');
@@ -22,24 +29,40 @@ async function query(expr) {
 }
 
 const selector = `{jenkins_job="${job}"}`;
-try {
-  const total = await query(`sum(default_jenkins_builds_total_build_count_total${selector})`);
-  const success = await query(`sum(default_jenkins_builds_success_build_count_total${selector})`);
+// increase() drops the first sample of a series born inside the window (e.g. the
+// first successful build), so add that first value back for such series.
+const builds = (metric, w) => {
+  const m = `default_jenkins_builds_${metric}_build_count_total${selector}`;
+  return query(`round((sum(increase(${m}[${w}])) or vector(0)) + (sum(min_over_time(${m}[${w}]) unless ${m} offset ${w}) or vector(0)))`);
+};
+
+async function main() {
+  let window, total = 0, success = 0;
+  for (window of windows) {
+    total = await builds('total', window);
+    if (total >= wantBuilds) break;
+  }
+  success = await builds('success', window);
 
   if (total === 0) {
-    console.log(`Pipeline health: no finished builds recorded yet for ${job}; nothing to judge, gate passes.`);
-    process.exit(0);
+    console.log(`Pipeline health: no finished builds of ${job} in the last ${window}; nothing to judge, gate passes.`);
+    return 0;
   }
 
-  const rate = success / total;
+  const rate = Math.min(success / total, 1);
   const pct = (x) => `${(x * 100).toFixed(1)}%`;
-  console.log(`Pipeline health for ${job}: ${success}/${total} successful builds = ${pct(rate)} (minimum ${pct(minRate)})`);
+  console.log(`Pipeline health for ${job}: ${success}/${total} successful builds in the last ${window} ` +
+              `(window grows until it covers ${wantBuilds} builds) = ${pct(rate)}, minimum ${pct(minRate)}`);
   if (rate < minRate) {
     console.error(`Pipeline Health Gate FAILED: ${pct(rate)} < ${pct(minRate)} — production deploy aborted`);
-    process.exit(1);
+    return 1;
   }
   console.log('Pipeline Health Gate passed');
-} catch (err) {
-  console.error(`Pipeline Health Gate FAILED: cannot read metrics (${err.message}) — failing closed`);
-  process.exit(1);
+  return 0;
 }
+
+// exitCode instead of process.exit(): lets pending sockets close cleanly.
+process.exitCode = await main().catch((err) => {
+  console.error(`Pipeline Health Gate FAILED: cannot read metrics (${err.message}) — failing closed`);
+  return 1;
+});
