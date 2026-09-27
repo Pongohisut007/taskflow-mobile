@@ -90,15 +90,17 @@ kubectl get pods -l color=$NEXT
 
 ## 5. Health Gate blocked the deploy
 
-Nothing was deployed; production still runs LIVE. The gate reads the last 20 `main` builds from Prometheus:
+Nothing was deployed; production still runs LIVE. The gate reads the result of each of the last 20 `main`
+builds from Prometheus (Jenkins Prometheus plugin, per-build metrics; 0 = SUCCESS) and prints them in the console:
 
 ```bash
-curl -s 'http://localhost:9090/api/v1/query' --data-urlencode \
-  'query=sum(default_jenkins_builds_success_build_count_total{jenkins_job="taskflow/lab4/main"}) / sum(default_jenkins_builds_total_build_count_total{jenkins_job="taskflow/lab4/main"})'
+curl -s 'http://localhost:9090/api/v1/query' --data-urlencode   'query=default_jenkins_builds_build_result_ordinal{jenkins_job="taskflow/lab4/main"}'
+# or run the gate itself:
+PROMETHEUS_URL=http://localhost:9090 node ci/pipeline-health.mjs taskflow/lab4/main
 ```
 
-* Below 0.90 → `main` has been failing. Fix those failures first. The gate passes again once
-  enough green builds push the rate over 90%, because only the last 20 builds are kept.
+* Below 90% → `main` has been failing. Fix those failures first. The gate passes again once
+  at least 18 of the last 20 builds are green. The console line lists each build and its result.
 * `cannot read metrics … failing closed` → Prometheus is down: `cd monitoring && docker compose up -d prometheus`
   and check `docker network inspect kind` lists `prometheus`.
 * Only for an urgent fix, and only with a second engineer approving: redeploy manually with §3's

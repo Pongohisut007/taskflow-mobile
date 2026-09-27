@@ -30,8 +30,8 @@ pipeline {
   }
 
   options {
-    // Keep exactly 20 builds: the Prometheus plugin counts retained builds, so its
-    // success/total counters become "the last 20 builds" for the health gate.
+    // Keep the last 20 builds, the same window the Pipeline Health Gate judges
+    // (Prometheus plugin perBuildMetrics, max 20 builds per job).
     buildDiscarder(logRotator(numToKeepStr: '20'))
     // Includes up to 15 minutes waiting for Terraform approval on main.
     timeout(time: 60, unit: 'MINUTES')
@@ -422,7 +422,7 @@ pipeline {
     stage('Pipeline Health Gate') {
       when { branch 'main' }
       steps {
-        // Lab 09 Prometheus: success / total over this job's last 20 builds; < 90% aborts.
+        // Lab 09 Prometheus, per-build results of this job's last 20 builds; < 90% SUCCESS aborts.
         sh 'node ci/pipeline-health.mjs "$JOB_NAME"'
       }
     }
