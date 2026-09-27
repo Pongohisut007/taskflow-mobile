@@ -437,7 +437,9 @@ pipeline {
         '''
         withCredentials([file(credentialsId: 'kind-kubeconfig', variable: 'KUBECONFIG')]) {
           script {
-            def k = "${env.TOOLS_DIR}/kubectl"
+            // Explicit namespace: inside a pod, kubectl otherwise defaults to the pod's own
+            // ServiceAccount namespace (jenkins-agents), not the kubeconfig's "default".
+            def k = "${env.TOOLS_DIR}/kubectl -n default"
             env.LIVE_COLOR = sh(script: "${k} get svc taskflow -o jsonpath='{.spec.selector.color}'", returnStdout: true).trim()
             env.NEXT_COLOR = (env.LIVE_COLOR == 'blue') ? 'green' : 'blue'
             echo "Live: ${env.LIVE_COLOR} -> deploying ${env.IMAGE_TAG} to ${env.NEXT_COLOR}"
@@ -466,7 +468,7 @@ pipeline {
           withCredentials([file(credentialsId: 'kind-kubeconfig', variable: 'KUBECONFIG')]) {
             script {
               if (env.LIVE_COLOR) {
-                def k = "${env.TOOLS_DIR}/kubectl"
+                def k = "${env.TOOLS_DIR}/kubectl -n default"
                 echo "ROLLBACK: deploy failed, restoring Service selector to ${env.LIVE_COLOR}"
                 sh """${k} patch svc taskflow -p '{"spec":{"selector":{"color":"${env.LIVE_COLOR}"}}}'"""
                 sh "${k} get svc taskflow -o jsonpath='{.spec.selector.color}'"
