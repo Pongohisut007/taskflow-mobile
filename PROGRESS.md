@@ -1,5 +1,15 @@
 # PROGRESS — Lab 10 Capstone (Jenkins CI/CD Workshop)
 
+> ## ✅ สถานะล่าสุด 2026-09-29 21:35 — ทำครบแล้ว
+> - API `taskflow/lab4/main` **#10 SUCCESS**: ทุก gate + Health Gate ผ่าน → deploy blue → green (`ca3af15`)
+> - Mobile `taskflow/mobile/main` **#3 SUCCESS**: release AAB ที่ sign แล้ว (`CN=TaskFlow Upload`, `jarsigner` ผ่าน) หลักฐานอยู่ที่ `lab10-evidence/aab-signer.txt`
+> - NDK r28c และ CMake 3.22.1 ใส่ไว้ใน cache ของ `taskflow-worker` แล้ว; PR #11 merge แล้ว
+> - เพิ่ม Lab 10 ใน `สรุปแต่ละ lab.docx` แล้ว (สำรองไว้ที่ `(ก่อนเพิ่ม Lab 10).docx`)
+> - ใส่ส่วน Lab10 ใน `Lab 01.docx` แล้ว: deliverable 3 ข้อ + แผนภาพ + หลักฐาน โดยเก็บรูป #9/#8 เดิมไว้ (สำรองไว้ที่ `Lab 01 (ก่อนเพิ่ม Lab 10).docx`)
+> - **ที่เหลือเป็นของผู้ใช้:** ใส่รูปแคปหน้า Approval / mobile main #3 / อีเมลแจ้งเตือนเพิ่มในรายงาน (ถ้าต้องการ), demo สดตาม `docs/lab10/demo-script.md`, ลบ API token (`~/.jenkins-lab9` และใน Jenkins)
+>
+> รายละเอียดด้านล่างเป็นบันทึกระหว่างทำงาน (ณ 27 ก.ย.)
+
 อัปเดตล่าสุด: **2026-09-27 17:10** (หยุดพักงานไว้ตรงนี้) · branch ที่ใช้พัฒนา: `nongao/lab10` · merge เข้า `main` แล้ว 3 ครั้ง (PR #8, #9, #10)
 
 ---
