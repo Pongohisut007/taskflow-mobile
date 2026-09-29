@@ -1,0 +1,498 @@
+﻿Branch indexing
+Connecting to https://api.github.com using Pongohisut007/******
+Obtained frontend/Jenkinsfile from cffe4c934d460413e0b747c40760e2778fcf43a0
+[Pipeline] Start of Pipeline
+[Pipeline] readTrusted
+Obtained frontend/ci/mobile-build-pod.yaml from cffe4c934d460413e0b747c40760e2778fcf43a0
+[Pipeline] podTemplate
+[Pipeline] {
+[Pipeline] node
+Created Pod: kind jenkins-agents/taskflow-mobile-main-3-f1ff2-kbqn5-rknlg
+[PodInfo] jenkins-agents/taskflow-mobile-main-3-f1ff2-kbqn5-rknlg
+	Container [flutter] waiting [ContainerCreating] No message
+	Container [jnlp] waiting [ContainerCreating] No message
+	Pod [Pending][PodSandboxNotReady] no pod sandbox exists
+	Pod [Pending][ContainersNotReady] containers with unready status: [flutter jnlp]
+[PodInfo] jenkins-agents/taskflow-mobile-main-3-f1ff2-kbqn5-rknlg
+	Container [flutter] waiting [ContainerCreating] No message
+	Container [jnlp] waiting [ContainerCreating] No message
+	Pod [Pending][ContainersNotReady] containers with unready status: [flutter jnlp]
+Agent taskflow-mobile-main-3-f1ff2-kbqn5-rknlg is provisioned from template taskflow_mobile_main_3-f1ff2-kbqn5
+---
+apiVersion: "v1"
+kind: "Pod"
+metadata:
+  annotations:
+    kubernetes.jenkins.io/last-refresh: "1790691400227"
+    buildUrl: "http://jenkins:8080/job/taskflow/job/mobile/job/main/3/"
+    runUrl: "job/taskflow/job/mobile/job/main/3/"
+  labels:
+    jenkins: "slave"
+    jenkins/label-digest: "48327d15a4004ddfa5902029f5323dca3c5124ea"
+    jenkins/label: "taskflow_mobile_main_3-f1ff2"
+    kubernetes.jenkins.io/controller: "http___jenkins_8080x"
+  name: "taskflow-mobile-main-3-f1ff2-kbqn5-rknlg"
+  namespace: "jenkins-agents"
+spec:
+  containers:
+  - command:
+    - "cat"
+    env:
+    - name: "GRADLE_USER_HOME"
+      value: "/cache/gradle"
+    - name: "PUB_CACHE"
+      value: "/cache/pub"
+    image: "ghcr.io/cirruslabs/flutter:3.44.0"
+    name: "flutter"
+    resources:
+      limits:
+        memory: "4Gi"
+      requests:
+        cpu: "1"
+        memory: "2Gi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/cache"
+      name: "build-cache"
+    - mountPath: "/opt/android-sdk-linux/ndk"
+      name: "build-cache"
+      subPath: "ndk"
+    - mountPath: "/opt/android-sdk-linux/cmake"
+      name: "build-cache"
+      subPath: "cmake"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - env:
+    - name: "JENKINS_SECRET"
+      value: "********"
+    - name: "JENKINS_TUNNEL"
+      value: "jenkins:50000"
+    - name: "JENKINS_AGENT_NAME"
+      value: "taskflow-mobile-main-3-f1ff2-kbqn5-rknlg"
+    - name: "REMOTING_OPTS"
+      value: "-noReconnectAfter 1d"
+    - name: "JENKINS_NAME"
+      value: "taskflow-mobile-main-3-f1ff2-kbqn5-rknlg"
+    - name: "JENKINS_AGENT_WORKDIR"
+      value: "/home/jenkins/agent"
+    - name: "JENKINS_URL"
+      value: "http://jenkins:8080/"
+    image: "jenkins/inbound-agent:3391.va_37fa_a_305d6d-1-jdk25"
+    name: "jnlp"
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  nodeSelector:
+    kubernetes.io/hostname: "taskflow-worker"
+  restartPolicy: "Never"
+  volumes:
+  - hostPath:
+      path: "/var/cache/jenkins-flutter"
+      type: "DirectoryOrCreate"
+    name: "build-cache"
+  - emptyDir:
+      medium: ""
+    name: "workspace-volume"
+
+Running on taskflow-mobile-main-3-f1ff2-kbqn5-rknlg in /home/jenkins/agent/workspace/taskflow_mobile_main
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential github-token
+Cloning the remote Git repository
+Cloning with configured refspecs honoured and without tags
+Cloning repository https://github.com/Pongohisut007/taskflow-mobile.git
+ > git init /home/jenkins/agent/workspace/taskflow_mobile_main # timeout=10
+Fetching upstream changes from https://github.com/Pongohisut007/taskflow-mobile.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_ASKPASS to set credentials 
+ > git fetch --no-tags --force --progress -- https://github.com/Pongohisut007/taskflow-mobile.git +refs/heads/main:refs/remotes/origin/main # timeout=10
+ > git config remote.origin.url https://github.com/Pongohisut007/taskflow-mobile.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/main:refs/remotes/origin/main # timeout=10
+Avoid second fetch
+Checking out Revision cffe4c934d460413e0b747c40760e2778fcf43a0 (main)
+Commit message: "Merge pull request #11 from Pongohisut007/nongao/lab10"
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f cffe4c934d460413e0b747c40760e2778fcf43a0 # timeout=10
+ > git rev-list --no-walk ca3af15ab0577bd6c6ac94dec9ec548874436420 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 1 hr 0 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Pub Get)
+[Pipeline] sh
++ flutter --version
+Flutter 3.44.0 • channel [user-branch] • unknown source
+Framework • revision 559ffa3f75 (5 months ago) • 2026-05-15 14:13:13 -0700
+Engine • hash fcf463a2242790d1fdcd9d044f533080f5022e18 (revision 4c525dac5e) (4 months ago) • 2026-05-15 19:00:04.000Z
+Tools • Dart 3.12.0 • DevTools 2.57.0
+[Pipeline] sh
++ mkdir -p /cache/gradle
++ printf org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m\norg.gradle.daemon=false\n
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/taskflow_mobile_main/frontend
+[Pipeline] {
+[Pipeline] sh
++ flutter pub get
+Resolving dependencies...
+Downloading packages...
+  clock 1.1.2 (1.1.3 available)
+  code_assets 1.2.1 (2.1.0 available)
+  flutter_secure_storage 9.2.4 (11.2.0 available)
+  flutter_secure_storage_linux 1.2.3 (3.0.3 available)
+  flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+  flutter_secure_storage_platform_interface 1.1.2 (2.1.1 available)
+  flutter_secure_storage_web 1.2.1 (2.1.1 available)
+  flutter_secure_storage_windows 3.1.2 (4.2.2 available)
+  hooks 2.0.2 (2.2.0 available)
+  html 0.15.6 (0.15.7 available)
+  js 0.6.7 (0.7.2 available)
+  matcher 0.12.19 (0.12.20 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.0 (1.19.0 available)
+  objective_c 9.5.0 (9.6.0 available)
+  petitparser 7.0.2 (7.1.0 available)
+  record_use 0.6.0 (1.1.1 available)
+  stack_trace 1.12.1 (1.12.2 available)
+  test_api 0.7.11 (0.7.14 available)
+  vector_math 2.2.0 (2.4.3 available)
+  video_player 2.13.0 (2.14.0 available)
+  video_player_android 2.12.0 (2.12.2 available)
+  video_player_avfoundation 2.11.0 (2.12.0 available)
+  vm_service 15.2.0 (15.3.0 available)
+  win32 5.15.0 (6.4.0 available)
+Got dependencies!
+25 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Analyze, Test & SCA)
+[Pipeline] parallel
+[Pipeline] { (Branch: Analyze)
+[Pipeline] { (Branch: Unit Test)
+[Pipeline] { (Branch: SCA)
+[Pipeline] stage
+[Pipeline] { (Analyze)
+[Pipeline] stage
+[Pipeline] { (Unit Test)
+[Pipeline] stage
+[Pipeline] { (SCA)
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/taskflow_mobile_main/frontend
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/taskflow_mobile_main/frontend
+[Pipeline] {
+[Pipeline] sh
+[Pipeline] sh
++ curl -fsSL -o /tmp/osv-scanner https://github.com/google/osv-scanner/releases/download/v2.6.0/osv-scanner_linux_amd64
+[Pipeline] sh
++ flutter analyze
+Resolving dependencies...
++ flutter test --coverage
+Downloading packages...
+Resolving dependencies...
+Downloading packages...
+  clock 1.1.2 (1.1.3 available)
+  code_assets 1.2.1 (2.1.0 available)
+  flutter_secure_storage 9.2.4 (11.2.0 available)
+  flutter_secure_storage_linux 1.2.3 (3.0.3 available)
+  flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+  flutter_secure_storage_platform_interface 1.1.2 (2.1.1 available)
+  flutter_secure_storage_web 1.2.1 (2.1.1 available)
+  flutter_secure_storage_windows 3.1.2 (4.2.2 available)
+  hooks 2.0.2 (2.2.0 available)
+  html 0.15.6 (0.15.7 available)
+  js 0.6.7 (0.7.2 available)
+  matcher 0.12.19 (0.12.20 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.0 (1.19.0 available)
+  objective_c 9.5.0 (9.6.0 available)
+  petitparser 7.0.2 (7.1.0 available)
+  record_use 0.6.0 (1.1.1 available)
+  stack_trace 1.12.1 (1.12.2 available)
+  test_api 0.7.11 (0.7.14 available)
+  vector_math 2.2.0 (2.4.3 available)
+  video_player 2.13.0 (2.14.0 available)
+  video_player_android 2.12.0 (2.12.2 available)
+  video_player_avfoundation 2.11.0 (2.12.0 available)
+  vm_service 15.2.0 (15.3.0 available)
+  win32 5.15.0 (6.4.0 available)
+Got dependencies!
+25 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+  clock 1.1.2 (1.1.3 available)
+  code_assets 1.2.1 (2.1.0 available)
+  flutter_secure_storage 9.2.4 (11.2.0 available)
+  flutter_secure_storage_linux 1.2.3 (3.0.3 available)
+  flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+  flutter_secure_storage_platform_interface 1.1.2 (2.1.1 available)
+  flutter_secure_storage_web 1.2.1 (2.1.1 available)
+  flutter_secure_storage_windows 3.1.2 (4.2.2 available)
+  hooks 2.0.2 (2.2.0 available)
+  html 0.15.6 (0.15.7 available)
+  js 0.6.7 (0.7.2 available)
+  matcher 0.12.19 (0.12.20 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.0 (1.19.0 available)
+  objective_c 9.5.0 (9.6.0 available)
+  petitparser 7.0.2 (7.1.0 available)
+  record_use 0.6.0 (1.1.1 available)
+  stack_trace 1.12.1 (1.12.2 available)
+  test_api 0.7.11 (0.7.14 available)
+  vector_math 2.2.0 (2.4.3 available)
+  video_player 2.13.0 (2.14.0 available)
+  video_player_android 2.12.0 (2.12.2 available)
+  video_player_avfoundation 2.11.0 (2.12.0 available)
+  vm_service 15.2.0 (15.3.0 available)
+  win32 5.15.0 (6.4.0 available)
+Got dependencies!
+25 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /home/jenkins/agent/workspace/taskflow_mobile_main/frontend/test/widget_test.dart
+00:00 +0: cart checkout button triggers purchase and shows progress
+00:01 +1: checkout success shows purchase count and actions
+00:01 +2: checkout failure explains partial purchase and can retry
+00:02 +3: All tests passed!
+[Pipeline] }
+[Pipeline] // dir
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+Analyzing frontend...                                           
+No issues found! (ran in 16.3s)
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
++ chmod +x /tmp/osv-scanner
++ /tmp/osv-scanner scan source --format sarif --output osv.sarif -L frontend/pubspec.lock
+Warning: --output has been deprecated in favor of --output-file
+Starting filesystem walk for root: /
+Scanned /home/jenkins/agent/workspace/taskflow_mobile_main/frontend/pubspec.lock file and found 81 packages
+End status: 0 dirs visited, 1 inodes visited, 1 Extract calls, 2.047703ms elapsed, 2.047813ms wall time
++ /tmp/osv-scanner scan source -L frontend/pubspec.lock
+Starting filesystem walk for root: /
+Scanned /home/jenkins/agent/workspace/taskflow_mobile_main/frontend/pubspec.lock file and found 81 packages
+End status: 0 dirs visited, 1 inodes visited, 1 Extract calls, 1.554086ms elapsed, 1.554156ms wall time
+
+No issues found
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // parallel
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Debug APK)
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/taskflow_mobile_main/frontend
+[Pipeline] {
+[Pipeline] sh
++ flutter build apk --debug
+Resolving dependencies...
+Downloading packages...
+  clock 1.1.2 (1.1.3 available)
+  code_assets 1.2.1 (2.1.0 available)
+  flutter_secure_storage 9.2.4 (11.2.0 available)
+  flutter_secure_storage_linux 1.2.3 (3.0.3 available)
+  flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+  flutter_secure_storage_platform_interface 1.1.2 (2.1.1 available)
+  flutter_secure_storage_web 1.2.1 (2.1.1 available)
+  flutter_secure_storage_windows 3.1.2 (4.2.2 available)
+  hooks 2.0.2 (2.2.0 available)
+  html 0.15.6 (0.15.7 available)
+  js 0.6.7 (0.7.2 available)
+  matcher 0.12.19 (0.12.20 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.0 (1.19.0 available)
+  objective_c 9.5.0 (9.6.0 available)
+  petitparser 7.0.2 (7.1.0 available)
+  record_use 0.6.0 (1.1.1 available)
+  stack_trace 1.12.1 (1.12.2 available)
+  test_api 0.7.11 (0.7.14 available)
+  vector_math 2.2.0 (2.4.3 available)
+  video_player 2.13.0 (2.14.0 available)
+  video_player_android 2.12.0 (2.12.2 available)
+  video_player_avfoundation 2.11.0 (2.12.0 available)
+  vm_service 15.2.0 (15.3.0 available)
+  win32 5.15.0 (6.4.0 available)
+Got dependencies!
+25 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Running Gradle task 'assembleDebug'...                          
+Checking the license for package Android SDK Platform 34 in /opt/android-sdk-linux/licenses
+License for package Android SDK Platform 34 accepted.
+Preparing "Install Android SDK Platform 34 (revision 3)".
+"Install Android SDK Platform 34 (revision 3)" ready.
+Installing Android SDK Platform 34 in /opt/android-sdk-linux/platforms/android-34
+"Install Android SDK Platform 34 (revision 3)" complete.
+"Install Android SDK Platform 34 (revision 3)" finished.
+[=========                              ] 25%                                   
+Checking the license for package Android SDK Platform 35 in /opt/android-sdk-linux/licenses
+License for package Android SDK Platform 35 accepted.
+Preparing "Install Android SDK Platform 35 (revision 2)".
+"Install Android SDK Platform 35 (revision 2)" ready.
+Installing Android SDK Platform 35 in /opt/android-sdk-linux/platforms/android-35
+"Install Android SDK Platform 35 (revision 2)" complete.
+"Install Android SDK Platform 35 (revision 2)" finished.
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+[=========                              ] 25%                                   
+Running Gradle task 'assembleDebug'...                            302.2s
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+[Pipeline] }
+[Pipeline] // dir
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+Recording fingerprints
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Release AAB)
+[Pipeline] withCredentials
+Masking supported pattern matches of $ANDROID_KEYSTORE_PATH or $ANDROID_KEYSTORE_PASSWORD or $ANDROID_KEY_PASSWORD
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/taskflow_mobile_main/frontend
+[Pipeline] {
+[Pipeline] sh
++ flutter build appbundle --release --build-number 3
+Resolving dependencies...
+Downloading packages...
+  clock 1.1.2 (1.1.3 available)
+  code_assets 1.2.1 (2.1.0 available)
+  flutter_secure_storage 9.2.4 (11.2.0 available)
+  flutter_secure_storage_linux 1.2.3 (3.0.3 available)
+  flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+  flutter_secure_storage_platform_interface 1.1.2 (2.1.1 available)
+  flutter_secure_storage_web 1.2.1 (2.1.1 available)
+  flutter_secure_storage_windows 3.1.2 (4.2.2 available)
+  hooks 2.0.2 (2.2.0 available)
+  html 0.15.6 (0.15.7 available)
+  js 0.6.7 (0.7.2 available)
+  matcher 0.12.19 (0.12.20 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.0 (1.19.0 available)
+  objective_c 9.5.0 (9.6.0 available)
+  petitparser 7.0.2 (7.1.0 available)
+  record_use 0.6.0 (1.1.1 available)
+  stack_trace 1.12.1 (1.12.2 available)
+  test_api 0.7.11 (0.7.14 available)
+  vector_math 2.2.0 (2.4.3 available)
+  video_player 2.13.0 (2.14.0 available)
+  video_player_android 2.12.0 (2.12.2 available)
+  video_player_avfoundation 2.11.0 (2.12.0 available)
+  vm_service 15.2.0 (15.3.0 available)
+  win32 5.15.0 (6.4.0 available)
+Got dependencies!
+25 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Running Gradle task 'bundleRelease'...                          
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 12340 bytes (99.2% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Running Gradle task 'bundleRelease'...                            262.5s
+✓ Built build/app/outputs/bundle/release/app-release.aab (55.4MB)
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] sh
++ AAB=frontend/build/app/outputs/bundle/release/app-release.aab
++ jarsigner -verify -certs frontend/build/app/outputs/bundle/release/app-release.aab
++ grep -q jar verified verify.txt
++ keytool -printcert -jarfile frontend/build/app/outputs/bundle/release/app-release.aab
++ tee aab-signer.txt
+Signer #1:
+
+Certificate #1:
+Owner: CN=TaskFlow Upload, OU=Lab10, O=TaskFlow, C=TH
+Issuer: CN=TaskFlow Upload, OU=Lab10, O=TaskFlow, C=TH
+Serial number: a63cae56b3365552
+Valid from: Sat Sep 26 22:30:57 GMT 2026 until: Wed Feb 11 22:30:57 GMT 2054
+Certificate fingerprints:
+	 SHA1: 27:38:E0:40:EC:7C:2C:A5:E0:C3:59:10:5E:7A:D5:8F:D6:9E:15:4B
+	 SHA256: E5:70:2A:FD:B4:E9:0B:68:53:4E:66:04:4F:8D:C5:AA:8C:71:A4:A5:62:EB:11:E1:DA:1E:31:C4:35:A9:2A:0D
+Signature algorithm name: SHA384withRSA
+Subject Public Key Algorithm: 2048-bit RSA key
+Version: 3
+
+Extensions: 
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: 02 8A 54 1C C6 F0 EA 54   CF 94 1A F8 AF FB 7F 75  ..T....T.......u
+0010: F5 F7 B2 AE                                        ....
+]
+]
+
+
++ grep -q CN=Android Debug aab-signer.txt
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+Recording fingerprints
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] emailext
+Sending email to: oookung75@gmail.com
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] }
+[Pipeline] // podTemplate
+[Pipeline] End of Pipeline
+
+Could not update commit status, please check if your scan credentials belong to a member of the organization or a collaborator of the repository and repo:status scope is selected
+
+
+GitHub has been notified of this commit’s build result
+
+Finished: SUCCESS
+
