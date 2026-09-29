@@ -1,0 +1,2345 @@
+Branch indexing
+Connecting to https://api.github.com using Pongohisut007/******
+Obtained Jenkinsfile from 344f546157dc56bd8a5127d7c7f9907ffe0eade3
+[Pipeline] Start of Pipeline
+[Pipeline] readTrusted
+Obtained k8s/ci/api-build-pod.yaml from 344f546157dc56bd8a5127d7c7f9907ffe0eade3
+[Pipeline] podTemplate
+[Pipeline] {
+[Pipeline] node
+Created Pod: kind jenkins-agents/taskflow-lab4-main-7-wwhzb-d452z-j9q2f
+[PodInfo] jenkins-agents/taskflow-lab4-main-7-wwhzb-d452z-j9q2f
+	Container [checkov] waiting [ContainerCreating] No message
+	Container [gitleaks] waiting [ContainerCreating] No message
+	Container [jnlp] waiting [ContainerCreating] No message
+	Container [kaniko] waiting [ContainerCreating] No message
+	Container [node] waiting [ContainerCreating] No message
+	Container [postgres] waiting [ContainerCreating] No message
+	Container [python] waiting [ContainerCreating] No message
+	Container [semgrep] waiting [ContainerCreating] No message
+	Container [sonar] waiting [ContainerCreating] No message
+	Container [terraform] waiting [ContainerCreating] No message
+	Container [tfsec] waiting [ContainerCreating] No message
+	Container [trivy] waiting [ContainerCreating] No message
+	Pod [Pending][PodSandboxNotReady] no pod sandbox exists
+	Pod [Pending][ContainersNotReady] containers with unready status: [node postgres gitleaks semgrep sonar terraform tfsec checkov python kaniko trivy jnlp]
+[PodInfo] jenkins-agents/taskflow-lab4-main-7-wwhzb-d452z-j9q2f
+	Container [checkov] waiting [ContainerCreating] No message
+	Container [gitleaks] waiting [ContainerCreating] No message
+	Container [jnlp] waiting [ContainerCreating] No message
+	Container [kaniko] waiting [ContainerCreating] No message
+	Container [node] waiting [ContainerCreating] No message
+	Container [postgres] waiting [ContainerCreating] No message
+	Container [python] waiting [ContainerCreating] No message
+	Container [semgrep] waiting [ContainerCreating] No message
+	Container [sonar] waiting [ContainerCreating] No message
+	Container [terraform] waiting [ContainerCreating] No message
+	Container [tfsec] waiting [ContainerCreating] No message
+	Container [trivy] waiting [ContainerCreating] No message
+	Pod [Pending][ContainersNotReady] containers with unready status: [node postgres gitleaks semgrep sonar terraform tfsec checkov python kaniko trivy jnlp]
+Still waiting to schedule task
+‘taskflow-lab4-main-7-wwhzb-d452z-j9q2f’ is offline
+Agent taskflow-lab4-main-7-wwhzb-d452z-j9q2f is provisioned from template taskflow_lab4_main_7-wwhzb-d452z
+---
+apiVersion: "v1"
+kind: "Pod"
+metadata:
+  annotations:
+    kubernetes.jenkins.io/last-refresh: "1790496923151"
+    buildUrl: "http://jenkins:8080/job/taskflow/job/lab4/job/main/7/"
+    runUrl: "job/taskflow/job/lab4/job/main/7/"
+  labels:
+    jenkins: "slave"
+    jenkins/label-digest: "9424757b7cb1038fb69157776365883f7b5e8ec9"
+    jenkins/label: "taskflow_lab4_main_7-wwhzb"
+    kubernetes.jenkins.io/controller: "http___jenkins_8080x"
+  name: "taskflow-lab4-main-7-wwhzb-d452z-j9q2f"
+  namespace: "jenkins-agents"
+spec:
+  containers:
+  - command:
+    - "cat"
+    env:
+    - name: "DB_HOST"
+      value: "localhost"
+    - name: "DB_PORT"
+      value: "5432"
+    - name: "DB_NAME"
+      valueFrom:
+        secretKeyRef:
+          key: "database"
+          name: "taskflow-ci-db"
+    - name: "DB_USER"
+      valueFrom:
+        secretKeyRef:
+          key: "username"
+          name: "taskflow-ci-db"
+    - name: "DB_PASSWORD"
+      valueFrom:
+        secretKeyRef:
+          key: "password"
+          name: "taskflow-ci-db"
+    image: "node:22-alpine"
+    name: "node"
+    resources:
+      limits:
+        memory: "2Gi"
+      requests:
+        cpu: "500m"
+        memory: "512Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/root/.npm"
+      name: "npm-cache"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - env:
+    - name: "POSTGRES_DB"
+      valueFrom:
+        secretKeyRef:
+          key: "database"
+          name: "taskflow-ci-db"
+    - name: "POSTGRES_USER"
+      valueFrom:
+        secretKeyRef:
+          key: "username"
+          name: "taskflow-ci-db"
+    - name: "POSTGRES_PASSWORD"
+      valueFrom:
+        secretKeyRef:
+          key: "password"
+          name: "taskflow-ci-db"
+    image: "postgres:16-alpine"
+    name: "postgres"
+    resources:
+      limits:
+        memory: "256Mi"
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "ghcr.io/gitleaks/gitleaks:v8.21.2"
+    name: "gitleaks"
+    resources:
+      limits:
+        memory: "512Mi"
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "semgrep/semgrep:1.95.0"
+    name: "semgrep"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "sonarsource/sonar-scanner-cli:11"
+    name: "sonar"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "hashicorp/terraform:1.15.8"
+    name: "terraform"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "aquasec/tfsec:v1.28.14"
+    name: "tfsec"
+    resources:
+      limits:
+        memory: "512Mi"
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "bridgecrew/checkov:3.2.495"
+    name: "checkov"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "localhost:5001/ci-ansible:26.9.0"
+    name: "python"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "/busybox/cat"
+    image: "gcr.io/kaniko-project/executor:v1.23.2-debug"
+    name: "kaniko"
+    resources:
+      limits:
+        memory: "2Gi"
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "aquasec/trivy:0.72.0"
+    name: "trivy"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/root/.cache/trivy"
+      name: "trivy-cache"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - env:
+    - name: "JENKINS_SECRET"
+      value: "********"
+    - name: "JENKINS_TUNNEL"
+      value: "jenkins:50000"
+    - name: "JENKINS_AGENT_NAME"
+      value: "taskflow-lab4-main-7-wwhzb-d452z-j9q2f"
+    - name: "REMOTING_OPTS"
+      value: "-noReconnectAfter 1d"
+    - name: "JENKINS_NAME"
+      value: "taskflow-lab4-main-7-wwhzb-d452z-j9q2f"
+    - name: "JENKINS_AGENT_WORKDIR"
+      value: "/home/jenkins/agent"
+    - name: "JENKINS_URL"
+      value: "http://jenkins:8080/"
+    image: "jenkins/inbound-agent:3391.va_37fa_a_305d6d-1-jdk25"
+    name: "jnlp"
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  nodeSelector:
+    kubernetes.io/os: "linux"
+  restartPolicy: "Never"
+  volumes:
+  - emptyDir:
+      medium: ""
+    name: "workspace-volume"
+  - hostPath:
+      path: "/var/cache/jenkins-npm"
+      type: "DirectoryOrCreate"
+    name: "npm-cache"
+  - hostPath:
+      path: "/var/cache/jenkins-trivy"
+      type: "DirectoryOrCreate"
+    name: "trivy-cache"
+
+Running on taskflow-lab4-main-7-wwhzb-d452z-j9q2f in /home/jenkins/agent/workspace/taskflow_lab4_main
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential github-token
+Cloning the remote Git repository
+Cloning with configured refspecs honoured and without tags
+Cloning repository https://github.com/Pongohisut007/****-mobile.git
+ > git init /home/jenkins/agent/workspace/****_lab4_main # timeout=10
+Fetching upstream changes from https://github.com/Pongohisut007/****-mobile.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_ASKPASS to set credentials 
+ > git fetch --no-tags --force --progress -- https://github.com/Pongohisut007/****-mobile.git +refs/heads/main:refs/remotes/origin/main # timeout=10
+ > git config remote.origin.url https://github.com/Pongohisut007/****-mobile.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/main:refs/remotes/origin/main # timeout=10
+Avoid second fetch
+Checking out Revision 344f546157dc56bd8a5127d7c7f9907ffe0eade3 (main)
+Commit message: "Merge pull request #8 from Pongohisut007/nongao/lab10"
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 344f546157dc56bd8a5127d7c7f9907ffe0eade3 # timeout=10
+ > git rev-list --no-walk d011805e41f1066099c864a038171b8980c0b42b # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 1 hr 0 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Secrets)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
++ git config --global --add safe.directory /home/jenkins/agent/workspace/****_lab4_main
++ gitleaks git . --redact --verbose --report-format sarif --report-path gitleaks.sarif
+
+    ○
+    │╲
+    │ ○
+    ○ ░
+    ░    gitleaks
+
+[90m8:15AM[0m [32mINF[0m 136 commits scanned.
+[90m8:15AM[0m [32mINF[0m scan completed in 278ms
+[90m8:15AM[0m [32mINF[0m no leaks found
+[Pipeline] }
+[Pipeline] // container
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Install)
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/backend
+[Pipeline] {
+[Pipeline] sh
++ npm ci --prefer-offline '--fetch-retries=5' '--fetch-timeout=120000'
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 823 packages, and audited 824 packages in 27s
+
+178 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Lint, Test & Scan)
+[Pipeline] parallel
+[Pipeline] { (Branch: Lint)
+[Pipeline] { (Branch: Unit Test)
+[Pipeline] { (Branch: SAST)
+[Pipeline] { (Branch: Semgrep)
+[Pipeline] { (Branch: SCA)
+[Pipeline] { (Branch: Terraform Validate)
+[Pipeline] { (Branch: Ansible Lint)
+[Pipeline] { (Branch: tfsec)
+[Pipeline] { (Branch: checkov)
+[Pipeline] stage
+[Pipeline] { (Lint)
+[Pipeline] stage
+[Pipeline] { (Unit Test)
+[Pipeline] stage
+[Pipeline] { (SAST)
+[Pipeline] stage
+[Pipeline] { (Semgrep)
+[Pipeline] stage
+[Pipeline] { (SCA)
+[Pipeline] stage
+[Pipeline] { (Terraform Validate)
+[Pipeline] stage
+[Pipeline] { (Ansible Lint)
+[Pipeline] stage
+[Pipeline] { (tfsec)
+[Pipeline] stage
+[Pipeline] { (checkov)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/backend
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/backend
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/backend
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/backend
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
+[Pipeline] sh
++ npx eslint '{src,test}/**/*.ts'
+[Pipeline] sh
++ npx jest --ci --coverage '--maxWorkers=2' '--reporters=default' '--reporters=jest-junit'
+[Pipeline] sh
++ npx eslint -c eslint.security.config.mjs src/ -f @microsoft/eslint-formatter-sarif -o eslint.sarif
+[Pipeline] sh
++ npm audit '--audit-level=high' --json
+[Pipeline] sh
++ ansible-lint infra/ansible/playbook.yml
+[Pipeline] sh
++ tfsec infra/terraform --no-color --format sarif --out tfsec.sarif --soft-fail
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
++ HOME=/tmp checkov -d infra/terraform --framework terraform --skip-download --compact -o cli -o sarif --output-file-path console,checkov.sarif
+[Pipeline] container
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/infra/terraform
+[Pipeline] {
++ semgrep scan '--config=p/owasp-top-ten' '--config=p/nodejs' --sarif --output semgrep.sarif backend/src
+[Pipeline] sh
+
+======================================================
+tfsec is joining the Trivy family
+
+tfsec will continue to remain available 
+for the time being, although our engineering 
+attention will be directed at Trivy going forward.
+
+You can read more here: 
+https://github.com/aquasecurity/tfsec/discussions/1994
+======================================================
++ terraform init '-backend=false'
+[0m[1mInitializing provider plugins...[0m
+- Reusing previous version of hashicorp/aws from the dependency lock file
+1 file(s) written: tfsec.sarif
+[Pipeline] sh
++ tfsec infra/terraform --no-color
+
+======================================================
+tfsec is joining the Trivy family
+
+tfsec will continue to remain available 
+for the time being, although our engineering 
+attention will be directed at Trivy going forward.
+
+You can read more here: 
+https://github.com/aquasecurity/tfsec/discussions/1994
+======================================================
+[Pipeline] script
+[Pipeline] {
+[Pipeline] readJSON
+[Pipeline] echo
+npm audit: critical=0, high=0, moderate=0, low=0
+[Pipeline] }
+  timings
+  ──────────────────────────────────────────
+  disk i/o             195.203µs
+  parsing              1.736043ms
+  adaptation           647.576µs
+  checks               26.806658ms
+  total                29.38548ms
+
+  counts
+  ──────────────────────────────────────────
+  modules downloaded   0
+  modules processed    1
+  blocks processed     22
+  files read           5
+
+  results
+  ──────────────────────────────────────────
+  passed               10
+  ignored              2
+  critical             0
+  high                 0
+  medium               0
+  low                  0
+
+
+No problems detected!
+
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] // container
+Post stage
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] }
+METRICS: Using configs from the Registry (like --config=p/ci) reports pseudonymous rule metrics to semgrep.dev.
+To disable Registry rule metrics, use "--metrics=off".
+Using configs only from local files (like --config=xyz.yml) does not enable metrics.
+
+More information: https://semgrep.dev/docs/metrics
+
+PASS src/uploads/uploads.service.spec.ts (5.692 s)
+PASS src/tasks/tasks.service.spec.ts (6.263 s)
+[Pipeline] }
+[Pipeline] // dir
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+- Installing hashicorp/aws v5.100.0...
+PASS src/health/health.controller.spec.ts
+PASS src/app.controller.spec.ts
+PASS src/tasks/tasks.controller.spec.ts
+
+[32mPassed[0m: 0 failure(s), 0 warning(s) in 1 files processed of 1 encountered. Last profile that met the validation criteria was 'production'.
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.494 
+
+terraform scan results:
+
+Passed checks: 29, Failed checks: 0, Skipped checks: 1
+
+Check: CKV_AWS_108: "Ensure IAM policies does not allow data exfiltration"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_107: "Ensure IAM policies does not allow credentials exposure"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_283: "Ensure no IAM policies documents allow ALL or any AWS principal permissions to the resource"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_110: "Ensure IAM policies does not allow privilege escalation"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_111: "Ensure IAM policies does not allow write access without constraints"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_109: "Ensure IAM policies does not allow permissions management / resource exposure without constraints"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_356: "Ensure no IAM policies documents allow "*" as a statement's resource for restrictable actions"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_49: "Ensure no IAM policies documents allow "*" as a statement's actions"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_1: "Ensure IAM policies that allow full "*-*" administrative privileges are not created"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_358: "Ensure AWS GitHub Actions OIDC authorization policies only allow safe claims and claim order"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	PASSED for resource: aws_security_group.app
+	File: /main.tf:5-51
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.app
+	File: /main.tf:5-51
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	PASSED for resource: aws_security_group.app
+	File: /main.tf:5-51
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	PASSED for resource: aws_security_group.app
+	File: /main.tf:5-51
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	PASSED for resource: aws_security_group.app
+	File: /main.tf:5-51
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.app
+	File: /main.tf:5-51
+Check: CKV_AWS_60: "Ensure IAM role allows only specific services or principals to assume it"
+	PASSED for resource: aws_iam_role.app
+	File: /main.tf:65-68
+Check: CKV_AWS_274: "Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy"
+	PASSED for resource: aws_iam_role.app
+	File: /main.tf:65-68
+Check: CKV_AWS_61: "Ensure AWS IAM policy does not allow assume role permission across all services"
+	PASSED for resource: aws_iam_role.app
+	File: /main.tf:65-68
+Check: CKV_AWS_135: "Ensure that EC2 is EBS optimized"
+	PASSED for resource: aws_instance.app
+	File: /main.tf:75-105
+Check: CKV_AWS_79: "Ensure Instance Metadata Service Version 1 is not enabled"
+	PASSED for resource: aws_instance.app
+	File: /main.tf:75-105
+Check: CKV_AWS_88: "EC2 instance should not have public IP."
+	PASSED for resource: aws_instance.app
+	File: /main.tf:75-105
+Check: CKV_AWS_8: "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted"
+	PASSED for resource: aws_instance.app
+	File: /main.tf:75-105
+Check: CKV_AWS_46: "Ensure no hard-coded secrets exist in EC2 user data"
+	PASSED for resource: aws_instance.app
+	File: /main.tf:75-105
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /providers.tf:1-16
+Check: CKV2_AWS_56: "Ensure AWS Managed IAMFullAccess IAM policy is not used."
+	PASSED for resource: aws_iam_role.app
+	File: /main.tf:65-68
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	PASSED for resource: aws_security_group.app
+	File: /main.tf:5-51
+Check: CKV2_AWS_41: "Ensure an IAM role is attached to EC2 instance"
+	PASSED for resource: aws_instance.app
+	File: /main.tf:75-105
+Check: CKV2_AWS_40: "Ensure AWS IAM policy does not allow full IAM privileges"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_126: "Ensure that detailed monitoring is enabled for EC2 instances"
+	SKIPPED for resource: aws_instance.app
+	Suppress comment: Detailed monitoring is paid (not free tier) and LocalStack does not implement MonitorInstances
+	File: /main.tf:75-105
+
+[Pipeline] }
+[Pipeline] // container
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |    8.11 |     7.88 |    8.28 |    8.23 |                   
+ src               |   27.65 |       50 |      75 |   21.95 |                   
+  ...controller.ts |     100 |       75 |     100 |     100 | 6                 
+  app.module.ts    |       0 |      100 |     100 |       0 | 1-54              
+  app.service.ts   |     100 |      100 |     100 |     100 |                   
+  main.ts          |       0 |        0 |       0 |       0 | 1-16              
+ src/auth          |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-63              
+  auth.module.ts   |       0 |      100 |       0 |       0 | 1-33              
+  auth.service.ts  |       0 |        0 |       0 |       0 | 1-80              
+ ...uth/decorators |       0 |        0 |       0 |       0 |                   
+  ....decorator.ts |       0 |        0 |       0 |       0 | 1-10              
+  ....decorator.ts |       0 |      100 |       0 |       0 | 1-7               
+ src/auth/dto      |       0 |      100 |     100 |       0 |                   
+  login.dto.ts     |       0 |      100 |     100 |       0 | 1-9               
+  register.dto.ts  |       0 |      100 |     100 |       0 | 1-21              
+ src/auth/guards   |       0 |        0 |       0 |       0 |                   
+  ...auth.guard.ts |       0 |      100 |     100 |       0 | 1-6               
+  ...auth.guard.ts |       0 |      100 |     100 |       0 | 1-5               
+  roles.guard.ts   |       0 |        0 |       0 |       0 | 1-31              
+ ...uth/strategies |       0 |        0 |       0 |       0 |                   
+  jwt.strategy.ts  |       0 |        0 |       0 |       0 | 1-29              
+  ...l.strategy.ts |       0 |        0 |       0 |       0 | 1-14              
+ src/banner        |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-45              
+  banner.module.ts |       0 |      100 |     100 |       0 | 1-12              
+  ...er.service.ts |       0 |        0 |       0 |       0 | 1-41              
+ src/banner/dto    |       0 |      100 |     100 |       0 |                   
+  ...banner.dto.ts |       0 |      100 |     100 |       0 | 1-7               
+  ...banner.dto.ts |       0 |      100 |     100 |       0 | 1-8               
+ ...anner/entities |       0 |      100 |     100 |       0 |                   
+  banner.entity.ts |       0 |      100 |     100 |       0 | 1-7               
+ src/cart          |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-88              
+  cart.module.ts   |       0 |      100 |     100 |       0 | 1-13              
+  cart.service.ts  |       0 |        0 |       0 |       0 | 1-136             
+ src/cart/dto      |       0 |      100 |     100 |       0 |                   
+  ...t-item.dto.ts |       0 |      100 |     100 |       0 | 1-5               
+ src/cart/entities |       0 |        0 |       0 |       0 |                   
+  ...tem.entity.ts |       0 |        0 |       0 |       0 | 1-30              
+  cart.entity.ts   |       0 |        0 |       0 |       0 | 1-28              
+ src/categories    |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-47              
+  ...ies.module.ts |       0 |      100 |     100 |       0 | 1-12              
+  ...es.service.ts |       0 |        0 |       0 |       0 | 1-62              
+ ...ories/entities |       0 |      100 |       0 |       0 |                   
+  ...ory.entity.ts |       0 |      100 |       0 |       0 | 1-28              
+ ...ommon/entities |     100 |       75 |     100 |     100 |                   
+  base.entity.ts   |     100 |       75 |     100 |     100 | 17-23             
+ src/database      |       0 |      100 |       0 |       0 |                   
+  ...ase.module.ts |       0 |      100 |       0 |       0 | 1-66              
+ ...database/seeds |       0 |        0 |       0 |       0 |                   
+  seed.ts          |       0 |        0 |       0 |       0 | 1-412             
+ src/favorites     |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-64              
+  ...tes.module.ts |       0 |      100 |     100 |       0 | 1-12              
+  ...es.service.ts |       0 |        0 |       0 |       0 | 1-76              
+ src/favorites/dto |       0 |      100 |     100 |       0 |                   
+  ...vorite.dto.ts |       0 |      100 |     100 |       0 | 1-5               
+  ...vorite.dto.ts |       0 |      100 |     100 |       0 | 1-5               
+ ...rites/entities |       0 |        0 |       0 |       0 |                   
+  ...ite.entity.ts |       0 |        0 |       0 |       0 | 1-27              
+ src/health        |     100 |    83.33 |     100 |     100 |                   
+  ...controller.ts |     100 |    83.33 |     100 |     100 | 6                 
+ src/iap           |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-21              
+  iap.module.ts    |       0 |      100 |     100 |       0 | 1-9               
+  iap.service.ts   |       0 |        0 |       0 |       0 | 1-188             
+ src/iap/dto       |       0 |      100 |     100 |       0 |                   
+  ...rchase.dto.ts |       0 |      100 |     100 |       0 | 1-5               
+ src/ingredients   |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-43              
+  ...nts.module.ts |       0 |      100 |     100 |       0 | 1-13              
+  ...ts.service.ts |       0 |        0 |       0 |       0 | 1-40              
+ ...ients/entities |       0 |        0 |       0 |       0 |                   
+  ...ent.entity.ts |       0 |      100 |       0 |       0 | 1-18              
+  ...ent.entity.ts |       0 |        0 |       0 |       0 | 1-63              
+ src/orders        |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-43              
+  orders.module.ts |       0 |      100 |     100 |       0 | 1-13              
+  ...rs.service.ts |       0 |        0 |       0 |       0 | 1-41              
+ ...rders/entities |       0 |        0 |       0 |       0 |                   
+  ...tem.entity.ts |       0 |        0 |       0 |       0 | 1-49              
+  order.entity.ts  |       0 |        0 |       0 |       0 | 1-75              
+ src/payments      |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-43              
+  ...nts.module.ts |       0 |      100 |     100 |       0 | 1-12              
+  ...ts.service.ts |       0 |        0 |       0 |       0 | 1-39              
+ ...ments/entities |       0 |        0 |       0 |       0 |                   
+  ...ent.entity.ts |       0 |        0 |       0 |       0 | 1-67              
+ src/recipe-access |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-58              
+  ...ess.module.ts |       0 |      100 |     100 |       0 | 1-12              
+  ...ss.service.ts |       0 |        0 |       0 |       0 | 1-75              
+ ...ccess/entities |       0 |        0 |       0 |       0 |                   
+  ...ess.entity.ts |       0 |        0 |       0 |       0 | 1-74              
+ src/recipes       |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-67              
+  ...pes.module.ts |       0 |      100 |     100 |       0 | 1-17              
+  ...es.service.ts |       0 |        0 |       0 |       0 | 1-227             
+ src/recipes/dto   |       0 |        0 |       0 |       0 |                   
+  ...recipe.dto.ts |       0 |      100 |     100 |       0 | 3                 
+  ...ecipes.dto.ts |       0 |        0 |       0 |       0 | 1-55              
+  ...recipe.dto.ts |       0 |      100 |     100 |       0 | 3                 
+ ...cipes/entities |       0 |        0 |       0 |       0 |                   
+  ...ent.entity.ts |       0 |        0 |       0 |       0 | 1-47              
+  ...ion.entity.ts |       0 |        0 |       0 |       0 | 1-41              
+  recipe.entity.ts |       0 |        0 |       0 |       0 | 1-132             
+ src/reviews       |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-44              
+  ...ews.module.ts |       0 |      100 |     100 |       0 | 1-12              
+  ...ws.service.ts |       0 |        0 |       0 |       0 | 1-42              
+ ...views/entities |       0 |        0 |       0 |       0 |                   
+  review.entity.ts |       0 |        0 |       0 |       0 | 1-42              
+ src/tasks         |   83.33 |    76.19 |     100 |   85.71 |                   
+  ...controller.ts |     100 |       75 |     100 |     100 | 18-49             
+  tasks.module.ts  |       0 |      100 |     100 |       0 | 1-12              
+  tasks.service.ts |     100 |    83.33 |     100 |     100 | 12                
+ src/tasks/dto     |     100 |      100 |     100 |     100 |                   
+  ...e-task.dto.ts |     100 |      100 |     100 |     100 |                   
+  ...e-task.dto.ts |     100 |      100 |     100 |     100 |                   
+ ...tasks/entities |     100 |      100 |     100 |     100 |                   
+  task.entity.ts   |     100 |      100 |     100 |     100 |                   
+ src/uploads       |   35.24 |    24.13 |   42.85 |    36.6 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-79              
+  ...ads.module.ts |       0 |      100 |     100 |       0 | 1-10              
+  ...ds.service.ts |   47.77 |    35.89 |      60 |    48.8 | 107,122,139-257   
+ src/uploads/dto   |       0 |        0 |     100 |       0 |                   
+  ...upload.dto.ts |       0 |        0 |     100 |       0 | 1-12              
+  ...upload.dto.ts |       0 |        0 |     100 |       0 | 1-13              
+ ...ploads/storage |   46.66 |       75 |       0 |   38.46 |                   
+  r2.provider.ts   |   46.66 |       75 |       0 |   38.46 | 16-69             
+ src/users         |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-52              
+  users.module.ts  |       0 |      100 |     100 |       0 | 1-19              
+  users.service.ts |       0 |        0 |       0 |       0 | 1-154             
+ ...users/entities |       0 |        0 |       0 |       0 |                   
+  user.entity.ts   |       0 |        0 |       0 |       0 | 1-64              
+-------------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 5 passed, 5 total
+Tests:       17 passed, 17 total
+Snapshots:   0 total
+Time:        18.92 s
+Ran all test suites.
+[Pipeline] }
+[Pipeline] // dir
+Post stage
+[Pipeline] junit
+Recording test results
+[Checks API] No suitable checks publisher found.
+[Pipeline] recordCoverage
+[Coverage] Recording coverage results
+[Coverage] Creating parser for Cobertura Coverage Reports
+[Coverage] Searching for all files in '/home/jenkins/agent/workspace/****_lab4_main' that match the pattern 'backend/coverage/cobertura-coverage.xml'
+[Coverage] Traversing of symbolic links: enabled
+[Coverage] -> found 1 file
+[Coverage] Successfully parsed file '/home/jenkins/agent/workspace/****_lab4_main/backend/coverage/cobertura-coverage.xml'
+[Coverage] Module Coverage: 100.00% (1/1)
+[Coverage] Package Coverage: 18.18% (8/44)
+[Coverage] File Coverage: 11.83% (11/93)
+[Coverage] Class Coverage: 11.83% (11/93)
+[Coverage] Method Coverage: 8.28% (28/338)
+[Coverage] Line Coverage: 8.30% (120/1445)
+[Coverage] Branch Coverage: 9.07% (68/750)
+[Coverage] Lines of Code: 1445
+[Coverage] Successfully processed file 'backend/coverage/cobertura-coverage.xml'
+[Coverage] Resolving source code files...
+[Coverage] Searching for source code files in:
+[Coverage] -> backend
+[Coverage] -> /home/jenkins/agent/workspace/****_lab4_main/src/main/java
+[Coverage] -> resolved absolute paths for all 93 source files
+[Coverage] Making paths of 93 source code files relative to workspace root...
+               
+               
+┌─────────────┐
+│ Scan Status │
+└─────────────┘
+  Scanning 100 files tracked by git with 561 Code rules:
+                                                                                                                        
+  Language      Rules   Files          Origin      Rules                                                                
+ ─────────────────────────────        ───────────────────                                                               
+  ts               72     100          Community     561                                                                
+  <multilang>       5     100                                                                                           
+                                                                                                                        
+[Checks API] No suitable checks publisher found.
+[Coverage] Obtaining result action of reference build
+[Coverage] Reference build recorder is not configured
+[Coverage] -> Found no reference build
+[Coverage] No quality gates have been set - skipping
+[Coverage] Executing source code painting...
+[Coverage] Painting 93 source files on agent
+[Coverage] -> finished painting successfully
+[Coverage] -> zipping sources from folder '/home/jenkins/agent/workspace/****_lab4_main/coverage-sources-.tmp2995084656220422575/coverage' as '/home/jenkins/agent/workspace/****_lab4_main/coverage-sources-coverage.zip'
+[Coverage] -> deleted temporary source folder '/home/jenkins/agent/workspace/****_lab4_main/coverage-sources-.tmp2995084656220422575'
+[Coverage] Copying painted sources from agent to build folder
+[Coverage] -> extracting...
+[Coverage] -> done
+[Coverage] Deleting source code files of build #6
+[Coverage] Finished coverage processing - adding the action to the build...
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+                
+                
+┌──────────────┐
+│ Scan Summary │
+└──────────────┘
+Some files were skipped or only partially analyzed.
+  Scan was limited to files tracked by git.
+
+(need more rules? `semgrep login` for additional free Semgrep Registry rules)
+
+Ran 77 rules on 100 files: 0 findings.
+
+A new version of Semgrep is available. See https://semgrep.dev/docs/upgrading
+If Semgrep missed a finding, please send us feedback to let us know!
+See https://semgrep.dev/docs/reporting-false-negatives/
+[Pipeline] }
+[Pipeline] // container
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+
+/home/jenkins/agent/workspace/****_lab4_main/backend/src/main.ts
+  16:1  warning  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+
+✖ 1 problem (0 errors, 1 warning)
+
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+- Installed hashicorp/aws v5.100.0 (signed by HashiCorp)
+
+Terraform has made some changes to the provider dependency selections recorded
+in the .terraform.lock.hcl file. Review those changes and commit them to your
+version control system if they represent changes you intended to make.
+
+[0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+[Pipeline] sh
++ terraform validate
+[32m[1mSuccess![0m The configuration is valid.
+[0m
+[Pipeline] sh
++ terraform fmt -check -recursive
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // parallel
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (SBOM & Sign)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ mkdir -p /home/jenkins/agent/workspace/****_lab4_main/.tools
++ wget -q -O- https://github.com/anchore/syft/releases/download/v1.18.1/syft_1.18.1_linux_amd64.tar.gz
++ tar -xz -C /home/jenkins/agent/workspace/****_lab4_main/.tools syft
++ wget -q -O /home/jenkins/agent/workspace/****_lab4_main/.tools/cosign https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64
++ chmod +x /home/jenkins/agent/workspace/****_lab4_main/.tools/cosign
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/syft scan dir:backend --source-name ****-api --source-version 344f546157dc56bd8a5127d7c7f9907ffe0eade3 -o 'cyclonedx-json=sbom.cdx.json'
+[Pipeline] withCredentials
+Masking supported pattern matches of $COSIGN_KEY or $COSIGN_PASSWORD
+[Pipeline] {
+[Pipeline] sh
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/cosign sign-blob --yes --key **** '--tlog-upload=false' --output-signature sbom.cdx.json.sig sbom.cdx.json
+Using payload from: sbom.cdx.json
+Wrote signature to file sbom.cdx.json.sig
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] sh
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/cosign verify-blob --key keys/cosign.pub --signature sbom.cdx.json.sig '--insecure-ignore-tlog=true' sbom.cdx.json
+WARNING: Skipping tlog verification is an insecure practice that lacks of transparency and auditability verification for the blob.
+Verified OK
+[Pipeline] sh
++ chmod a+r sbom.cdx.json sbom.cdx.json.sig
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Policy Gate)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ wget -q -O /home/jenkins/agent/workspace/****_lab4_main/.tools/opa https://github.com/open-policy-agent/opa/releases/download/v1.0.0/opa_linux_amd64_static
++ chmod +x /home/jenkins/agent/workspace/****_lab4_main/.tools/opa
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/opa check policy/security.rego
++ set +e
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/opa eval --data policy/security.rego --input backend/npm-audit.json --format pretty --fail-defined 'data.****.security.deny[msg]'
++ rc=0
++ cat policy-result.txt
+undefined
++ '[' 0 -eq 0 ]
++ echo 'Policy Gate: ALLOW'
+Policy Gate: ALLOW
++ exit 0
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (SonarQube Analysis)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/backend
+[Pipeline] {
+[Pipeline] withSonarQubeEnv
+Injecting SonarQube environment variables using the configuration: SonarQube
+[Pipeline] {
+[Pipeline] sh
++ sonar-scanner -Dsonar.projectKey=****-api -Dsonar.token=******
+08:26:26.667 INFO  Scanner configuration file: /opt/sonar-scanner/conf/sonar-scanner.properties
+08:26:26.671 INFO  Project root configuration file: /home/jenkins/agent/workspace/****_lab4_main/backend/sonar-project.properties
+08:26:26.699 INFO  SonarScanner CLI 7.3.0.5189
+08:26:26.702 INFO  Linux 6.18.33.2-microsoft-standard-WSL2 amd64
+08:26:26.763 WARN  Both 'sonar.login' and 'sonar.token' (or the 'SONAR_TOKEN' env variable) are set, but only the latter will be used.
+08:26:28.062 INFO  Communicating with SonarQube Server 9.9.8.100196
+08:26:29.102 INFO  Load global settings
+08:26:29.476 INFO  Load global settings (done) | time=374ms
+08:26:29.478 INFO  Server id: 147B411E-AaDPPadJ-tqh_SzzlGYN
+08:26:29.484 INFO  User cache: /opt/sonar-scanner/.sonar/cache
+08:26:29.489 INFO  Load/download plugins
+08:26:29.489 INFO  Load plugins index
+08:26:29.675 INFO  Load plugins index (done) | time=186ms
+08:26:31.544 INFO  Load/download plugins (done) | time=2055ms
+08:26:32.094 INFO  Process project properties
+08:26:32.106 INFO  Process project properties (done) | time=12ms
+08:26:32.109 INFO  Execute project builders
+08:26:32.111 INFO  Execute project builders (done) | time=2ms
+08:26:32.115 INFO  Project key: ****-api
+08:26:32.115 INFO  Base dir: /home/jenkins/agent/workspace/****_lab4_main/backend
+08:26:32.115 INFO  Working dir: /home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork
+08:26:32.126 INFO  Load project settings for component key: '****-api'
+08:26:32.448 INFO  Load project settings for component key: '****-api' (done) | time=322ms
+08:26:32.593 INFO  Auto-configuring with CI 'Jenkins'
+08:26:32.596 INFO  Load quality profiles
+08:26:33.349 INFO  Load quality profiles (done) | time=753ms
+08:26:33.360 INFO  Load active rules
+08:26:38.253 INFO  Load active rules (done) | time=4893ms
+08:26:38.258 INFO  Load analysis cache
+08:26:38.276 INFO  Load analysis cache (404) | time=19ms
+08:26:38.321 INFO  Load project repositories
+08:26:38.362 INFO  Load project repositories (done) | time=41ms
+08:26:38.387 INFO  Indexing files...
+08:26:38.388 INFO  Project configuration:
+08:26:38.388 INFO    Excluded sources: **/*.spec.ts, **/*.spec.ts
+08:26:38.388 INFO    Included tests: **/*.spec.ts
+08:26:38.389 INFO    Excluded sources for coverage: src/main.ts, **/*.module.ts, src/auth/**, src/banner/**, src/cart/**, src/categories/**, src/common/**, src/database/**, src/favorites/**, src/iap/**, src/ingredients/**, src/orders/**, src/payments/**, src/recipe-access/**, src/recipes/**, src/reviews/**, src/uploads/**, src/users/**
+08:26:38.750 INFO  100 files indexed
+08:26:38.750 INFO  100 files ignored because of inclusion/exclusion patterns
+08:26:38.750 INFO  0 files ignored because of scm ignore settings
+08:26:38.751 INFO  Quality profile for ts: Sonar way
+08:26:38.751 INFO  ------------- Run sensors on module ****-api
+08:26:38.824 INFO  Load metrics repository
+08:26:38.870 INFO  Load metrics repository (done) | time=46ms
+08:26:40.274 INFO  Sensor JaCoCo XML Report Importer [jacoco]
+08:26:40.275 INFO  'sonar.coverage.jacoco.xmlReportPaths' is not defined. Using default locations: target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml,build/reports/jacoco/test/jacocoTestReport.xml
+08:26:40.276 INFO  No report imported, no coverage information will be imported by JaCoCo XML Report Importer
+08:26:40.276 INFO  Sensor JaCoCo XML Report Importer [jacoco] (done) | time=2ms
+08:26:40.276 INFO  Sensor TypeScript analysis [javascript]
+08:26:45.945 WARN  Node.js version 22 is not recommended, you might experience issues. Please use a recommended version of Node.js [16, 18]
+08:26:45.999 INFO  Found 1 tsconfig.json file(s): [/home/jenkins/agent/workspace/****_lab4_main/backend/tsconfig.json]
+08:26:46.000 INFO  Creating TypeScript program
+08:26:46.000 INFO  TypeScript configuration file /home/jenkins/agent/workspace/****_lab4_main/backend/tsconfig.json
+08:26:46.003 INFO  100 source files to be analyzed
+08:26:46.030 ERROR Error: Unknown compiler option 'resolvePackageJsonExports'.; Argument for '--target' option must be: 'es3', 'es5', 'es6', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020', 'es2021', 'es2022', 'esnext'.
+08:26:46.031 ERROR     at createProgramOptions (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/lib/services/program/program.js:106:15)
+08:26:46.031 ERROR     at createProgram (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/lib/services/program/program.js:132:28)
+08:26:46.031 ERROR     at default_1 (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/lib/routing/on-create-program.js:10:57)
+08:26:46.031 ERROR     at Layer.handle [as handle_request] (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/node_modules/express/lib/router/layer.js:95:5)
+08:26:46.031 ERROR     at next (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/node_modules/express/lib/router/route.js:144:13)
+08:26:46.031 ERROR     at Route.dispatch (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/node_modules/express/lib/router/route.js:114:3)
+08:26:46.031 ERROR     at Layer.handle [as handle_request] (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/node_modules/express/lib/router/layer.js:95:5)
+08:26:46.031 ERROR     at /home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/node_modules/express/lib/router/index.js:284:15
+08:26:46.031 ERROR     at Function.process_params (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/node_modules/express/lib/router/index.js:346:12)
+08:26:46.031 ERROR     at next (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/node_modules/express/lib/router/index.js:280:10)
+08:26:46.034 ERROR Failed to create program: Unknown compiler option 'resolvePackageJsonExports'.; Argument for '--target' option must be: 'es3', 'es5', 'es6', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020', 'es2021', 'es2022', 'esnext'.
+08:26:46.035 INFO  Creating TypeScript program (done) | time=34ms
+08:26:46.035 INFO  Skipped 100 file(s) because they were not part of any tsconfig.json (enable debug logs to see the full list)
+08:26:46.040 INFO  100/100 source files have been analyzed
+08:26:46.041 INFO  Hit the cache for 0 out of 0
+08:26:46.043 INFO  Miss the cache for 0 out of 0
+08:26:46.043 INFO  Sensor TypeScript analysis [javascript] (done) | time=5767ms
+08:26:46.043 INFO  Sensor CSS Rules [javascript]
+08:26:46.044 INFO  No CSS, PHP, HTML or VueJS files are found in the project. CSS analysis is skipped.
+08:26:46.044 INFO  Sensor CSS Rules [javascript] (done) | time=1ms
+08:26:46.044 INFO  Sensor JavaScript/TypeScript Coverage [javascript]
+08:26:46.044 INFO  Analysing [/home/jenkins/agent/workspace/****_lab4_main/backend/coverage/lcov.info]
+08:26:46.083 INFO  Sensor JavaScript/TypeScript Coverage [javascript] (done) | time=39ms
+08:26:46.083 INFO  Sensor C# Project Type Information [csharp]
+08:26:46.085 INFO  Sensor C# Project Type Information [csharp] (done) | time=2ms
+08:26:46.086 INFO  Sensor C# Analysis Log [csharp]
+08:26:46.108 INFO  Sensor C# Analysis Log [csharp] (done) | time=22ms
+08:26:46.108 INFO  Sensor C# Properties [csharp]
+08:26:46.108 INFO  Sensor C# Properties [csharp] (done) | time=0ms
+08:26:46.108 INFO  Sensor HTML [web]
+08:26:46.112 INFO  Sensor HTML [web] (done) | time=4ms
+08:26:46.112 INFO  Sensor TextAndSecretsSensor [text]
+08:26:46.122 INFO  100 source files to be analyzed
+08:26:46.212 INFO  100/100 source files have been analyzed
+08:26:46.213 INFO  Sensor TextAndSecretsSensor [text] (done) | time=101ms
+08:26:46.213 INFO  Sensor VB.NET Project Type Information [vbnet]
+08:26:46.214 INFO  Sensor VB.NET Project Type Information [vbnet] (done) | time=1ms
+08:26:46.214 INFO  Sensor VB.NET Analysis Log [vbnet]
+08:26:46.227 INFO  Sensor VB.NET Analysis Log [vbnet] (done) | time=12ms
+08:26:46.227 INFO  Sensor VB.NET Properties [vbnet]
+08:26:46.227 INFO  Sensor VB.NET Properties [vbnet] (done) | time=0ms
+08:26:46.227 INFO  Sensor IaC Docker Sensor [iac]
+08:26:46.234 INFO  0 source files to be analyzed
+08:26:46.298 INFO  0/0 source files have been analyzed
+08:26:46.299 INFO  Sensor IaC Docker Sensor [iac] (done) | time=72ms
+08:26:46.304 INFO  ------------- Run sensors on project
+08:26:46.361 INFO  Sensor Analysis Warnings import [csharp]
+08:26:46.362 INFO  Sensor Analysis Warnings import [csharp] (done) | time=1ms
+08:26:46.362 INFO  Sensor Zero Coverage Sensor
+08:26:46.362 INFO  Sensor Zero Coverage Sensor (done) | time=0ms
+08:26:46.382 INFO  CPD Executor Calculating CPD for 0 files
+08:26:46.383 INFO  CPD Executor CPD calculation finished (done) | time=0ms
+08:26:46.503 INFO  Analysis report generated in 110ms, dir size=271.6 kB
+08:26:46.595 INFO  Analysis report compressed in 91ms, zip size=108.8 kB
+08:26:46.790 INFO  Analysis report uploaded in 195ms
+08:26:46.792 INFO  ANALYSIS SUCCESSFUL, you can find the results at: http://sonarqube:9000/dashboard?id=****-api
+08:26:46.792 INFO  Note that you will be able to access the updated dashboard once the server has processed the submitted analysis report
+08:26:46.792 INFO  More about the report processing at http://sonarqube:9000/api/ce/task?id=AaDh-UvsGZa56CL8LIPZ
+08:26:47.603 INFO  Analysis total time: 15.897 s
+08:26:47.605 INFO  EXECUTION SUCCESS
+08:26:47.606 INFO  Total time: 21.006s
+[Pipeline] }
+[Pipeline] // withSonarQubeEnv
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Quality Gate)
+[Pipeline] timeout
+Timeout set to expire in 5 min 0 sec
+[Pipeline] {
+[Pipeline] waitForQualityGate
+Checking status of SonarQube task 'AaDh-UvsGZa56CL8LIPZ' on server 'SonarQube'
+SonarQube task 'AaDh-UvsGZa56CL8LIPZ' status is 'IN_PROGRESS'
+SonarQube task 'AaDh-UvsGZa56CL8LIPZ' status is 'SUCCESS'
+SonarQube task 'AaDh-UvsGZa56CL8LIPZ' completed. Quality gate is 'OK'
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (E2E)
+[Pipeline] sh
++ cd backend
++ npm run build
+
+> backend@0.0.1 build
+> nest build
+
++ API_PID=736
++ trap 'kill $API_PID 2>/dev/null' EXIT
++ PORT=3000 node dist/src/main.js
++ seq 1 60
++ wget -q -O /dev/null http://localhost:3000/
+wget: can't connect to remote host: Connection refused
++ sleep 2
++ wget -q -O /dev/null http://localhost:3000/
+wget: can't connect to remote host: Connection refused
++ sleep 2
++ wget -q -O /dev/null http://localhost:3000/
++ break
++ cd /home/jenkins/agent/workspace/****_lab4_main/e2e
++ npm ci --prefer-offline '--fetch-retries=5'
+
+added 3 packages, and audited 4 packages in 1s
+
+found 0 vulnerabilities
++ BASE_URL=http://localhost:3000 npx playwright test
+
+Running 4 tests using 3 workers
+
+  ✓  1 tests/create-task.spec.ts:3:5 › POST /tasks creates a task (117ms)
+  ✓  3 tests/list-tasks.spec.ts:3:5 › GET /tasks lists tasks (119ms)
+  ✓  2 tests/mark-task-done.spec.ts:3:5 › PATCH /tasks/:id/done marks a task done (148ms)
+  ✓  4 tests/create-task.spec.ts:17:5 › POST /tasks rejects an empty title (19ms)
+
+  4 passed (1.1s)
++ kill 736
+Post stage
+[Pipeline] junit
+Recording test results
+[Checks API] No suitable checks publisher found.
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Image)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
++ /kaniko/executor --context dir:///home/jenkins/agent/workspace/****_lab4_main/backend --dockerfile /home/jenkins/agent/workspace/****_lab4_main/backend/Dockerfile --destination kind-registry:5000/****-api:344f546 --insecure --skip-tls-verify
+[36mINFO[0m[0000] Resolved base name node:22-alpine to build   
+[36mINFO[0m[0000] Resolved base name node:22-alpine to production 
+[36mINFO[0m[0000] Using dockerignore file: /home/jenkins/agent/workspace/****_lab4_main/backend/.dockerignore 
+[36mINFO[0m[0000] Retrieving image manifest node:22-alpine     
+[36mINFO[0m[0000] Retrieving image node:22-alpine from registry index.docker.io 
+[36mINFO[0m[0004] Retrieving image manifest node:22-alpine     
+[36mINFO[0m[0004] Returning cached image manifest              
+[36mINFO[0m[0004] Built cross stage deps: map[0:[/app/dist]]   
+[36mINFO[0m[0004] Retrieving image manifest node:22-alpine     
+[36mINFO[0m[0004] Returning cached image manifest              
+[36mINFO[0m[0004] Executing 0 build triggers                   
+[36mINFO[0m[0004] Building stage 'node:22-alpine' [idx: '0', base-idx: '-1'] 
+[36mINFO[0m[0004] Unpacking rootfs as cmd COPY package*.json ./ requires it. 
+[36mINFO[0m[0086] WORKDIR /app                                 
+[36mINFO[0m[0086] Cmd: workdir                                 
+[36mINFO[0m[0086] Changed working directory to /app            
+[36mINFO[0m[0086] Creating directory /app with uid -1 and gid -1 
+[36mINFO[0m[0086] Taking snapshot of files...                  
+[36mINFO[0m[0086] Resolving srcs [package*.json]...            
+[36mINFO[0m[0087] COPY package*.json ./                        
+[36mINFO[0m[0087] Resolving srcs [package*.json]...            
+[36mINFO[0m[0087] Taking snapshot of files...                  
+[36mINFO[0m[0087] RUN npm ci                                   
+[36mINFO[0m[0087] Initializing snapshotter ...                 
+[36mINFO[0m[0087] Taking snapshot of full filesystem...        
+[36mINFO[0m[0088] Cmd: /bin/sh                                 
+[36mINFO[0m[0088] Args: [-c npm ci]                            
+[36mINFO[0m[0088] Running: [/bin/sh -c npm ci]                 
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 823 packages, and audited 824 packages in 1m
+
+178 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm notice
+npm notice New major version of npm available! 10.9.9 -> 12.1.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.1.0
+npm notice To update run: npm install -g npm@12.1.0
+npm notice
+[36mINFO[0m[0148] Taking snapshot of full filesystem...        
+[36mINFO[0m[0174] COPY . .                                     
+[36mINFO[0m[0175] Taking snapshot of files...                  
+[36mINFO[0m[0175] RUN npm run build                            
+[36mINFO[0m[0175] Cmd: /bin/sh                                 
+[36mINFO[0m[0175] Args: [-c npm run build]                     
+[36mINFO[0m[0175] Running: [/bin/sh -c npm run build]          
+
+> backend@0.0.1 build
+> nest build
+
+[36mINFO[0m[0184] Taking snapshot of full filesystem...        
+[36mINFO[0m[0195] Saving file app/dist for later use           
+[36mINFO[0m[0195] Deleting filesystem...                       
+[36mINFO[0m[0197] Retrieving image manifest node:22-alpine     
+[36mINFO[0m[0197] Returning cached image manifest              
+[36mINFO[0m[0197] Executing 0 build triggers                   
+[36mINFO[0m[0197] Building stage 'node:22-alpine' [idx: '1', base-idx: '-1'] 
+[36mINFO[0m[0197] Unpacking rootfs as cmd COPY package*.json ./ requires it. 
+[36mINFO[0m[0257] WORKDIR /app                                 
+[36mINFO[0m[0257] Cmd: workdir                                 
+[36mINFO[0m[0257] Changed working directory to /app            
+[36mINFO[0m[0257] Creating directory /app with uid -1 and gid -1 
+[36mINFO[0m[0257] Taking snapshot of files...                  
+[36mINFO[0m[0257] Resolving srcs [package*.json]...            
+[36mINFO[0m[0258] COPY package*.json ./                        
+[36mINFO[0m[0258] Resolving srcs [package*.json]...            
+[36mINFO[0m[0258] Taking snapshot of files...                  
+[36mINFO[0m[0258] RUN npm ci --omit=dev && npm cache clean --force 
+[36mINFO[0m[0258] Initializing snapshotter ...                 
+[36mINFO[0m[0258] Taking snapshot of full filesystem...        
+[36mINFO[0m[0259] Cmd: /bin/sh                                 
+[36mINFO[0m[0259] Args: [-c npm ci --omit=dev && npm cache clean --force] 
+[36mINFO[0m[0259] Running: [/bin/sh -c npm ci --omit=dev && npm cache clean --force] 
+
+added 227 packages, and audited 228 packages in 14s
+
+58 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm notice
+npm notice New major version of npm available! 10.9.9 -> 12.1.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.1.0
+npm notice To update run: npm install -g npm@12.1.0
+npm notice
+npm warn using --force Recommended protections disabled.
+[36mINFO[0m[0274] Taking snapshot of full filesystem...        
+[36mINFO[0m[0279] RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack            /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack 
+[36mINFO[0m[0279] Cmd: /bin/sh                                 
+[36mINFO[0m[0279] Args: [-c rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack            /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack] 
+[36mINFO[0m[0279] Running: [/bin/sh -c rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack            /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack] 
+[36mINFO[0m[0279] Taking snapshot of full filesystem...        
+[36mINFO[0m[0280] COPY --from=build /app/dist ./dist           
+[36mINFO[0m[0280] Taking snapshot of files...                  
+[36mINFO[0m[0280] RUN mkdir -p /app/uploads && chown -R node:node /app 
+[36mINFO[0m[0280] Cmd: /bin/sh                                 
+[36mINFO[0m[0280] Args: [-c mkdir -p /app/uploads && chown -R node:node /app] 
+[36mINFO[0m[0280] Running: [/bin/sh -c mkdir -p /app/uploads && chown -R node:node /app] 
+[36mINFO[0m[0280] Taking snapshot of full filesystem...        
+[36mINFO[0m[0285] USER node                                    
+[36mINFO[0m[0285] Cmd: USER                                    
+[36mINFO[0m[0285] EXPOSE 3000                                  
+[36mINFO[0m[0285] Cmd: EXPOSE                                  
+[36mINFO[0m[0285] Adding exposed port: 3000/tcp                
+[36mINFO[0m[0285] CMD ["node", "dist/src/main.js"]             
+[36mINFO[0m[0285] Pushing image to kind-registry:5000/****-api:344f546 
+[36mINFO[0m[0285] Pushed kind-registry:5000/****-api@sha256:65224d9ae2269f2f2e338415b248658aa7b6ab73cf912e36e4ccc3a8a21cb3f2 
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Container Scan)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
++ trivy image --format sarif --output trivy.sarif kind-registry:5000/****-api:344f546
+2026-09-27T08:32:01Z	INFO	[vulndb] Need to update DB
+2026-09-27T08:32:01Z	INFO	[vulndb] Downloading vulnerability DB...
+2026-09-27T08:32:01Z	INFO	[vulndb] Downloading artifact...	repo="mirror.gcr.io/aquasec/trivy-db:2"
+159.25 KiB / 117.74 MiB [>___________________________________________________________] 0.13% ? p/s ?511.25 KiB / 117.74 MiB [>___________________________________________________________] 0.42% ? p/s ?847.25 KiB / 117.74 MiB [>___________________________________________________________] 0.70% ? p/s ?1.15 MiB / 117.74 MiB [>______________________________________________] 0.98% 1.66 MiB p/s ETA 1m10s1.39 MiB / 117.74 MiB [>_______________________________________________] 1.18% 1.66 MiB p/s ETA 1m9s1.54 MiB / 117.74 MiB [>_______________________________________________] 1.31% 1.66 MiB p/s ETA 1m9s1.63 MiB / 117.74 MiB [>______________________________________________] 1.39% 1.61 MiB p/s ETA 1m12s1.99 MiB / 117.74 MiB [>______________________________________________] 1.69% 1.61 MiB p/s ETA 1m12s2.29 MiB / 117.74 MiB [>______________________________________________] 1.95% 1.61 MiB p/s ETA 1m11s2.70 MiB / 117.74 MiB [->_____________________________________________] 2.29% 1.62 MiB p/s ETA 1m11s2.92 MiB / 117.74 MiB [->_____________________________________________] 2.48% 1.62 MiB p/s ETA 1m10s3.09 MiB / 117.74 MiB [->_____________________________________________] 2.62% 1.62 MiB p/s ETA 1m10s3.32 MiB / 117.74 MiB [->_____________________________________________] 2.82% 1.58 MiB p/s ETA 1m12s3.51 MiB / 117.74 MiB [->_____________________________________________] 2.98% 1.58 MiB p/s ETA 1m12s3.66 MiB / 117.74 MiB [->_____________________________________________] 3.11% 1.58 MiB p/s ETA 1m12s3.96 MiB / 117.74 MiB [->_____________________________________________] 3.36% 1.55 MiB p/s ETA 1m13s4.36 MiB / 117.74 MiB [->_____________________________________________] 3.70% 1.55 MiB p/s ETA 1m13s4.62 MiB / 117.74 MiB [->_____________________________________________] 3.92% 1.55 MiB p/s ETA 1m13s4.78 MiB / 117.74 MiB [->_____________________________________________] 4.06% 1.54 MiB p/s ETA 1m13s4.93 MiB / 117.74 MiB [->_____________________________________________] 4.19% 1.54 MiB p/s ETA 1m13s5.12 MiB / 117.74 MiB [-->____________________________________________] 4.35% 1.54 MiB p/s ETA 1m13s5.30 MiB / 117.74 MiB [-->____________________________________________] 4.50% 1.49 MiB p/s ETA 1m15s6.12 MiB / 117.74 MiB [-->____________________________________________] 5.20% 1.49 MiB p/s ETA 1m14s6.33 MiB / 117.74 MiB [-->____________________________________________] 5.37% 1.49 MiB p/s ETA 1m14s6.68 MiB / 117.74 MiB [-->____________________________________________] 5.67% 1.54 MiB p/s ETA 1m11s6.80 MiB / 117.74 MiB [-->____________________________________________] 5.78% 1.54 MiB p/s ETA 1m11s6.98 MiB / 117.74 MiB [-->____________________________________________] 5.92% 1.54 MiB p/s ETA 1m11s7.27 MiB / 117.74 MiB [-->____________________________________________] 6.17% 1.51 MiB p/s ETA 1m13s7.42 MiB / 117.74 MiB [-->____________________________________________] 6.30% 1.51 MiB p/s ETA 1m13s7.55 MiB / 117.74 MiB [--->___________________________________________] 6.41% 1.51 MiB p/s ETA 1m13s7.89 MiB / 117.74 MiB [--->___________________________________________] 6.70% 1.48 MiB p/s ETA 1m14s7.97 MiB / 117.74 MiB [--->___________________________________________] 6.77% 1.48 MiB p/s ETA 1m14s7.97 MiB / 117.74 MiB [--->___________________________________________] 6.77% 1.48 MiB p/s ETA 1m14s8.95 MiB / 117.74 MiB [--->___________________________________________] 7.60% 1.50 MiB p/s ETA 1m12s9.22 MiB / 117.74 MiB [--->___________________________________________] 7.83% 1.50 MiB p/s ETA 1m12s9.35 MiB / 117.74 MiB [--->___________________________________________] 7.94% 1.50 MiB p/s ETA 1m12s9.44 MiB / 117.74 MiB [--->___________________________________________] 8.02% 1.45 MiB p/s ETA 1m14s9.55 MiB / 117.74 MiB [--->___________________________________________] 8.11% 1.45 MiB p/s ETA 1m14s9.72 MiB / 117.74 MiB [--->___________________________________________] 8.25% 1.45 MiB p/s ETA 1m14s9.87 MiB / 117.74 MiB [--->___________________________________________] 8.39% 1.41 MiB p/s ETA 1m16s9.91 MiB / 117.74 MiB [--->___________________________________________] 8.41% 1.41 MiB p/s ETA 1m16s9.91 MiB / 117.74 MiB [--->___________________________________________] 8.41% 1.41 MiB p/s ETA 1m16s9.91 MiB / 117.74 MiB [--->___________________________________________] 8.41% 1.32 MiB p/s ETA 1m21s10.14 MiB / 117.74 MiB [--->__________________________________________] 8.61% 1.32 MiB p/s ETA 1m21s10.72 MiB / 117.74 MiB [---->_________________________________________] 9.10% 1.32 MiB p/s ETA 1m21s10.86 MiB / 117.74 MiB [---->_________________________________________] 9.22% 1.34 MiB p/s ETA 1m20s11.37 MiB / 117.74 MiB [---->_________________________________________] 9.66% 1.34 MiB p/s ETA 1m19s11.64 MiB / 117.74 MiB [---->_________________________________________] 9.88% 1.34 MiB p/s ETA 1m19s11.81 MiB / 117.74 MiB [---->________________________________________] 10.03% 1.35 MiB p/s ETA 1m18s12.03 MiB / 117.74 MiB [---->________________________________________] 10.22% 1.35 MiB p/s ETA 1m18s12.51 MiB / 117.74 MiB [---->________________________________________] 10.62% 1.35 MiB p/s ETA 1m17s12.91 MiB / 117.74 MiB [---->________________________________________] 10.96% 1.38 MiB p/s ETA 1m15s13.16 MiB / 117.74 MiB [----->_______________________________________] 11.18% 1.38 MiB p/s ETA 1m15s13.49 MiB / 117.74 MiB [----->_______________________________________] 11.45% 1.38 MiB p/s ETA 1m15s13.83 MiB / 117.74 MiB [----->_______________________________________] 11.74% 1.39 MiB p/s ETA 1m14s14.20 MiB / 117.74 MiB [----->_______________________________________] 12.06% 1.39 MiB p/s ETA 1m14s14.68 MiB / 117.74 MiB [----->_______________________________________] 12.47% 1.39 MiB p/s ETA 1m14s15.26 MiB / 117.74 MiB [----->_______________________________________] 12.96% 1.46 MiB p/s ETA 1m10s15.86 MiB / 117.74 MiB [------>_______________________________________] 13.47% 1.46 MiB p/s ETA 1m9s16.54 MiB / 117.74 MiB [------>_______________________________________] 14.05% 1.46 MiB p/s ETA 1m9s17.26 MiB / 117.74 MiB [------>_______________________________________] 14.66% 1.58 MiB p/s ETA 1m3s17.97 MiB / 117.74 MiB [------->______________________________________] 15.26% 1.58 MiB p/s ETA 1m3s18.39 MiB / 117.74 MiB [------->______________________________________] 15.62% 1.58 MiB p/s ETA 1m2s18.42 MiB / 117.74 MiB [------->______________________________________] 15.65% 1.60 MiB p/s ETA 1m2s18.42 MiB / 117.74 MiB [------->______________________________________] 15.65% 1.60 MiB p/s ETA 1m2s18.48 MiB / 117.74 MiB [------->______________________________________] 15.70% 1.60 MiB p/s ETA 1m2s18.67 MiB / 117.74 MiB [------->______________________________________] 15.86% 1.52 MiB p/s ETA 1m4s19.40 MiB / 117.74 MiB [------->______________________________________] 16.48% 1.52 MiB p/s ETA 1m4s20.05 MiB / 117.74 MiB [------->______________________________________] 17.03% 1.52 MiB p/s ETA 1m4s20.67 MiB / 117.74 MiB [-------->______________________________________] 17.55% 1.64 MiB p/s ETA 59s21.04 MiB / 117.74 MiB [-------->______________________________________] 17.87% 1.64 MiB p/s ETA 58s21.41 MiB / 117.74 MiB [-------->______________________________________] 18.19% 1.64 MiB p/s ETA 58s21.89 MiB / 117.74 MiB [-------->______________________________________] 18.60% 1.67 MiB p/s ETA 57s22.06 MiB / 117.74 MiB [-------->______________________________________] 18.74% 1.67 MiB p/s ETA 57s22.36 MiB / 117.74 MiB [-------->______________________________________] 18.99% 1.67 MiB p/s ETA 57s22.70 MiB / 117.74 MiB [--------->_____________________________________] 19.28% 1.65 MiB p/s ETA 57s23.10 MiB / 117.74 MiB [--------->_____________________________________] 19.62% 1.65 MiB p/s ETA 57s23.47 MiB / 117.74 MiB [--------->_____________________________________] 19.93% 1.65 MiB p/s ETA 57s23.90 MiB / 117.74 MiB [--------->_____________________________________] 20.30% 1.67 MiB p/s ETA 56s24.22 MiB / 117.74 MiB [--------->_____________________________________] 20.57% 1.67 MiB p/s ETA 56s24.51 MiB / 117.74 MiB [--------->_____________________________________] 20.82% 1.67 MiB p/s ETA 55s24.90 MiB / 117.74 MiB [--------->_____________________________________] 21.15% 1.67 MiB p/s ETA 55s25.26 MiB / 117.74 MiB [---------->____________________________________] 21.45% 1.67 MiB p/s ETA 55s25.52 MiB / 117.74 MiB [---------->____________________________________] 21.68% 1.67 MiB p/s ETA 55s25.88 MiB / 117.74 MiB [---------->____________________________________] 21.98% 1.67 MiB p/s ETA 55s26.25 MiB / 117.74 MiB [---------->____________________________________] 22.29% 1.67 MiB p/s ETA 54s26.56 MiB / 117.74 MiB [---------->____________________________________] 22.56% 1.67 MiB p/s ETA 54s26.79 MiB / 117.74 MiB [---------->____________________________________] 22.76% 1.66 MiB p/s ETA 54s27.27 MiB / 117.74 MiB [---------->____________________________________] 23.16% 1.66 MiB p/s ETA 54s27.62 MiB / 117.74 MiB [----------->___________________________________] 23.45% 1.66 MiB p/s ETA 54s27.62 MiB / 117.74 MiB [----------->___________________________________] 23.45% 1.64 MiB p/s ETA 55s27.65 MiB / 117.74 MiB [----------->___________________________________] 23.48% 1.64 MiB p/s ETA 54s27.68 MiB / 117.74 MiB [----------->___________________________________] 23.51% 1.64 MiB p/s ETA 54s27.68 MiB / 117.74 MiB [----------->___________________________________] 23.51% 1.54 MiB p/s ETA 58s27.68 MiB / 117.74 MiB [----------->___________________________________] 23.51% 1.54 MiB p/s ETA 58s27.71 MiB / 117.74 MiB [----------->___________________________________] 23.53% 1.54 MiB p/s ETA 58s27.71 MiB / 117.74 MiB [---------->___________________________________] 23.53% 1.44 MiB p/s ETA 1m2s27.75 MiB / 117.74 MiB [---------->___________________________________] 23.57% 1.44 MiB p/s ETA 1m2s27.79 MiB / 117.74 MiB [---------->___________________________________] 23.60% 1.44 MiB p/s ETA 1m2s27.79 MiB / 117.74 MiB [---------->___________________________________] 23.60% 1.36 MiB p/s ETA 1m6s27.82 MiB / 117.74 MiB [---------->___________________________________] 23.62% 1.36 MiB p/s ETA 1m6s27.85 MiB / 117.74 MiB [---------->___________________________________] 23.65% 1.36 MiB p/s ETA 1m6s27.91 MiB / 117.74 MiB [---------->___________________________________] 23.70% 1.28 MiB p/s ETA 1m9s27.94 MiB / 117.74 MiB [---------->___________________________________] 23.73% 1.28 MiB p/s ETA 1m9s27.97 MiB / 117.74 MiB [---------->___________________________________] 23.75% 1.28 MiB p/s ETA 1m9s27.99 MiB / 117.74 MiB [---------->__________________________________] 23.77% 1.21 MiB p/s ETA 1m14s27.99 MiB / 117.74 MiB [---------->__________________________________] 23.77% 1.21 MiB p/s ETA 1m14s28.02 MiB / 117.74 MiB [---------->__________________________________] 23.79% 1.21 MiB p/s ETA 1m14s28.02 MiB / 117.74 MiB [---------->__________________________________] 23.79% 1.13 MiB p/s ETA 1m19s28.02 MiB / 117.74 MiB [---------->__________________________________] 23.79% 1.13 MiB p/s ETA 1m19s28.06 MiB / 117.74 MiB [---------->__________________________________] 23.83% 1.13 MiB p/s ETA 1m19s28.08 MiB / 117.74 MiB [---------->__________________________________] 23.85% 1.07 MiB p/s ETA 1m23s28.08 MiB / 117.74 MiB [---------->__________________________________] 23.85% 1.07 MiB p/s ETA 1m23s28.14 MiB / 117.74 MiB [---------->__________________________________] 23.90% 1.07 MiB p/s ETA 1m23s28.19 MiB / 117.74 MiB [---------->__________________________________] 23.94% 1.01 MiB p/s ETA 1m28s28.19 MiB / 117.74 MiB [---------->__________________________________] 23.94% 1.01 MiB p/s ETA 1m28s28.29 MiB / 117.74 MiB [---------->__________________________________] 24.03% 1.01 MiB p/s ETA 1m28s28.78 MiB / 117.74 MiB [---------->__________________________________] 24.44% 1.01 MiB p/s ETA 1m28s29.27 MiB / 117.74 MiB [----------->_________________________________] 24.86% 1.01 MiB p/s ETA 1m27s29.75 MiB / 117.74 MiB [----------->_________________________________] 25.27% 1.01 MiB p/s ETA 1m27s30.08 MiB / 117.74 MiB [----------->_________________________________] 25.55% 1.08 MiB p/s ETA 1m20s30.45 MiB / 117.74 MiB [----------->_________________________________] 25.86% 1.08 MiB p/s ETA 1m20s30.68 MiB / 117.74 MiB [----------->_________________________________] 26.06% 1.08 MiB p/s ETA 1m20s31.29 MiB / 117.74 MiB [----------->_________________________________] 26.57% 1.14 MiB p/s ETA 1m15s31.68 MiB / 117.74 MiB [------------>________________________________] 26.90% 1.14 MiB p/s ETA 1m15s32.00 MiB / 117.74 MiB [------------>________________________________] 27.18% 1.14 MiB p/s ETA 1m14s32.70 MiB / 117.74 MiB [------------>_________________________________] 27.77% 1.22 MiB p/s ETA 1m9s33.38 MiB / 117.74 MiB [------------->________________________________] 28.35% 1.22 MiB p/s ETA 1m9s33.92 MiB / 117.74 MiB [------------->________________________________] 28.81% 1.22 MiB p/s ETA 1m8s34.11 MiB / 117.74 MiB [------------->________________________________] 28.97% 1.29 MiB p/s ETA 1m4s34.60 MiB / 117.74 MiB [------------->________________________________] 29.39% 1.29 MiB p/s ETA 1m4s35.11 MiB / 117.74 MiB [------------->________________________________] 29.82% 1.29 MiB p/s ETA 1m3s35.66 MiB / 117.74 MiB [-------------->________________________________] 30.28% 1.38 MiB p/s ETA 59s35.75 MiB / 117.74 MiB [-------------->________________________________] 30.36% 1.38 MiB p/s ETA 59s35.78 MiB / 117.74 MiB [-------------->________________________________] 30.39% 1.38 MiB p/s ETA 59s36.02 MiB / 117.74 MiB [-------------->_______________________________] 30.59% 1.33 MiB p/s ETA 1m1s36.45 MiB / 117.74 MiB [-------------->_______________________________] 30.95% 1.33 MiB p/s ETA 1m1s36.89 MiB / 117.74 MiB [-------------->_______________________________] 31.33% 1.33 MiB p/s ETA 1m0s37.25 MiB / 117.74 MiB [-------------->________________________________] 31.64% 1.37 MiB p/s ETA 58s37.39 MiB / 117.74 MiB [-------------->________________________________] 31.75% 1.37 MiB p/s ETA 58s37.54 MiB / 117.74 MiB [-------------->________________________________] 31.89% 1.37 MiB p/s ETA 58s37.78 MiB / 117.74 MiB [--------------->_______________________________] 32.08% 1.34 MiB p/s ETA 59s37.95 MiB / 117.74 MiB [--------------->_______________________________] 32.23% 1.34 MiB p/s ETA 59s38.25 MiB / 117.74 MiB [--------------->_______________________________] 32.48% 1.34 MiB p/s ETA 59s38.34 MiB / 117.74 MiB [-------------->_______________________________] 32.56% 1.32 MiB p/s ETA 1m0s38.43 MiB / 117.74 MiB [--------------->______________________________] 32.64% 1.32 MiB p/s ETA 1m0s38.57 MiB / 117.74 MiB [--------------->______________________________] 32.76% 1.32 MiB p/s ETA 1m0s39.07 MiB / 117.74 MiB [--------------->______________________________] 33.18% 1.31 MiB p/s ETA 1m0s39.53 MiB / 117.74 MiB [--------------->_______________________________] 33.57% 1.31 MiB p/s ETA 59s40.11 MiB / 117.74 MiB [---------------->______________________________] 34.07% 1.31 MiB p/s ETA 59s40.72 MiB / 117.74 MiB [---------------->______________________________] 34.58% 1.40 MiB p/s ETA 54s41.34 MiB / 117.74 MiB [---------------->______________________________] 35.11% 1.40 MiB p/s ETA 54s42.00 MiB / 117.74 MiB [---------------->______________________________] 35.67% 1.40 MiB p/s ETA 53s42.58 MiB / 117.74 MiB [---------------->______________________________] 36.16% 1.51 MiB p/s ETA 49s43.13 MiB / 117.74 MiB [----------------->_____________________________] 36.63% 1.51 MiB p/s ETA 49s43.71 MiB / 117.74 MiB [----------------->_____________________________] 37.12% 1.51 MiB p/s ETA 48s44.03 MiB / 117.74 MiB [----------------->_____________________________] 37.40% 1.57 MiB p/s ETA 46s44.26 MiB / 117.74 MiB [----------------->_____________________________] 37.59% 1.57 MiB p/s ETA 46s44.42 MiB / 117.74 MiB [----------------->_____________________________] 37.72% 1.57 MiB p/s ETA 46s44.59 MiB / 117.74 MiB [----------------->_____________________________] 37.87% 1.53 MiB p/s ETA 47s45.01 MiB / 117.74 MiB [----------------->_____________________________] 38.23% 1.53 MiB p/s ETA 47s45.21 MiB / 117.74 MiB [------------------>____________________________] 38.40% 1.53 MiB p/s ETA 47s45.49 MiB / 117.74 MiB [------------------>____________________________] 38.64% 1.53 MiB p/s ETA 47s45.60 MiB / 117.74 MiB [------------------>____________________________] 38.73% 1.53 MiB p/s ETA 47s45.60 MiB / 117.74 MiB [------------------>____________________________] 38.73% 1.53 MiB p/s ETA 47s45.64 MiB / 117.74 MiB [------------------>____________________________] 38.77% 1.45 MiB p/s ETA 49s46.00 MiB / 117.74 MiB [------------------>____________________________] 39.07% 1.45 MiB p/s ETA 49s46.44 MiB / 117.74 MiB [------------------>____________________________] 39.44% 1.45 MiB p/s ETA 49s47.04 MiB / 117.74 MiB [------------------>____________________________] 39.95% 1.50 MiB p/s ETA 47s47.66 MiB / 117.74 MiB [------------------->___________________________] 40.47% 1.50 MiB p/s ETA 46s48.28 MiB / 117.74 MiB [------------------->___________________________] 41.00% 1.50 MiB p/s ETA 46s48.80 MiB / 117.74 MiB [------------------->___________________________] 41.45% 1.60 MiB p/s ETA 43s48.83 MiB / 117.74 MiB [------------------->___________________________] 41.47% 1.60 MiB p/s ETA 43s49.16 MiB / 117.74 MiB [------------------->___________________________] 41.75% 1.60 MiB p/s ETA 42s49.86 MiB / 117.74 MiB [------------------->___________________________] 42.34% 1.61 MiB p/s ETA 42s50.40 MiB / 117.74 MiB [-------------------->__________________________] 42.80% 1.61 MiB p/s ETA 41s50.73 MiB / 117.74 MiB [-------------------->__________________________] 43.08% 1.61 MiB p/s ETA 41s51.10 MiB / 117.74 MiB [-------------------->__________________________] 43.40% 1.64 MiB p/s ETA 40s51.34 MiB / 117.74 MiB [-------------------->__________________________] 43.61% 1.64 MiB p/s ETA 40s51.74 MiB / 117.74 MiB [-------------------->__________________________] 43.95% 1.64 MiB p/s ETA 40s52.22 MiB / 117.74 MiB [-------------------->__________________________] 44.35% 1.65 MiB p/s ETA 39s52.75 MiB / 117.74 MiB [--------------------->_________________________] 44.80% 1.65 MiB p/s ETA 39s52.87 MiB / 117.74 MiB [--------------------->_________________________] 44.90% 1.65 MiB p/s ETA 39s53.01 MiB / 117.74 MiB [--------------------->_________________________] 45.02% 1.63 MiB p/s ETA 39s53.17 MiB / 117.74 MiB [--------------------->_________________________] 45.15% 1.63 MiB p/s ETA 39s53.23 MiB / 117.74 MiB [--------------------->_________________________] 45.21% 1.63 MiB p/s ETA 39s53.54 MiB / 117.74 MiB [--------------------->_________________________] 45.47% 1.58 MiB p/s ETA 40s53.84 MiB / 117.74 MiB [--------------------->_________________________] 45.73% 1.58 MiB p/s ETA 40s54.23 MiB / 117.74 MiB [--------------------->_________________________] 46.06% 1.58 MiB p/s ETA 40s54.76 MiB / 117.74 MiB [--------------------->_________________________] 46.51% 1.61 MiB p/s ETA 39s55.45 MiB / 117.74 MiB [---------------------->________________________] 47.10% 1.61 MiB p/s ETA 38s56.05 MiB / 117.74 MiB [---------------------->________________________] 47.60% 1.61 MiB p/s ETA 38s56.39 MiB / 117.74 MiB [---------------------->________________________] 47.89% 1.68 MiB p/s ETA 36s56.45 MiB / 117.74 MiB [---------------------->________________________] 47.94% 1.68 MiB p/s ETA 36s56.57 MiB / 117.74 MiB [---------------------->________________________] 48.05% 1.68 MiB p/s ETA 36s57.19 MiB / 117.74 MiB [---------------------->________________________] 48.57% 1.66 MiB p/s ETA 36s57.78 MiB / 117.74 MiB [----------------------->_______________________] 49.07% 1.66 MiB p/s ETA 36s58.20 MiB / 117.74 MiB [----------------------->_______________________] 49.43% 1.66 MiB p/s ETA 35s58.66 MiB / 117.74 MiB [----------------------->_______________________] 49.82% 1.71 MiB p/s ETA 34s58.99 MiB / 117.74 MiB [----------------------->_______________________] 50.10% 1.71 MiB p/s ETA 34s59.20 MiB / 117.74 MiB [----------------------->_______________________] 50.28% 1.71 MiB p/s ETA 34s59.57 MiB / 117.74 MiB [----------------------->_______________________] 50.60% 1.70 MiB p/s ETA 34s60.00 MiB / 117.74 MiB [----------------------->_______________________] 50.96% 1.70 MiB p/s ETA 34s60.33 MiB / 117.74 MiB [------------------------>______________________] 51.23% 1.70 MiB p/s ETA 33s60.70 MiB / 117.74 MiB [------------------------>______________________] 51.55% 1.71 MiB p/s ETA 33s60.98 MiB / 117.74 MiB [------------------------>______________________] 51.79% 1.71 MiB p/s ETA 33s61.35 MiB / 117.74 MiB [------------------------>______________________] 52.11% 1.71 MiB p/s ETA 32s61.68 MiB / 117.74 MiB [------------------------>______________________] 52.38% 1.70 MiB p/s ETA 32s62.08 MiB / 117.74 MiB [------------------------>______________________] 52.72% 1.70 MiB p/s ETA 32s62.42 MiB / 117.74 MiB [------------------------>______________________] 53.01% 1.70 MiB p/s ETA 32s62.71 MiB / 117.74 MiB [------------------------->_____________________] 53.26% 1.71 MiB p/s ETA 32s62.88 MiB / 117.74 MiB [------------------------->_____________________] 53.41% 1.71 MiB p/s ETA 32s63.24 MiB / 117.74 MiB [------------------------->_____________________] 53.71% 1.71 MiB p/s ETA 31s63.61 MiB / 117.74 MiB [------------------------->_____________________] 54.03% 1.69 MiB p/s ETA 31s64.06 MiB / 117.74 MiB [------------------------->_____________________] 54.41% 1.69 MiB p/s ETA 31s64.48 MiB / 117.74 MiB [------------------------->_____________________] 54.76% 1.69 MiB p/s ETA 31s64.79 MiB / 117.74 MiB [------------------------->_____________________] 55.03% 1.71 MiB p/s ETA 30s65.05 MiB / 117.74 MiB [------------------------->_____________________] 55.25% 1.71 MiB p/s ETA 30s65.46 MiB / 117.74 MiB [-------------------------->____________________] 55.59% 1.71 MiB p/s ETA 30s65.70 MiB / 117.74 MiB [-------------------------->____________________] 55.80% 1.70 MiB p/s ETA 30s66.02 MiB / 117.74 MiB [-------------------------->____________________] 56.07% 1.70 MiB p/s ETA 30s66.23 MiB / 117.74 MiB [-------------------------->____________________] 56.25% 1.70 MiB p/s ETA 30s66.59 MiB / 117.74 MiB [-------------------------->____________________] 56.55% 1.68 MiB p/s ETA 30s67.19 MiB / 117.74 MiB [-------------------------->____________________] 57.07% 1.68 MiB p/s ETA 30s67.58 MiB / 117.74 MiB [-------------------------->____________________] 57.40% 1.68 MiB p/s ETA 29s67.86 MiB / 117.74 MiB [--------------------------->___________________] 57.64% 1.71 MiB p/s ETA 29s68.12 MiB / 117.74 MiB [--------------------------->___________________] 57.86% 1.71 MiB p/s ETA 28s68.62 MiB / 117.74 MiB [--------------------------->___________________] 58.28% 1.71 MiB p/s ETA 28s68.93 MiB / 117.74 MiB [--------------------------->___________________] 58.55% 1.72 MiB p/s ETA 28s69.13 MiB / 117.74 MiB [--------------------------->___________________] 58.72% 1.72 MiB p/s ETA 28s69.58 MiB / 117.74 MiB [--------------------------->___________________] 59.10% 1.72 MiB p/s ETA 28s69.68 MiB / 117.74 MiB [--------------------------->___________________] 59.18% 1.69 MiB p/s ETA 28s70.20 MiB / 117.74 MiB [---------------------------->__________________] 59.62% 1.69 MiB p/s ETA 28s70.59 MiB / 117.74 MiB [---------------------------->__________________] 59.95% 1.69 MiB p/s ETA 27s70.87 MiB / 117.74 MiB [---------------------------->__________________] 60.19% 1.71 MiB p/s ETA 27s71.15 MiB / 117.74 MiB [---------------------------->__________________] 60.43% 1.71 MiB p/s ETA 27s71.40 MiB / 117.74 MiB [---------------------------->__________________] 60.64% 1.71 MiB p/s ETA 27s71.63 MiB / 117.74 MiB [---------------------------->__________________] 60.84% 1.68 MiB p/s ETA 27s71.94 MiB / 117.74 MiB [---------------------------->__________________] 61.10% 1.68 MiB p/s ETA 27s72.21 MiB / 117.74 MiB [---------------------------->__________________] 61.33% 1.68 MiB p/s ETA 27s72.76 MiB / 117.74 MiB [----------------------------->_________________] 61.80% 1.69 MiB p/s ETA 26s73.31 MiB / 117.74 MiB [----------------------------->_________________] 62.26% 1.69 MiB p/s ETA 26s73.73 MiB / 117.74 MiB [----------------------------->_________________] 62.62% 1.69 MiB p/s ETA 26s73.93 MiB / 117.74 MiB [----------------------------->_________________] 62.79% 1.71 MiB p/s ETA 25s74.40 MiB / 117.74 MiB [----------------------------->_________________] 63.19% 1.71 MiB p/s ETA 25s74.81 MiB / 117.74 MiB [----------------------------->_________________] 63.53% 1.71 MiB p/s ETA 25s74.98 MiB / 117.74 MiB [----------------------------->_________________] 63.68% 1.71 MiB p/s ETA 25s75.32 MiB / 117.74 MiB [------------------------------>________________] 63.97% 1.71 MiB p/s ETA 24s75.52 MiB / 117.74 MiB [------------------------------>________________] 64.14% 1.71 MiB p/s ETA 24s75.75 MiB / 117.74 MiB [------------------------------>________________] 64.33% 1.68 MiB p/s ETA 24s76.09 MiB / 117.74 MiB [------------------------------>________________] 64.63% 1.68 MiB p/s ETA 24s76.45 MiB / 117.74 MiB [------------------------------>________________] 64.93% 1.68 MiB p/s ETA 24s76.88 MiB / 117.74 MiB [------------------------------>________________] 65.30% 1.70 MiB p/s ETA 24s77.38 MiB / 117.74 MiB [------------------------------>________________] 65.72% 1.70 MiB p/s ETA 23s77.91 MiB / 117.74 MiB [------------------------------->_______________] 66.17% 1.70 MiB p/s ETA 23s77.94 MiB / 117.74 MiB [------------------------------->_______________] 66.19% 1.70 MiB p/s ETA 23s78.28 MiB / 117.74 MiB [------------------------------->_______________] 66.48% 1.70 MiB p/s ETA 23s78.57 MiB / 117.74 MiB [------------------------------->_______________] 66.73% 1.70 MiB p/s ETA 23s78.76 MiB / 117.74 MiB [------------------------------->_______________] 66.89% 1.68 MiB p/s ETA 23s79.25 MiB / 117.74 MiB [------------------------------->_______________] 67.31% 1.68 MiB p/s ETA 22s79.59 MiB / 117.74 MiB [------------------------------->_______________] 67.60% 1.68 MiB p/s ETA 22s80.14 MiB / 117.74 MiB [------------------------------->_______________] 68.06% 1.72 MiB p/s ETA 21s80.48 MiB / 117.74 MiB [-------------------------------->______________] 68.35% 1.72 MiB p/s ETA 21s80.60 MiB / 117.74 MiB [-------------------------------->______________] 68.46% 1.72 MiB p/s ETA 21s81.22 MiB / 117.74 MiB [-------------------------------->______________] 68.98% 1.72 MiB p/s ETA 21s81.39 MiB / 117.74 MiB [-------------------------------->______________] 69.13% 1.72 MiB p/s ETA 21s81.61 MiB / 117.74 MiB [-------------------------------->______________] 69.31% 1.72 MiB p/s ETA 20s81.94 MiB / 117.74 MiB [-------------------------------->______________] 69.59% 1.69 MiB p/s ETA 21s82.43 MiB / 117.74 MiB [-------------------------------->______________] 70.01% 1.69 MiB p/s ETA 20s82.96 MiB / 117.74 MiB [--------------------------------->_____________] 70.46% 1.69 MiB p/s ETA 20s83.50 MiB / 117.74 MiB [--------------------------------->_____________] 70.92% 1.75 MiB p/s ETA 19s83.73 MiB / 117.74 MiB [--------------------------------->_____________] 71.11% 1.75 MiB p/s ETA 19s84.02 MiB / 117.74 MiB [--------------------------------->_____________] 71.35% 1.75 MiB p/s ETA 19s84.20 MiB / 117.74 MiB [--------------------------------->_____________] 71.51% 1.71 MiB p/s ETA 19s84.40 MiB / 117.74 MiB [--------------------------------->_____________] 71.68% 1.71 MiB p/s ETA 19s84.59 MiB / 117.74 MiB [--------------------------------->_____________] 71.84% 1.71 MiB p/s ETA 19s84.84 MiB / 117.74 MiB [--------------------------------->_____________] 72.06% 1.67 MiB p/s ETA 19s85.41 MiB / 117.74 MiB [---------------------------------->____________] 72.54% 1.67 MiB p/s ETA 19s86.03 MiB / 117.74 MiB [---------------------------------->____________] 73.07% 1.67 MiB p/s ETA 18s86.51 MiB / 117.74 MiB [---------------------------------->____________] 73.48% 1.74 MiB p/s ETA 17s86.79 MiB / 117.74 MiB [---------------------------------->____________] 73.71% 1.74 MiB p/s ETA 17s87.04 MiB / 117.74 MiB [---------------------------------->____________] 73.92% 1.74 MiB p/s ETA 17s87.26 MiB / 117.74 MiB [---------------------------------->____________] 74.11% 1.71 MiB p/s ETA 17s87.44 MiB / 117.74 MiB [---------------------------------->____________] 74.27% 1.71 MiB p/s ETA 17s87.75 MiB / 117.74 MiB [----------------------------------->___________] 74.53% 1.71 MiB p/s ETA 17s88.08 MiB / 117.74 MiB [----------------------------------->___________] 74.81% 1.69 MiB p/s ETA 17s88.20 MiB / 117.74 MiB [----------------------------------->___________] 74.91% 1.69 MiB p/s ETA 17s88.73 MiB / 117.74 MiB [----------------------------------->___________] 75.36% 1.69 MiB p/s ETA 17s89.26 MiB / 117.74 MiB [----------------------------------->___________] 75.81% 1.71 MiB p/s ETA 16s89.37 MiB / 117.74 MiB [----------------------------------->___________] 75.90% 1.71 MiB p/s ETA 16s89.94 MiB / 117.74 MiB [----------------------------------->___________] 76.39% 1.71 MiB p/s ETA 16s90.51 MiB / 117.74 MiB [------------------------------------>__________] 76.87% 1.73 MiB p/s ETA 15s90.77 MiB / 117.74 MiB [------------------------------------>__________] 77.09% 1.73 MiB p/s ETA 15s90.97 MiB / 117.74 MiB [------------------------------------>__________] 77.26% 1.73 MiB p/s ETA 15s91.24 MiB / 117.74 MiB [------------------------------------>__________] 77.49% 1.70 MiB p/s ETA 15s91.53 MiB / 117.74 MiB [------------------------------------>__________] 77.74% 1.70 MiB p/s ETA 15s91.90 MiB / 117.74 MiB [------------------------------------>__________] 78.05% 1.70 MiB p/s ETA 15s92.38 MiB / 117.74 MiB [------------------------------------>__________] 78.46% 1.71 MiB p/s ETA 14s93.05 MiB / 117.74 MiB [------------------------------------->_________] 79.02% 1.71 MiB p/s ETA 14s93.42 MiB / 117.74 MiB [------------------------------------->_________] 79.34% 1.71 MiB p/s ETA 14s93.63 MiB / 117.74 MiB [------------------------------------->_________] 79.52% 1.73 MiB p/s ETA 13s93.82 MiB / 117.74 MiB [------------------------------------->_________] 79.68% 1.73 MiB p/s ETA 13s94.03 MiB / 117.74 MiB [------------------------------------->_________] 79.86% 1.73 MiB p/s ETA 13s94.33 MiB / 117.74 MiB [------------------------------------->_________] 80.11% 1.70 MiB p/s ETA 13s94.87 MiB / 117.74 MiB [------------------------------------->_________] 80.57% 1.70 MiB p/s ETA 13s95.30 MiB / 117.74 MiB [-------------------------------------->________] 80.94% 1.70 MiB p/s ETA 13s95.77 MiB / 117.74 MiB [-------------------------------------->________] 81.33% 1.74 MiB p/s ETA 12s96.14 MiB / 117.74 MiB [-------------------------------------->________] 81.65% 1.74 MiB p/s ETA 12s96.45 MiB / 117.74 MiB [-------------------------------------->________] 81.91% 1.74 MiB p/s ETA 12s96.65 MiB / 117.74 MiB [-------------------------------------->________] 82.08% 1.72 MiB p/s ETA 12s96.92 MiB / 117.74 MiB [-------------------------------------->________] 82.32% 1.72 MiB p/s ETA 12s97.14 MiB / 117.74 MiB [-------------------------------------->________] 82.50% 1.72 MiB p/s ETA 11s97.41 MiB / 117.74 MiB [-------------------------------------->________] 82.73% 1.69 MiB p/s ETA 11s97.78 MiB / 117.74 MiB [--------------------------------------->_______] 83.05% 1.69 MiB p/s ETA 11s98.03 MiB / 117.74 MiB [--------------------------------------->_______] 83.26% 1.69 MiB p/s ETA 11s98.06 MiB / 117.74 MiB [--------------------------------------->_______] 83.28% 1.66 MiB p/s ETA 11s98.12 MiB / 117.74 MiB [--------------------------------------->_______] 83.34% 1.66 MiB p/s ETA 11s98.25 MiB / 117.74 MiB [--------------------------------------->_______] 83.44% 1.66 MiB p/s ETA 11s98.85 MiB / 117.74 MiB [--------------------------------------->_______] 83.95% 1.63 MiB p/s ETA 11s99.42 MiB / 117.74 MiB [--------------------------------------->_______] 84.44% 1.63 MiB p/s ETA 11s100.05 MiB / 117.74 MiB [--------------------------------------->______] 84.97% 1.63 MiB p/s ETA 10s100.62 MiB / 117.74 MiB [---------------------------------------->______] 85.46% 1.72 MiB p/s ETA 9s100.88 MiB / 117.74 MiB [---------------------------------------->______] 85.68% 1.72 MiB p/s ETA 9s101.31 MiB / 117.74 MiB [---------------------------------------->______] 86.04% 1.72 MiB p/s ETA 9s101.78 MiB / 117.74 MiB [---------------------------------------->______] 86.44% 1.73 MiB p/s ETA 9s102.19 MiB / 117.74 MiB [---------------------------------------->______] 86.79% 1.73 MiB p/s ETA 8s102.79 MiB / 117.74 MiB [----------------------------------------->_____] 87.30% 1.73 MiB p/s ETA 8s102.97 MiB / 117.74 MiB [----------------------------------------->_____] 87.45% 1.75 MiB p/s ETA 8s103.15 MiB / 117.74 MiB [----------------------------------------->_____] 87.61% 1.75 MiB p/s ETA 8s103.44 MiB / 117.74 MiB [----------------------------------------->_____] 87.86% 1.75 MiB p/s ETA 8s103.64 MiB / 117.74 MiB [----------------------------------------->_____] 88.03% 1.71 MiB p/s ETA 8s103.95 MiB / 117.74 MiB [----------------------------------------->_____] 88.29% 1.71 MiB p/s ETA 8s104.48 MiB / 117.74 MiB [----------------------------------------->_____] 88.73% 1.71 MiB p/s ETA 7s104.92 MiB / 117.74 MiB [----------------------------------------->_____] 89.11% 1.74 MiB p/s ETA 7s105.40 MiB / 117.74 MiB [------------------------------------------>____] 89.52% 1.74 MiB p/s ETA 7s105.72 MiB / 117.74 MiB [------------------------------------------>____] 89.79% 1.74 MiB p/s ETA 6s106.00 MiB / 117.74 MiB [------------------------------------------>____] 90.03% 1.74 MiB p/s ETA 6s106.28 MiB / 117.74 MiB [------------------------------------------>____] 90.26% 1.74 MiB p/s ETA 6s106.37 MiB / 117.74 MiB [------------------------------------------>____] 90.34% 1.74 MiB p/s ETA 6s106.67 MiB / 117.74 MiB [------------------------------------------>____] 90.59% 1.70 MiB p/s ETA 6s106.93 MiB / 117.74 MiB [------------------------------------------>____] 90.81% 1.70 MiB p/s ETA 6s107.41 MiB / 117.74 MiB [------------------------------------------>____] 91.22% 1.70 MiB p/s ETA 6s108.00 MiB / 117.74 MiB [------------------------------------------->___] 91.72% 1.73 MiB p/s ETA 5s108.36 MiB / 117.74 MiB [------------------------------------------->___] 92.03% 1.73 MiB p/s ETA 5s108.79 MiB / 117.74 MiB [------------------------------------------->___] 92.39% 1.73 MiB p/s ETA 5s108.83 MiB / 117.74 MiB [------------------------------------------->___] 92.43% 1.71 MiB p/s ETA 5s109.14 MiB / 117.74 MiB [------------------------------------------->___] 92.70% 1.71 MiB p/s ETA 5s109.54 MiB / 117.74 MiB [------------------------------------------->___] 93.03% 1.71 MiB p/s ETA 4s109.78 MiB / 117.74 MiB [------------------------------------------->___] 93.24% 1.70 MiB p/s ETA 4s110.15 MiB / 117.74 MiB [------------------------------------------->___] 93.55% 1.70 MiB p/s ETA 4s110.66 MiB / 117.74 MiB [-------------------------------------------->__] 93.99% 1.70 MiB p/s ETA 4s111.10 MiB / 117.74 MiB [-------------------------------------------->__] 94.36% 1.73 MiB p/s ETA 3s111.56 MiB / 117.74 MiB [-------------------------------------------->__] 94.75% 1.73 MiB p/s ETA 3s111.95 MiB / 117.74 MiB [-------------------------------------------->__] 95.08% 1.73 MiB p/s ETA 3s112.22 MiB / 117.74 MiB [-------------------------------------------->__] 95.31% 1.74 MiB p/s ETA 3s112.22 MiB / 117.74 MiB [-------------------------------------------->__] 95.31% 1.74 MiB p/s ETA 3s112.26 MiB / 117.74 MiB [-------------------------------------------->__] 95.35% 1.74 MiB p/s ETA 3s112.29 MiB / 117.74 MiB [-------------------------------------------->__] 95.37% 1.64 MiB p/s ETA 3s112.94 MiB / 117.74 MiB [--------------------------------------------->_] 95.92% 1.64 MiB p/s ETA 2s113.49 MiB / 117.74 MiB [--------------------------------------------->_] 96.39% 1.64 MiB p/s ETA 2s114.08 MiB / 117.74 MiB [--------------------------------------------->_] 96.89% 1.72 MiB p/s ETA 2s114.66 MiB / 117.74 MiB [--------------------------------------------->_] 97.38% 1.72 MiB p/s ETA 1s114.91 MiB / 117.74 MiB [--------------------------------------------->_] 97.60% 1.72 MiB p/s ETA 1s115.30 MiB / 117.74 MiB [---------------------------------------------->] 97.92% 1.74 MiB p/s ETA 1s115.69 MiB / 117.74 MiB [---------------------------------------------->] 98.25% 1.74 MiB p/s ETA 1s115.96 MiB / 117.74 MiB [---------------------------------------------->] 98.49% 1.74 MiB p/s ETA 1s116.29 MiB / 117.74 MiB [---------------------------------------------->] 98.77% 1.74 MiB p/s ETA 0s116.60 MiB / 117.74 MiB [---------------------------------------------->] 99.03% 1.74 MiB p/s ETA 0s116.94 MiB / 117.74 MiB [---------------------------------------------->] 99.32% 1.74 MiB p/s ETA 0s117.31 MiB / 117.74 MiB [---------------------------------------------->] 99.63% 1.74 MiB p/s ETA 0s117.66 MiB / 117.74 MiB [---------------------------------------------->] 99.93% 1.74 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.74 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.67 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.67 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.67 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.56 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.56 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.56 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.46 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.46 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.46 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.37 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.37 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.37 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.28 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.28 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.28 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.20 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.20 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.20 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.12 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.12 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.12 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.05 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [--------------------------------------------->] 100.00% 1.05 MiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------>] 100.00% 1003.36 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------>] 100.00% 1003.36 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------>] 100.00% 1003.36 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 938.62 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 938.62 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 938.62 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 878.07 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 878.07 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 878.07 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 821.42 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 821.42 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 821.42 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 768.42 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 768.42 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 768.42 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 718.85 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 718.85 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 672.47 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 672.47 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 672.47 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 629.09 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 629.09 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 629.09 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 588.50 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 588.50 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 588.50 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 550.53 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 550.53 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 550.53 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 515.01 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 515.01 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 515.01 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 481.79 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 450.70 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [------------------------------------------->] 100.00% 450.70 KiB p/s ETA 0s117.74 MiB / 117.74 MiB [-----------------------------------------------] 100.00% 1.33 MiB p/s 1m29s2026-09-27T08:33:31Z	INFO	[vulndb] Artifact successfully downloaded	repo="mirror.gcr.io/aquasec/trivy-db:2"
+2026-09-27T08:33:32Z	INFO	[vuln] Vulnerability scanning is enabled
+2026-09-27T08:33:32Z	INFO	[secret] Secret scanning is enabled
+2026-09-27T08:33:32Z	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+2026-09-27T08:33:32Z	INFO	[secret] Please see https://trivy.dev/docs/v0.72/guide/scanner/secret#recommendation for faster secret detection
+2026-09-27T08:33:36Z	INFO	Detected OS	family="alpine" version="3.24.2"
+2026-09-27T08:33:36Z	WARN	This OS version is not on the EOL list	family="alpine" version="3.24"
+2026-09-27T08:33:36Z	INFO	[alpine] Detecting vulnerabilities...	os_version="3.24" repository="3.24" pkg_num=18
+2026-09-27T08:33:36Z	INFO	Number of language-specific files	num=1
+2026-09-27T08:33:36Z	INFO	[node-pkg] Detecting vulnerabilities...
+
+📣 [34mNotices:[0m
+  - Version 0.74.0 of Trivy is now available, current version is 0.72.0
+
+To suppress version checks, run Trivy scans with the --skip-version-check flag
+
+[Pipeline] sh
++ trivy image --skip-db-update --exit-code 1 --severity HIGH,CRITICAL kind-registry:5000/****-api:344f546
+2026-09-27T08:33:38Z	INFO	[vuln] Vulnerability scanning is enabled
+2026-09-27T08:33:38Z	INFO	[secret] Secret scanning is enabled
+2026-09-27T08:33:38Z	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+2026-09-27T08:33:38Z	INFO	[secret] Please see https://trivy.dev/docs/v0.72/guide/scanner/secret#recommendation for faster secret detection
+2026-09-27T08:33:38Z	INFO	Detected OS	family="alpine" version="3.24.2"
+2026-09-27T08:33:38Z	WARN	This OS version is not on the EOL list	family="alpine" version="3.24"
+2026-09-27T08:33:38Z	INFO	[alpine] Detecting vulnerabilities...	os_version="3.24" repository="3.24" pkg_num=18
+2026-09-27T08:33:38Z	INFO	Number of language-specific files	num=1
+2026-09-27T08:33:38Z	INFO	[node-pkg] Detecting vulnerabilities...
+
+Report Summary
+
+┌──────────────────────────────────────────────────────────────────────────────────┬──────────┬─────────────────┬─────────┐
+│                                      Target                                      │   Type   │ Vulnerabilities │ Secrets │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ kind-registry:5000/****-api:344f546 (alpine 3.24.2)                          │  alpine  │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/checksums/package.json                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/client-s3/package.json                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/core/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-env/package.json                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-http/package.json                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-ini/package.json                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-login/package.json                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-node/package.json                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-process/package.json               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-sso/package.json                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-web-identity/package.json          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/middleware-sdk-s3/package.json                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/nested-clients/package.json                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/s3-request-presigner/package.json                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/signature-v4-multi-region/package.json                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/token-providers/package.json                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/types/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/xml-builder/package.json                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws/lambda-invoke-store/package.json                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@borewit/text-codec/package.json                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@cspotcode/source-map-support/node_modules/@jridgewell/trace-m- │ node-pkg │        0        │    -    │
+│ apping/package.json                                                              │          │                 │         │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@cspotcode/source-map-support/package.json                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@jridgewell/resolve-uri/package.json                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@jridgewell/sourcemap-codec/package.json                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@lukeed/csprng/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@nestjs/common/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@nestjs/config/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@nestjs/core/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@nestjs/jwt/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@nestjs/passport/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@nestjs/platform-express/package.json                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@nestjs/typeorm/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@smithy/core/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@smithy/credential-provider-imds/package.json                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@smithy/fetch-http-handler/package.json                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@smithy/node-http-handler/package.json                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@smithy/signature-v4/package.json                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@smithy/types/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@sqltools/formatter/package.json                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@tokenizer/inflate/package.json                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@tokenizer/token/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@tsconfig/node10/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@tsconfig/node12/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@tsconfig/node14/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@tsconfig/node16/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@types/jsonwebtoken/package.json                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@types/ms/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@types/node/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@types/validator/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/accepts/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/acorn-walk/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/acorn/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/append-field/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/arg/package.json                                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/aws-ssl-profiles/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/bcrypt/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/body-parser/node_modules/content-type/package.json              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/body-parser/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/bowser/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/buffer-equal-constant-time/package.json                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/busboy/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/bytes/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/call-bind-apply-helpers/package.json                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/call-bound/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/class-transformer/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/class-validator/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/content-disposition/package.json                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/content-type/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/cookie-signature/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/cookie/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/cors/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/create-require/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/dayjs/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/debug/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/dedent/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/depd/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/diff/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/dotenv-expand/node_modules/dotenv/package.json                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/dotenv-expand/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/dotenv/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/dunder-proto/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/ecdsa-sig-formatter/package.json                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/ee-first/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/encodeurl/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/es-define-property/package.json                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/es-errors/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/es-object-atoms/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/escalade/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/escape-html/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/etag/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/express/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/fast-safe-stringify/package.json                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/fdir/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/file-type/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/finalhandler/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/forwarded/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/fresh/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/function-bind/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/generate-function/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/get-caller-file/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/get-east-asian-width/package.json                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/get-intrinsic/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/get-proto/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/gopd/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/has-symbols/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/hasown/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/http-errors/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/iconv-lite/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/ieee754/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/inherits/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/ipaddr.js/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/is-promise/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/is-property/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/iterare/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/jsonwebtoken/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/jwa/package.json                                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/jws/package.json                                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/libphonenumber-js/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/load-esm/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash.includes/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash.isboolean/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash.isinteger/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash.isnumber/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash.isplainobject/package.json                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash.isstring/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash.once/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/long/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lru.min/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/make-error/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/math-intrinsics/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/media-typer/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/merge-descriptors/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/mime-db/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/mime-types/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/ms/package.json                                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/multer/node_modules/media-typer/package.json                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/multer/node_modules/mime-db/package.json                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/multer/node_modules/mime-types/package.json                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/multer/node_modules/type-is/package.json                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/multer/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/mysql2/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/named-placeholders/package.json                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/negotiator/node_modules/content-type/package.json               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/negotiator/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/node-addon-api/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/node-gyp-build/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/object-assign/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/object-inspect/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/on-finished/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/once/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/parseurl/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/passport-jwt/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/passport-local/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/passport-strategy/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/passport/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/path-to-regexp/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pause/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pg-cloudflare/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pg-connection-string/package.json                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pg-int8/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pg-pool/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pg-protocol/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pg-types/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pg/package.json                                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pgpass/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/picomatch/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/postgres-array/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/postgres-bytea/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/postgres-date/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/postgres-interval/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/proxy-addr/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/qs/package.json                                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/range-parser/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/raw-body/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/reflect-metadata/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/router/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/rxjs/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/safe-buffer/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/safer-buffer/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/semver/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/send/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/serve-static/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/setprototypeof/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/side-channel-list/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/side-channel-map/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/side-channel-weakmap/package.json                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/side-channel/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/split2/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/sql-escaper/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/sql-highlight/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/statuses/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/streamsearch/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/strtok3/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/tinyglobby/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/toidentifier/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/token-types/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/ts-node/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/tslib/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/type-is/node_modules/content-type/package.json                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/type-is/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/ansi-regex/package.json                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/ansi-styles/package.json                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/ansis/package.json                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/cliui/node_modules/string-width/package.j- │ node-pkg │        0        │    -    │
+│ son                                                                              │          │                 │         │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/cliui/package.json                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/emoji-regex/package.json                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/string-width/package.json                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/strip-ansi/package.json                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/wrap-ansi/node_modules/string-width/packa- │ node-pkg │        0        │    -    │
+│ ge.json                                                                          │          │                 │         │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/wrap-ansi/package.json                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/yargs-parser/package.json                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/yargs/package.json                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typescript/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/uid/package.json                                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/uint8array-extras/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/undici-types/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/unpipe/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/utils-merge/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/v8-compile-cache-lib/package.json                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/validator/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/vary/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/wrappy/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/xtend/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/y18n/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/yn/package.json                                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/package.json                                                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ opt/yarn-v1.22.22/package.json                                                   │ node-pkg │        0        │    -    │
+└──────────────────────────────────────────────────────────────────────────────────┴──────────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+[Pipeline] }
+[Pipeline] // container
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Terraform Plan)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/infra/terraform
+[Pipeline] {
+[Pipeline] sh
++ terraform init '-input=false' -reconfigure '-backend-config=ci.s3.tfbackend'
+[0m[1mInitializing the backend...[0m
+[0m[32m
+Successfully configured the backend "s3"! Terraform will automatically
+use this backend unless the backend configuration changes.[0m
+
+[0m[1mInitializing provider plugins...[0m
+- Reusing previous version of hashicorp/aws from the dependency lock file
+- Installing hashicorp/aws v5.100.0...
+- Installed hashicorp/aws v5.100.0 (signed by HashiCorp)
+
+
+[0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ terraform plan '-input=false' -detailed-exitcode '-out=tfplan'
+[0m[1mdata.aws_iam_policy_document.ec2_assume: Reading...[0m[0m
+[0m[1mdata.aws_vpc.default: Reading...[0m[0m
+[0m[1mdata.aws_iam_policy_document.ec2_assume: Read complete after 0s [id=2851119427][0m
+[0m[1mdata.aws_vpc.default: Read complete after 0s [id=vpc-295fa2d79fe6ac64a][0m
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  [32m+[0m create[0m
+
+Terraform will perform the following actions:
+
+[1m  # aws_iam_instance_profile.app[0m will be created
+[0m  [32m+[0m[0m resource "aws_iam_instance_profile" "app" {
+      [32m+[0m[0m arn         = (known after apply)
+      [32m+[0m[0m create_date = (known after apply)
+      [32m+[0m[0m id          = (known after apply)
+      [32m+[0m[0m name        = "****-app-profile"
+      [32m+[0m[0m name_prefix = (known after apply)
+      [32m+[0m[0m path        = "/"
+      [32m+[0m[0m role        = "****-app-role"
+      [32m+[0m[0m tags_all    = (known after apply)
+      [32m+[0m[0m unique_id   = (known after apply)
+    }
+
+[1m  # aws_iam_role.app[0m will be created
+[0m  [32m+[0m[0m resource "aws_iam_role" "app" {
+      [32m+[0m[0m arn                   = (known after apply)
+      [32m+[0m[0m assume_role_policy    = jsonencode(
+            {
+              [32m+[0m[0m Statement = [
+                  [32m+[0m[0m {
+                      [32m+[0m[0m Action    = "sts:AssumeRole"
+                      [32m+[0m[0m Effect    = "Allow"
+                      [32m+[0m[0m Principal = {
+                          [32m+[0m[0m Service = "ec2.amazonaws.com"
+                        }
+                    },
+                ]
+              [32m+[0m[0m Version   = "2012-10-17"
+            }
+        )
+      [32m+[0m[0m create_date           = (known after apply)
+      [32m+[0m[0m force_detach_policies = false
+      [32m+[0m[0m id                    = (known after apply)
+      [32m+[0m[0m managed_policy_arns   = (known after apply)
+      [32m+[0m[0m max_session_duration  = 3600
+      [32m+[0m[0m name                  = "****-app-role"
+      [32m+[0m[0m name_prefix           = (known after apply)
+      [32m+[0m[0m path                  = "/"
+      [32m+[0m[0m tags_all              = (known after apply)
+      [32m+[0m[0m unique_id             = (known after apply)
+
+      [32m+[0m[0m inline_policy (known after apply)
+    }
+
+[1m  # aws_instance.app[0m will be created
+[0m  [32m+[0m[0m resource "aws_instance" "app" {
+      [32m+[0m[0m ami                                  = "ami-1e749f67"
+      [32m+[0m[0m arn                                  = (known after apply)
+      [32m+[0m[0m associate_public_ip_address          = (known after apply)
+      [32m+[0m[0m availability_zone                    = (known after apply)
+      [32m+[0m[0m cpu_core_count                       = (known after apply)
+      [32m+[0m[0m cpu_threads_per_core                 = (known after apply)
+      [32m+[0m[0m disable_api_stop                     = (known after apply)
+      [32m+[0m[0m disable_api_termination              = (known after apply)
+      [32m+[0m[0m ebs_optimized                        = true
+      [32m+[0m[0m enable_primary_ipv6                  = (known after apply)
+      [32m+[0m[0m get_password_data                    = false
+      [32m+[0m[0m host_id                              = (known after apply)
+      [32m+[0m[0m host_resource_group_arn              = (known after apply)
+      [32m+[0m[0m iam_instance_profile                 = "****-app-profile"
+      [32m+[0m[0m id                                   = (known after apply)
+      [32m+[0m[0m instance_initiated_shutdown_behavior = (known after apply)
+      [32m+[0m[0m instance_lifecycle                   = (known after apply)
+      [32m+[0m[0m instance_state                       = (known after apply)
+      [32m+[0m[0m instance_type                        = "t3.micro"
+      [32m+[0m[0m ipv6_address_count                   = (known after apply)
+      [32m+[0m[0m ipv6_addresses                       = (known after apply)
+      [32m+[0m[0m key_name                             = (known after apply)
+      [32m+[0m[0m monitoring                           = (known after apply)
+      [32m+[0m[0m outpost_arn                          = (known after apply)
+      [32m+[0m[0m password_data                        = (known after apply)
+      [32m+[0m[0m placement_group                      = (known after apply)
+      [32m+[0m[0m placement_partition_number           = (known after apply)
+      [32m+[0m[0m primary_network_interface_id         = (known after apply)
+      [32m+[0m[0m private_dns                          = (known after apply)
+      [32m+[0m[0m private_ip                           = (known after apply)
+      [32m+[0m[0m public_dns                           = (known after apply)
+      [32m+[0m[0m public_ip                            = (known after apply)
+      [32m+[0m[0m secondary_private_ips                = (known after apply)
+      [32m+[0m[0m security_groups                      = (known after apply)
+      [32m+[0m[0m source_dest_check                    = true
+      [32m+[0m[0m spot_instance_request_id             = (known after apply)
+      [32m+[0m[0m subnet_id                            = (known after apply)
+      [32m+[0m[0m tags                                 = {
+          [32m+[0m[0m "Name" = "****-app"
+        }
+      [32m+[0m[0m tags_all                             = {
+          [32m+[0m[0m "Name" = "****-app"
+        }
+      [32m+[0m[0m tenancy                              = (known after apply)
+      [32m+[0m[0m user_data                            = (known after apply)
+      [32m+[0m[0m user_data_base64                     = (known after apply)
+      [32m+[0m[0m user_data_replace_on_change          = false
+      [32m+[0m[0m vpc_security_group_ids               = (known after apply)
+
+      [32m+[0m[0m capacity_reservation_specification (known after apply)
+
+      [32m+[0m[0m cpu_options (known after apply)
+
+      [32m+[0m[0m ebs_block_device (known after apply)
+
+      [32m+[0m[0m enclave_options (known after apply)
+
+      [32m+[0m[0m ephemeral_block_device (known after apply)
+
+      [32m+[0m[0m instance_market_options (known after apply)
+
+      [32m+[0m[0m maintenance_options (known after apply)
+
+      [32m+[0m[0m metadata_options {
+          [32m+[0m[0m http_endpoint               = "enabled"
+          [32m+[0m[0m http_protocol_ipv6          = "disabled"
+          [32m+[0m[0m http_put_response_hop_limit = (known after apply)
+          [32m+[0m[0m http_tokens                 = "required"
+          [32m+[0m[0m instance_metadata_tags      = (known after apply)
+        }
+
+      [32m+[0m[0m network_interface (known after apply)
+
+      [32m+[0m[0m private_dns_name_options (known after apply)
+
+      [32m+[0m[0m root_block_device {
+          [32m+[0m[0m delete_on_termination = true
+          [32m+[0m[0m device_name           = (known after apply)
+          [32m+[0m[0m encrypted             = true
+          [32m+[0m[0m iops                  = (known after apply)
+          [32m+[0m[0m kms_key_id            = (known after apply)
+          [32m+[0m[0m tags_all              = (known after apply)
+          [32m+[0m[0m throughput            = (known after apply)
+          [32m+[0m[0m volume_id             = (known after apply)
+          [32m+[0m[0m volume_size           = 8
+          [32m+[0m[0m volume_type           = "gp3"
+        }
+    }
+
+[1m  # aws_security_group.app[0m will be created
+[0m  [32m+[0m[0m resource "aws_security_group" "app" {
+      [32m+[0m[0m arn                    = (known after apply)
+      [32m+[0m[0m description            = "Allow inbound HTTP on 8080"
+      [32m+[0m[0m egress                 = [
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "0.0.0.0/0",
+                ]
+              [32m+[0m[0m description      = "HTTP to the internet for Ubuntu apt mirrors"
+              [32m+[0m[0m from_port        = 80
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 80
+            },
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "0.0.0.0/0",
+                ]
+              [32m+[0m[0m description      = "HTTPS to the internet for image and package downloads"
+              [32m+[0m[0m from_port        = 443
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 443
+            },
+        ]
+      [32m+[0m[0m id                     = (known after apply)
+      [32m+[0m[0m ingress                = [
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "172.31.0.0/16",
+                ]
+              [32m+[0m[0m description      = "App port from trusted networks"
+              [32m+[0m[0m from_port        = 8080
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 8080
+            },
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "172.31.0.0/16",
+                ]
+              [32m+[0m[0m description      = "SSH for Ansible from trusted networks"
+              [32m+[0m[0m from_port        = 22
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 22
+            },
+        ]
+      [32m+[0m[0m name                   = "****-app-sg"
+      [32m+[0m[0m name_prefix            = (known after apply)
+      [32m+[0m[0m owner_id               = (known after apply)
+      [32m+[0m[0m revoke_rules_on_delete = false
+      [32m+[0m[0m tags                   = {
+          [32m+[0m[0m "Name" = "****-app-sg"
+        }
+      [32m+[0m[0m tags_all               = {
+          [32m+[0m[0m "Name" = "****-app-sg"
+        }
+      [32m+[0m[0m vpc_id                 = "vpc-295fa2d79fe6ac64a"
+    }
+
+[1mPlan:[0m [0m4 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  [32m+[0m[0m app_url             = (known after apply)
+  [32m+[0m[0m instance_id         = (known after apply)
+  [32m+[0m[0m instance_private_ip = (known after apply)
+  [32m+[0m[0m instance_public_ip  = (known after apply)
+  [32m+[0m[0m security_group_id   = (known after apply)
+  [32m+[0m[0m ssh_user            = "ubuntu"
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
++ terraform show -no-color tfplan
++ grep -E '^ +# .* (will|must) be |^Plan:|^No changes' tfplan.txt
++ cat tfplan-summary.txt
+  # aws_iam_instance_profile.app will be created
+  # aws_iam_role.app will be created
+  # aws_instance.app will be created
+  # aws_security_group.app will be created
+Plan: 4 to add, 0 to change, 0 to destroy.
++ chmod a+r tfplan tfplan.txt tfplan-summary.txt
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // container
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+Recording fingerprints
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Approval)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] readFile
+[Pipeline] timeout
+Timeout set to expire in 15 min
+[Pipeline] {
+[Pipeline] input
+Apply this Terraform plan?
+
+# aws_iam_instance_profile.app will be created
+  # aws_iam_role.app will be created
+  # aws_instance.app will be created
+  # aws_security_group.app will be created
+Plan: 4 to add, 0 to change, 0 to destroy.
+
+Full plan: https://d27f-49-237-177-216.ngrok-free.app/job/****/job/lab4/job/main/7/artifact/infra/terraform/tfplan.txt
+Apply or Abort
+Approved by Pongphisut
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] echo
+Terraform plan approved by Pongphisut
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Terraform Apply)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/infra/terraform
+[Pipeline] {
+[Pipeline] sh
++ terraform apply '-input=false' tfplan
+[0m[1maws_iam_role.app: Creating...[0m[0m
+[0m[1maws_security_group.app: Creating...[0m[0m
+[0m[1maws_security_group.app: Creation complete after 1s [id=sg-fbdabac3fa2a4cc41][0m
+[0m[1maws_iam_role.app: Creation complete after 1s [id=****-app-role][0m
+[0m[1maws_iam_instance_profile.app: Creating...[0m[0m
+[0m[1maws_iam_instance_profile.app: Creation complete after 6s [id=****-app-profile][0m
+[0m[1maws_instance.app: Creating...[0m[0m
+[0m[1maws_instance.app: Still creating... [00m10s elapsed][0m[0m
+[0m[1maws_instance.app: Creation complete after 11s [id=i-41fb6a3c8955ca4de][0m
+[0m[1m[32m
+Apply complete! Resources: 4 added, 0 changed, 0 destroyed.[0m
+[0m[1m[32m
+Outputs:
+
+[0mapp_url = "http://54.214.152.8:8080"
+instance_id = "i-41fb6a3c8955ca4de"
+instance_private_ip = "10.99.109.230"
+instance_public_ip = "54.214.152.8"
+security_group_id = "sg-fbdabac3fa2a4cc41"
+ssh_user = "ubuntu"
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Configure with Ansible)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/infra/terraform
+[Pipeline] {
+[Pipeline] sh
++ terraform output -json
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] container
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ansible-inventory -i infra/ansible/inventory/terraform.py --graph --vars
+@all:
+  |--@ungrouped:
+  |--@****_app:
+  |  |--i-41fb6a3c8955ca4de
+  |  |  |--{ansible_host = ****-target}
+  |  |  |--{ansible_user = ubuntu}
+  |  |  |--{instance_private_ip = 10.99.109.230}
+  |  |  |--{instance_public_ip = 54.214.152.8}
++ ansible-playbook -i infra/ansible/inventory/terraform.py --private-key **** -e app_image=localhost:5001/****-api:344f546 -e docker_manage_service=false infra/ansible/playbook.yml
+
+PLAY [Configure the ****-api host] *****************************************
+
+TASK [Gathering Facts] *********************************************************
+[WARNING]: Host 'i-41fb6a3c8955ca4de' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+ok: [i-41fb6a3c8955ca4de]
+
+TASK [Install repository prerequisites] ****************************************
+ok: [i-41fb6a3c8955ca4de]
+
+TASK [Add NodeSource repository for Node.js 22] ********************************
+ok: [i-41fb6a3c8955ca4de]
+
+TASK [Install Node.js and Docker] **********************************************
+ok: [i-41fb6a3c8955ca4de]
+
+TASK [Enable and start Docker] *************************************************
+skipping: [i-41fb6a3c8955ca4de]
+
+TASK [Pull the ****-api image] *********************************************
+changed: [i-41fb6a3c8955ca4de]
+
+TASK [Read installed versions] *************************************************
+ok: [i-41fb6a3c8955ca4de] => (item=node --version)
+ok: [i-41fb6a3c8955ca4de] => (item=docker --version)
+ok: [i-41fb6a3c8955ca4de] => (item=docker image inspect --format '{{.Id}}' localhost:5001/****-api:344f546)
+
+TASK [Show installed versions] *************************************************
+ok: [i-41fb6a3c8955ca4de] => {
+    "msg": [
+        "v22.23.3",
+        "Docker version 29.1.3, build 29.1.3-0ubuntu3~24.04.2",
+        "sha256:65224d9ae2269f2f2e338415b248658aa7b6ab73cf912e36e4ccc3a8a21cb3f2"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+i-41fb6a3c8955ca4de        : ok=7    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Pipeline Health Gate)
+[Pipeline] sh
++ node ci/pipeline-health.mjs ****/lab4/main
+Pipeline health for ****/lab4/main: 1/1 successful builds in the last 15d (window grows until it covers 20 builds) = 100.0%, minimum 90.0%
+Pipeline Health Gate passed
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy — Production)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ wget -q -O /home/jenkins/agent/workspace/****_lab4_main/.tools/kubectl https://dl.k8s.io/release/v1.37.0/bin/linux/amd64/kubectl
++ chmod +x /home/jenkins/agent/workspace/****_lab4_main/.tools/kubectl
+[Pipeline] withCredentials
+Masking supported pattern matches of $KUBECONFIG
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/kubectl get svc **** -o 'jsonpath={.spec.selector.color}'
+Error from server (NotFound): services "****" not found
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // withCredentials
+Post stage
+[Pipeline] withCredentials
+Masking supported pattern matches of $KUBECONFIG
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] emailext
+Sending email to: oookung75@gmail.com
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] }
+[Pipeline] // podTemplate
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+
+Could not update commit status, please check if your scan credentials belong to a member of the organization or a collaborator of the repository and repo:status scope is selected
+
+
+GitHub has been notified of this commit’s build result
+
+Finished: FAILURE

@@ -3,6 +3,10 @@
 apiVersion: v1
 kind: Pod
 spec:
+  # The Gradle/NDK caches are hostPath volumes, i.e. per node: always build on the
+  # same node so the ~5 GB of Android downloads are reused.
+  nodeSelector:
+    kubernetes.io/hostname: taskflow-worker
   containers:
     - name: flutter
       # Pinned, not :stable: the moving tag stays stale on nodes (IfNotPresent) and builds drift.
