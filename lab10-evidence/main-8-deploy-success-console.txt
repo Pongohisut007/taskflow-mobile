@@ -1,0 +1,2085 @@
+Branch indexing
+Connecting to https://api.github.com using Pongohisut007/******
+Obtained Jenkinsfile from 02c02321b631caa18f676a93380eff4d1899bc5b
+[Pipeline] Start of Pipeline
+[Pipeline] readTrusted
+Obtained k8s/ci/api-build-pod.yaml from 02c02321b631caa18f676a93380eff4d1899bc5b
+[Pipeline] podTemplate
+[Pipeline] {
+[Pipeline] node
+Created Pod: kind jenkins-agents/taskflow-lab4-main-8-nk0j3-cqfw0-7n4nq
+[PodInfo] jenkins-agents/taskflow-lab4-main-8-nk0j3-cqfw0-7n4nq
+	Container [checkov] waiting [ContainerCreating] No message
+	Container [gitleaks] waiting [ContainerCreating] No message
+	Container [jnlp] waiting [ContainerCreating] No message
+	Container [kaniko] waiting [ContainerCreating] No message
+	Container [node] waiting [ContainerCreating] No message
+	Container [postgres] waiting [ContainerCreating] No message
+	Container [python] waiting [ContainerCreating] No message
+	Container [semgrep] waiting [ContainerCreating] No message
+	Container [sonar] waiting [ContainerCreating] No message
+	Container [terraform] waiting [ContainerCreating] No message
+	Container [tfsec] waiting [ContainerCreating] No message
+	Container [trivy] waiting [ContainerCreating] No message
+	Pod [Pending][PodSandboxNotReady] no pod sandbox exists
+	Pod [Pending][ContainersNotReady] containers with unready status: [node postgres gitleaks semgrep sonar terraform tfsec checkov python kaniko trivy jnlp]
+[PodInfo] jenkins-agents/taskflow-lab4-main-8-nk0j3-cqfw0-7n4nq
+	Container [checkov] waiting [ContainerCreating] No message
+	Container [gitleaks] waiting [ContainerCreating] No message
+	Container [jnlp] waiting [ContainerCreating] No message
+	Container [kaniko] waiting [ContainerCreating] No message
+	Container [node] waiting [ContainerCreating] No message
+	Container [postgres] waiting [ContainerCreating] No message
+	Container [python] waiting [ContainerCreating] No message
+	Container [semgrep] waiting [ContainerCreating] No message
+	Container [sonar] waiting [ContainerCreating] No message
+	Container [terraform] waiting [ContainerCreating] No message
+	Container [tfsec] waiting [ContainerCreating] No message
+	Container [trivy] waiting [ContainerCreating] No message
+	Pod [Pending][ContainersNotReady] containers with unready status: [node postgres gitleaks semgrep sonar terraform tfsec checkov python kaniko trivy jnlp]
+Still waiting to schedule task
+‘taskflow-lab4-main-8-nk0j3-cqfw0-7n4nq’ is offline
+Agent taskflow-lab4-main-8-nk0j3-cqfw0-7n4nq is provisioned from template taskflow_lab4_main_8-nk0j3-cqfw0
+---
+apiVersion: "v1"
+kind: "Pod"
+metadata:
+  annotations:
+    kubernetes.jenkins.io/last-refresh: "1790498713063"
+    buildUrl: "http://jenkins:8080/job/taskflow/job/lab4/job/main/8/"
+    runUrl: "job/taskflow/job/lab4/job/main/8/"
+  labels:
+    jenkins: "slave"
+    jenkins/label-digest: "51e8109e15f4015b1e76e97dfe1c75584c885a63"
+    jenkins/label: "taskflow_lab4_main_8-nk0j3"
+    kubernetes.jenkins.io/controller: "http___jenkins_8080x"
+  name: "taskflow-lab4-main-8-nk0j3-cqfw0-7n4nq"
+  namespace: "jenkins-agents"
+spec:
+  containers:
+  - command:
+    - "cat"
+    env:
+    - name: "DB_HOST"
+      value: "localhost"
+    - name: "DB_PORT"
+      value: "5432"
+    - name: "DB_NAME"
+      valueFrom:
+        secretKeyRef:
+          key: "database"
+          name: "taskflow-ci-db"
+    - name: "DB_USER"
+      valueFrom:
+        secretKeyRef:
+          key: "username"
+          name: "taskflow-ci-db"
+    - name: "DB_PASSWORD"
+      valueFrom:
+        secretKeyRef:
+          key: "password"
+          name: "taskflow-ci-db"
+    image: "node:22-alpine"
+    name: "node"
+    resources:
+      limits:
+        memory: "2Gi"
+      requests:
+        cpu: "500m"
+        memory: "512Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/root/.npm"
+      name: "npm-cache"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - env:
+    - name: "POSTGRES_DB"
+      valueFrom:
+        secretKeyRef:
+          key: "database"
+          name: "taskflow-ci-db"
+    - name: "POSTGRES_USER"
+      valueFrom:
+        secretKeyRef:
+          key: "username"
+          name: "taskflow-ci-db"
+    - name: "POSTGRES_PASSWORD"
+      valueFrom:
+        secretKeyRef:
+          key: "password"
+          name: "taskflow-ci-db"
+    image: "postgres:16-alpine"
+    name: "postgres"
+    resources:
+      limits:
+        memory: "256Mi"
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "ghcr.io/gitleaks/gitleaks:v8.21.2"
+    name: "gitleaks"
+    resources:
+      limits:
+        memory: "512Mi"
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "semgrep/semgrep:1.95.0"
+    name: "semgrep"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "sonarsource/sonar-scanner-cli:11"
+    name: "sonar"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "hashicorp/terraform:1.15.8"
+    name: "terraform"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "aquasec/tfsec:v1.28.14"
+    name: "tfsec"
+    resources:
+      limits:
+        memory: "512Mi"
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "bridgecrew/checkov:3.2.495"
+    name: "checkov"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "localhost:5001/ci-ansible:26.9.0"
+    name: "python"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "/busybox/cat"
+    image: "gcr.io/kaniko-project/executor:v1.23.2-debug"
+    name: "kaniko"
+    resources:
+      limits:
+        memory: "2Gi"
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    image: "aquasec/trivy:0.72.0"
+    name: "trivy"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+    tty: true
+    volumeMounts:
+    - mountPath: "/root/.cache/trivy"
+      name: "trivy-cache"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - env:
+    - name: "JENKINS_SECRET"
+      value: "********"
+    - name: "JENKINS_TUNNEL"
+      value: "jenkins:50000"
+    - name: "JENKINS_AGENT_NAME"
+      value: "taskflow-lab4-main-8-nk0j3-cqfw0-7n4nq"
+    - name: "REMOTING_OPTS"
+      value: "-noReconnectAfter 1d"
+    - name: "JENKINS_NAME"
+      value: "taskflow-lab4-main-8-nk0j3-cqfw0-7n4nq"
+    - name: "JENKINS_AGENT_WORKDIR"
+      value: "/home/jenkins/agent"
+    - name: "JENKINS_URL"
+      value: "http://jenkins:8080/"
+    image: "jenkins/inbound-agent:3391.va_37fa_a_305d6d-1-jdk25"
+    name: "jnlp"
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  nodeSelector:
+    kubernetes.io/os: "linux"
+  restartPolicy: "Never"
+  volumes:
+  - emptyDir:
+      medium: ""
+    name: "workspace-volume"
+  - hostPath:
+      path: "/var/cache/jenkins-npm"
+      type: "DirectoryOrCreate"
+    name: "npm-cache"
+  - hostPath:
+      path: "/var/cache/jenkins-trivy"
+      type: "DirectoryOrCreate"
+    name: "trivy-cache"
+
+Running on taskflow-lab4-main-8-nk0j3-cqfw0-7n4nq in /home/jenkins/agent/workspace/taskflow_lab4_main
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential github-token
+Cloning the remote Git repository
+Cloning with configured refspecs honoured and without tags
+Cloning repository https://github.com/Pongohisut007/****-mobile.git
+ > git init /home/jenkins/agent/workspace/****_lab4_main # timeout=10
+Fetching upstream changes from https://github.com/Pongohisut007/****-mobile.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_ASKPASS to set credentials 
+ > git fetch --no-tags --force --progress -- https://github.com/Pongohisut007/****-mobile.git +refs/heads/main:refs/remotes/origin/main # timeout=10
+Avoid second fetch
+Checking out Revision 02c02321b631caa18f676a93380eff4d1899bc5b (main)
+ > git config remote.origin.url https://github.com/Pongohisut007/****-mobile.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/main:refs/remotes/origin/main # timeout=10
+Commit message: "Merge pull request #9 from Pongohisut007/nongao/lab10"
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 02c02321b631caa18f676a93380eff4d1899bc5b # timeout=10
+ > git rev-list --no-walk 344f546157dc56bd8a5127d7c7f9907ffe0eade3 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 1 hr 0 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Secrets)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
++ git config --global --add safe.directory /home/jenkins/agent/workspace/****_lab4_main
++ gitleaks git . --redact --verbose --report-format sarif --report-path gitleaks.sarif
+
+    ○
+    │╲
+    │ ○
+    ○ ░
+    ░    gitleaks
+
+[90m8:45AM[0m [32mINF[0m 137 commits scanned.
+[90m8:45AM[0m [32mINF[0m scan completed in 295ms
+[90m8:45AM[0m [32mINF[0m no leaks found
+[Pipeline] }
+[Pipeline] // container
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Install)
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/backend
+[Pipeline] {
+[Pipeline] sh
++ npm ci --prefer-offline '--fetch-retries=5' '--fetch-timeout=120000'
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 823 packages, and audited 824 packages in 31s
+
+178 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Lint, Test & Scan)
+[Pipeline] parallel
+[Pipeline] { (Branch: Lint)
+[Pipeline] { (Branch: Unit Test)
+[Pipeline] { (Branch: SAST)
+[Pipeline] { (Branch: Semgrep)
+[Pipeline] { (Branch: SCA)
+[Pipeline] { (Branch: Terraform Validate)
+[Pipeline] { (Branch: Ansible Lint)
+[Pipeline] { (Branch: tfsec)
+[Pipeline] { (Branch: checkov)
+[Pipeline] stage
+[Pipeline] { (Lint)
+[Pipeline] stage
+[Pipeline] { (Unit Test)
+[Pipeline] stage
+[Pipeline] { (SAST)
+[Pipeline] stage
+[Pipeline] { (Semgrep)
+[Pipeline] stage
+[Pipeline] { (SCA)
+[Pipeline] stage
+[Pipeline] { (Terraform Validate)
+[Pipeline] stage
+[Pipeline] { (Ansible Lint)
+[Pipeline] stage
+[Pipeline] { (tfsec)
+[Pipeline] stage
+[Pipeline] { (checkov)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/backend
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/backend
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/backend
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/backend
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
+[Pipeline] sh
++ npx eslint '{src,test}/**/*.ts'
+[Pipeline] sh
++ npx jest --ci --coverage '--maxWorkers=2' '--reporters=default' '--reporters=jest-junit'
+[Pipeline] sh
++ npx eslint -c eslint.security.config.mjs src/ -f @microsoft/eslint-formatter-sarif -o eslint.sarif
+[Pipeline] sh
++ npm audit '--audit-level=high' --json
+[Pipeline] sh
++ ansible-lint infra/ansible/playbook.yml
+[Pipeline] sh
++ tfsec infra/terraform --no-color --format sarif --out tfsec.sarif --soft-fail
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
++ HOME=/tmp checkov -d infra/terraform --framework terraform --skip-download --compact -o cli -o sarif --output-file-path console,checkov.sarif
+[Pipeline] container
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/infra/terraform
+[Pipeline] {
++ semgrep scan '--config=p/owasp-top-ten' '--config=p/nodejs' --sarif --output semgrep.sarif backend/src
+[Pipeline] sh
+
+======================================================
+tfsec is joining the Trivy family
+
+tfsec will continue to remain available 
+for the time being, although our engineering 
+attention will be directed at Trivy going forward.
+
+You can read more here: 
+https://github.com/aquasecurity/tfsec/discussions/1994
+======================================================
++ terraform init '-backend=false'
+[Pipeline] script
+[Pipeline] {
+[Pipeline] readJSON
+1 file(s) written: tfsec.sarif
+[Pipeline] echo
+npm audit: critical=0, high=0, moderate=0, low=0
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] sh
+[0m[1mInitializing provider plugins...[0m
+- Reusing previous version of hashicorp/aws from the dependency lock file
+[Pipeline] // dir
+Post stage
+[Pipeline] archiveArtifacts
++ tfsec infra/terraform --no-color
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+- Installing hashicorp/aws v5.100.0...
+
+======================================================
+tfsec is joining the Trivy family
+
+tfsec will continue to remain available 
+for the time being, although our engineering 
+attention will be directed at Trivy going forward.
+
+You can read more here: 
+https://github.com/aquasecurity/tfsec/discussions/1994
+======================================================
+  timings
+  ──────────────────────────────────────────
+  disk i/o             330.325µs
+  parsing              3.069293ms
+  adaptation           9.112346ms
+  checks               46.651043ms
+  total                59.163007ms
+
+  counts
+  ──────────────────────────────────────────
+  modules downloaded   0
+  modules processed    1
+  blocks processed     22
+  files read           5
+
+  results
+  ──────────────────────────────────────────
+  passed               10
+  ignored              2
+  critical             0
+  high                 0
+  medium               0
+  low                  0
+
+
+No problems detected!
+
+[Pipeline] }
+[Pipeline] // container
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] }
+METRICS: Using configs from the Registry (like --config=p/ci) reports pseudonymous rule metrics to semgrep.dev.
+To disable Registry rule metrics, use "--metrics=off".
+Using configs only from local files (like --config=xyz.yml) does not enable metrics.
+
+More information: https://semgrep.dev/docs/metrics
+
+[Pipeline] // dir
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+PASS src/uploads/uploads.service.spec.ts (5.228 s)
+PASS src/tasks/tasks.service.spec.ts (5.48 s)
+PASS src/health/health.controller.spec.ts
+PASS src/app.controller.spec.ts
+PASS src/tasks/tasks.controller.spec.ts
+
+[32mPassed[0m: 0 failure(s), 0 warning(s) in 1 files processed of 1 encountered. Last profile that met the validation criteria was 'production'.
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.494 
+
+terraform scan results:
+
+Passed checks: 29, Failed checks: 0, Skipped checks: 1
+
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	PASSED for resource: aws_security_group.app
+	File: /main.tf:5-51
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.app
+	File: /main.tf:5-51
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	PASSED for resource: aws_security_group.app
+	File: /main.tf:5-51
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	PASSED for resource: aws_security_group.app
+	File: /main.tf:5-51
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	PASSED for resource: aws_security_group.app
+	File: /main.tf:5-51
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.app
+	File: /main.tf:5-51
+Check: CKV_AWS_60: "Ensure IAM role allows only specific services or principals to assume it"
+	PASSED for resource: aws_iam_role.app
+	File: /main.tf:65-68
+Check: CKV_AWS_274: "Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy"
+	PASSED for resource: aws_iam_role.app
+	File: /main.tf:65-68
+Check: CKV_AWS_61: "Ensure AWS IAM policy does not allow assume role permission across all services"
+	PASSED for resource: aws_iam_role.app
+	File: /main.tf:65-68
+Check: CKV_AWS_135: "Ensure that EC2 is EBS optimized"
+	PASSED for resource: aws_instance.app
+	File: /main.tf:75-105
+Check: CKV_AWS_79: "Ensure Instance Metadata Service Version 1 is not enabled"
+	PASSED for resource: aws_instance.app
+	File: /main.tf:75-105
+Check: CKV_AWS_88: "EC2 instance should not have public IP."
+	PASSED for resource: aws_instance.app
+	File: /main.tf:75-105
+Check: CKV_AWS_8: "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted"
+	PASSED for resource: aws_instance.app
+	File: /main.tf:75-105
+Check: CKV_AWS_46: "Ensure no hard-coded secrets exist in EC2 user data"
+	PASSED for resource: aws_instance.app
+	File: /main.tf:75-105
+Check: CKV_AWS_108: "Ensure IAM policies does not allow data exfiltration"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_107: "Ensure IAM policies does not allow credentials exposure"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_283: "Ensure no IAM policies documents allow ALL or any AWS principal permissions to the resource"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_110: "Ensure IAM policies does not allow privilege escalation"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_111: "Ensure IAM policies does not allow write access without constraints"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_109: "Ensure IAM policies does not allow permissions management / resource exposure without constraints"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_356: "Ensure no IAM policies documents allow "*" as a statement's resource for restrictable actions"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_49: "Ensure no IAM policies documents allow "*" as a statement's actions"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_1: "Ensure IAM policies that allow full "*-*" administrative privileges are not created"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_358: "Ensure AWS GitHub Actions OIDC authorization policies only allow safe claims and claim order"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /providers.tf:1-16
+Check: CKV2_AWS_56: "Ensure AWS Managed IAMFullAccess IAM policy is not used."
+	PASSED for resource: aws_iam_role.app
+	File: /main.tf:65-68
+Check: CKV2_AWS_41: "Ensure an IAM role is attached to EC2 instance"
+	PASSED for resource: aws_instance.app
+	File: /main.tf:75-105
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	PASSED for resource: aws_security_group.app
+	File: /main.tf:5-51
+Check: CKV2_AWS_40: "Ensure AWS IAM policy does not allow full IAM privileges"
+	PASSED for resource: aws_iam_policy_document.ec2_assume
+	File: /main.tf:53-61
+Check: CKV_AWS_126: "Ensure that detailed monitoring is enabled for EC2 instances"
+	SKIPPED for resource: aws_instance.app
+	Suppress comment: Detailed monitoring is paid (not free tier) and LocalStack does not implement MonitorInstances
+	File: /main.tf:75-105
+
+[Pipeline] }
+[Pipeline] // container
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |    8.11 |     7.88 |    8.28 |    8.23 |                   
+ src               |   27.65 |       50 |      75 |   21.95 |                   
+  ...controller.ts |     100 |       75 |     100 |     100 | 6                 
+  app.module.ts    |       0 |      100 |     100 |       0 | 1-54              
+  app.service.ts   |     100 |      100 |     100 |     100 |                   
+  main.ts          |       0 |        0 |       0 |       0 | 1-16              
+ src/auth          |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-63              
+  auth.module.ts   |       0 |      100 |       0 |       0 | 1-33              
+  auth.service.ts  |       0 |        0 |       0 |       0 | 1-80              
+ ...uth/decorators |       0 |        0 |       0 |       0 |                   
+  ....decorator.ts |       0 |        0 |       0 |       0 | 1-10              
+  ....decorator.ts |       0 |      100 |       0 |       0 | 1-7               
+ src/auth/dto      |       0 |      100 |     100 |       0 |                   
+  login.dto.ts     |       0 |      100 |     100 |       0 | 1-9               
+  register.dto.ts  |       0 |      100 |     100 |       0 | 1-21              
+ src/auth/guards   |       0 |        0 |       0 |       0 |                   
+  ...auth.guard.ts |       0 |      100 |     100 |       0 | 1-6               
+  ...auth.guard.ts |       0 |      100 |     100 |       0 | 1-5               
+  roles.guard.ts   |       0 |        0 |       0 |       0 | 1-31              
+ ...uth/strategies |       0 |        0 |       0 |       0 |                   
+  jwt.strategy.ts  |       0 |        0 |       0 |       0 | 1-29              
+  ...l.strategy.ts |       0 |        0 |       0 |       0 | 1-14              
+ src/banner        |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-45              
+  banner.module.ts |       0 |      100 |     100 |       0 | 1-12              
+  ...er.service.ts |       0 |        0 |       0 |       0 | 1-41              
+ src/banner/dto    |       0 |      100 |     100 |       0 |                   
+  ...banner.dto.ts |       0 |      100 |     100 |       0 | 1-7               
+  ...banner.dto.ts |       0 |      100 |     100 |       0 | 1-8               
+ ...anner/entities |       0 |      100 |     100 |       0 |                   
+  banner.entity.ts |       0 |      100 |     100 |       0 | 1-7               
+ src/cart          |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-88              
+  cart.module.ts   |       0 |      100 |     100 |       0 | 1-13              
+  cart.service.ts  |       0 |        0 |       0 |       0 | 1-136             
+ src/cart/dto      |       0 |      100 |     100 |       0 |                   
+  ...t-item.dto.ts |       0 |      100 |     100 |       0 | 1-5               
+ src/cart/entities |       0 |        0 |       0 |       0 |                   
+  ...tem.entity.ts |       0 |        0 |       0 |       0 | 1-30              
+  cart.entity.ts   |       0 |        0 |       0 |       0 | 1-28              
+ src/categories    |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-47              
+  ...ies.module.ts |       0 |      100 |     100 |       0 | 1-12              
+  ...es.service.ts |       0 |        0 |       0 |       0 | 1-62              
+ ...ories/entities |       0 |      100 |       0 |       0 |                   
+  ...ory.entity.ts |       0 |      100 |       0 |       0 | 1-28              
+ ...ommon/entities |     100 |       75 |     100 |     100 |                   
+  base.entity.ts   |     100 |       75 |     100 |     100 | 17-23             
+ src/database      |       0 |      100 |       0 |       0 |                   
+  ...ase.module.ts |       0 |      100 |       0 |       0 | 1-66              
+ ...database/seeds |       0 |        0 |       0 |       0 |                   
+  seed.ts          |       0 |        0 |       0 |       0 | 1-412             
+ src/favorites     |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-64              
+  ...tes.module.ts |       0 |      100 |     100 |       0 | 1-12              
+  ...es.service.ts |       0 |        0 |       0 |       0 | 1-76              
+ src/favorites/dto |       0 |      100 |     100 |       0 |                   
+  ...vorite.dto.ts |       0 |      100 |     100 |       0 | 1-5               
+  ...vorite.dto.ts |       0 |      100 |     100 |       0 | 1-5               
+ ...rites/entities |       0 |        0 |       0 |       0 |                   
+  ...ite.entity.ts |       0 |        0 |       0 |       0 | 1-27              
+ src/health        |     100 |    83.33 |     100 |     100 |                   
+  ...controller.ts |     100 |    83.33 |     100 |     100 | 6                 
+ src/iap           |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-21              
+  iap.module.ts    |       0 |      100 |     100 |       0 | 1-9               
+  iap.service.ts   |       0 |        0 |       0 |       0 | 1-188             
+ src/iap/dto       |       0 |      100 |     100 |       0 |                   
+  ...rchase.dto.ts |       0 |      100 |     100 |       0 | 1-5               
+ src/ingredients   |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-43              
+  ...nts.module.ts |       0 |      100 |     100 |       0 | 1-13              
+  ...ts.service.ts |       0 |        0 |       0 |       0 | 1-40              
+ ...ients/entities |       0 |        0 |       0 |       0 |                   
+  ...ent.entity.ts |       0 |      100 |       0 |       0 | 1-18              
+  ...ent.entity.ts |       0 |        0 |       0 |       0 | 1-63              
+ src/orders        |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-43              
+  orders.module.ts |       0 |      100 |     100 |       0 | 1-13              
+  ...rs.service.ts |       0 |        0 |       0 |       0 | 1-41              
+ ...rders/entities |       0 |        0 |       0 |       0 |                   
+  ...tem.entity.ts |       0 |        0 |       0 |       0 | 1-49              
+  order.entity.ts  |       0 |        0 |       0 |       0 | 1-75              
+ src/payments      |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-43              
+  ...nts.module.ts |       0 |      100 |     100 |       0 | 1-12              
+  ...ts.service.ts |       0 |        0 |       0 |       0 | 1-39              
+ ...ments/entities |       0 |        0 |       0 |       0 |                   
+  ...ent.entity.ts |       0 |        0 |       0 |       0 | 1-67              
+ src/recipe-access |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-58              
+  ...ess.module.ts |       0 |      100 |     100 |       0 | 1-12              
+  ...ss.service.ts |       0 |        0 |       0 |       0 | 1-75              
+ ...ccess/entities |       0 |        0 |       0 |       0 |                   
+  ...ess.entity.ts |       0 |        0 |       0 |       0 | 1-74              
+ src/recipes       |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-67              
+  ...pes.module.ts |       0 |      100 |     100 |       0 | 1-17              
+  ...es.service.ts |       0 |        0 |       0 |       0 | 1-227             
+ src/recipes/dto   |       0 |        0 |       0 |       0 |                   
+  ...recipe.dto.ts |       0 |      100 |     100 |       0 | 3                 
+  ...ecipes.dto.ts |       0 |        0 |       0 |       0 | 1-55              
+  ...recipe.dto.ts |       0 |      100 |     100 |       0 | 3                 
+ ...cipes/entities |       0 |        0 |       0 |       0 |                   
+  ...ent.entity.ts |       0 |        0 |       0 |       0 | 1-47              
+  ...ion.entity.ts |       0 |        0 |       0 |       0 | 1-41              
+  recipe.entity.ts |       0 |        0 |       0 |       0 | 1-132             
+ src/reviews       |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-44              
+  ...ews.module.ts |       0 |      100 |     100 |       0 | 1-12              
+  ...ws.service.ts |       0 |        0 |       0 |       0 | 1-42              
+ ...views/entities |       0 |        0 |       0 |       0 |                   
+  review.entity.ts |       0 |        0 |       0 |       0 | 1-42              
+ src/tasks         |   83.33 |    76.19 |     100 |   85.71 |                   
+  ...controller.ts |     100 |       75 |     100 |     100 | 18-49             
+  tasks.module.ts  |       0 |      100 |     100 |       0 | 1-12              
+  tasks.service.ts |     100 |    83.33 |     100 |     100 | 12                
+ src/tasks/dto     |     100 |      100 |     100 |     100 |                   
+  ...e-task.dto.ts |     100 |      100 |     100 |     100 |                   
+  ...e-task.dto.ts |     100 |      100 |     100 |     100 |                   
+ ...tasks/entities |     100 |      100 |     100 |     100 |                   
+  task.entity.ts   |     100 |      100 |     100 |     100 |                   
+ src/uploads       |   35.24 |    24.13 |   42.85 |    36.6 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-79              
+  ...ads.module.ts |       0 |      100 |     100 |       0 | 1-10              
+  ...ds.service.ts |   47.77 |    35.89 |      60 |    48.8 | 107,122,139-257   
+ src/uploads/dto   |       0 |        0 |     100 |       0 |                   
+  ...upload.dto.ts |       0 |        0 |     100 |       0 | 1-12              
+  ...upload.dto.ts |       0 |        0 |     100 |       0 | 1-13              
+ ...ploads/storage |   46.66 |       75 |       0 |   38.46 |                   
+  r2.provider.ts   |   46.66 |       75 |       0 |   38.46 | 16-69             
+ src/users         |       0 |        0 |       0 |       0 |                   
+  ...controller.ts |       0 |        0 |       0 |       0 | 1-52              
+  users.module.ts  |       0 |      100 |     100 |       0 | 1-19              
+  users.service.ts |       0 |        0 |       0 |       0 | 1-154             
+ ...users/entities |       0 |        0 |       0 |       0 |                   
+  user.entity.ts   |       0 |        0 |       0 |       0 | 1-64              
+-------------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 5 passed, 5 total
+Tests:       17 passed, 17 total
+Snapshots:   0 total
+Time:        19.299 s
+Ran all test suites.
+[Pipeline] }
+[Pipeline] // dir
+Post stage
+[Pipeline] junit
+Recording test results
+[Checks API] No suitable checks publisher found.
+[Pipeline] recordCoverage
+               
+               
+┌─────────────┐
+│ Scan Status │
+└─────────────┘
+  Scanning 100 files tracked by git with 561 Code rules:
+                                                                                                                        
+  Language      Rules   Files          Origin      Rules                                                                
+ ─────────────────────────────        ───────────────────                                                               
+  ts               72     100          Community     561                                                                
+  <multilang>       5     100                                                                                           
+                                                                                                                        
+[Coverage] Recording coverage results
+[Coverage] Creating parser for Cobertura Coverage Reports
+[Coverage] Searching for all files in '/home/jenkins/agent/workspace/****_lab4_main' that match the pattern 'backend/coverage/cobertura-coverage.xml'
+[Coverage] Traversing of symbolic links: enabled
+[Coverage] -> found 1 file
+[Coverage] Successfully parsed file '/home/jenkins/agent/workspace/****_lab4_main/backend/coverage/cobertura-coverage.xml'
+[Coverage] Module Coverage: 100.00% (1/1)
+[Coverage] Package Coverage: 18.18% (8/44)
+[Coverage] File Coverage: 11.83% (11/93)
+[Coverage] Class Coverage: 11.83% (11/93)
+[Coverage] Method Coverage: 8.28% (28/338)
+[Coverage] Line Coverage: 8.30% (120/1445)
+[Coverage] Branch Coverage: 9.07% (68/750)
+[Coverage] Lines of Code: 1445
+[Coverage] Successfully processed file 'backend/coverage/cobertura-coverage.xml'
+[Coverage] Resolving source code files...
+[Coverage] Searching for source code files in:
+[Coverage] -> backend
+[Coverage] -> /home/jenkins/agent/workspace/****_lab4_main/src/main/java
+[Coverage] -> resolved absolute paths for all 93 source files
+[Coverage] Making paths of 93 source code files relative to workspace root...
+[Checks API] No suitable checks publisher found.
+[Coverage] Obtaining result action of reference build
+[Coverage] Reference build recorder is not configured
+[Coverage] -> Found no reference build
+[Coverage] No quality gates have been set - skipping
+[Coverage] Executing source code painting...
+[Coverage] Painting 93 source files on agent
+[Coverage] -> finished painting successfully
+[Coverage] -> zipping sources from folder '/home/jenkins/agent/workspace/****_lab4_main/coverage-sources-.tmp10646426562399522866/coverage' as '/home/jenkins/agent/workspace/****_lab4_main/coverage-sources-coverage.zip'
+[Coverage] -> deleted temporary source folder '/home/jenkins/agent/workspace/****_lab4_main/coverage-sources-.tmp10646426562399522866'
+[Coverage] Copying painted sources from agent to build folder
+[Coverage] -> extracting...
+[Coverage] -> done
+[Coverage] Deleting source code files of build #7
+[Coverage] Finished coverage processing - adding the action to the build...
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+                
+                
+┌──────────────┐
+│ Scan Summary │
+└──────────────┘
+Some files were skipped or only partially analyzed.
+  Scan was limited to files tracked by git.
+
+(need more rules? `semgrep login` for additional free Semgrep Registry rules)
+
+Ran 77 rules on 100 files: 0 findings.
+
+A new version of Semgrep is available. See https://semgrep.dev/docs/upgrading
+If Semgrep missed a finding, please send us feedback to let us know!
+See https://semgrep.dev/docs/reporting-false-negatives/
+[Pipeline] }
+[Pipeline] // container
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+
+/home/jenkins/agent/workspace/****_lab4_main/backend/src/main.ts
+  16:1  warning  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+
+✖ 1 problem (0 errors, 1 warning)
+
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+- Installed hashicorp/aws v5.100.0 (signed by HashiCorp)
+
+Terraform has made some changes to the provider dependency selections recorded
+in the .terraform.lock.hcl file. Review those changes and commit them to your
+version control system if they represent changes you intended to make.
+
+[0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+[Pipeline] sh
++ terraform validate
+[32m[1mSuccess![0m The configuration is valid.
+[0m
+[Pipeline] sh
++ terraform fmt -check -recursive
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // parallel
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (SBOM & Sign)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ mkdir -p /home/jenkins/agent/workspace/****_lab4_main/.tools
++ wget+  -q -O-tar https://github.com/anchore/syft/releases/download/v1.18.1/syft_1.18.1_linux_amd64.tar.gz -xz -C
+ /home/jenkins/agent/workspace/****_lab4_main/.tools syft
++ wget -q -O /home/jenkins/agent/workspace/****_lab4_main/.tools/cosign https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64
++ chmod +x /home/jenkins/agent/workspace/****_lab4_main/.tools/cosign
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/syft scan dir:backend --source-name ****-api --source-version 02c02321b631caa18f676a93380eff4d1899bc5b -o 'cyclonedx-json=sbom.cdx.json'
+[Pipeline] withCredentials
+Masking supported pattern matches of $COSIGN_KEY or $COSIGN_PASSWORD
+[Pipeline] {
+[Pipeline] sh
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/cosign sign-blob --yes --key **** '--tlog-upload=false' --output-signature sbom.cdx.json.sig sbom.cdx.json
+Using payload from: sbom.cdx.json
+Wrote signature to file sbom.cdx.json.sig
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] sh
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/cosign verify-blob --key keys/cosign.pub --signature sbom.cdx.json.sig '--insecure-ignore-tlog=true' sbom.cdx.json
+WARNING: Skipping tlog verification is an insecure practice that lacks of transparency and auditability verification for the blob.
+Verified OK
+[Pipeline] sh
++ chmod a+r sbom.cdx.json sbom.cdx.json.sig
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Policy Gate)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ wget -q -O /home/jenkins/agent/workspace/****_lab4_main/.tools/opa https://github.com/open-policy-agent/opa/releases/download/v1.0.0/opa_linux_amd64_static
++ chmod +x /home/jenkins/agent/workspace/****_lab4_main/.tools/opa
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/opa check policy/security.rego
++ set +e
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/opa eval --data policy/security.rego --input backend/npm-audit.json --format pretty --fail-defined 'data.****.security.deny[msg]'
++ rc=0
++ cat policy-result.txt
+undefined
++ '[' 0 -eq 0 ]
++ echo 'Policy Gate: ALLOW'
+Policy Gate: ALLOW
++ exit 0
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (SonarQube Analysis)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/backend
+[Pipeline] {
+[Pipeline] withSonarQubeEnv
+Injecting SonarQube environment variables using the configuration: SonarQube
+[Pipeline] {
+[Pipeline] sh
++ sonar-scanner -Dsonar.projectKey=****-api -Dsonar.token=******
+08:50:29.840 INFO  Scanner configuration file: /opt/sonar-scanner/conf/sonar-scanner.properties
+08:50:29.846 INFO  Project root configuration file: /home/jenkins/agent/workspace/****_lab4_main/backend/sonar-project.properties
+08:50:29.884 INFO  SonarScanner CLI 7.3.0.5189
+08:50:29.886 INFO  Linux 6.18.33.2-microsoft-standard-WSL2 amd64
+08:50:29.940 WARN  Both 'sonar.login' and 'sonar.token' (or the 'SONAR_TOKEN' env variable) are set, but only the latter will be used.
+08:50:31.547 INFO  Communicating with SonarQube Server 9.9.8.100196
+08:50:33.181 INFO  Load global settings
+08:50:33.514 INFO  Load global settings (done) | time=334ms
+08:50:33.517 INFO  Server id: 147B411E-AaDPPadJ-tqh_SzzlGYN
+08:50:33.526 INFO  User cache: /opt/sonar-scanner/.sonar/cache
+08:50:33.532 INFO  Load/download plugins
+08:50:33.532 INFO  Load plugins index
+08:50:33.686 INFO  Load plugins index (done) | time=154ms
+08:50:35.794 INFO  Load/download plugins (done) | time=2263ms
+08:50:36.432 INFO  Process project properties
+08:50:36.450 INFO  Process project properties (done) | time=18ms
+08:50:36.454 INFO  Execute project builders
+08:50:36.455 INFO  Execute project builders (done) | time=1ms
+08:50:36.461 INFO  Project key: ****-api
+08:50:36.461 INFO  Base dir: /home/jenkins/agent/workspace/****_lab4_main/backend
+08:50:36.461 INFO  Working dir: /home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork
+08:50:36.472 INFO  Load project settings for component key: '****-api'
+08:50:36.697 INFO  Load project settings for component key: '****-api' (done) | time=225ms
+08:50:36.914 INFO  Auto-configuring with CI 'Jenkins'
+08:50:36.919 INFO  Load quality profiles
+08:50:37.426 INFO  Load quality profiles (done) | time=507ms
+08:50:37.434 INFO  Load active rules
+08:50:43.116 INFO  Load active rules (done) | time=5682ms
+08:50:43.121 INFO  Load analysis cache
+08:50:43.148 INFO  Load analysis cache (404) | time=27ms
+08:50:43.220 INFO  Load project repositories
+08:50:43.253 INFO  Load project repositories (done) | time=33ms
+08:50:43.288 INFO  Indexing files...
+08:50:43.289 INFO  Project configuration:
+08:50:43.289 INFO    Excluded sources: **/*.spec.ts, **/*.spec.ts
+08:50:43.289 INFO    Included tests: **/*.spec.ts
+08:50:43.290 INFO    Excluded sources for coverage: src/main.ts, **/*.module.ts, src/auth/**, src/banner/**, src/cart/**, src/categories/**, src/common/**, src/database/**, src/favorites/**, src/iap/**, src/ingredients/**, src/orders/**, src/payments/**, src/recipe-access/**, src/recipes/**, src/reviews/**, src/uploads/**, src/users/**
+08:50:43.649 INFO  100 files indexed
+08:50:43.650 INFO  100 files ignored because of inclusion/exclusion patterns
+08:50:43.650 INFO  0 files ignored because of scm ignore settings
+08:50:43.651 INFO  Quality profile for ts: Sonar way
+08:50:43.651 INFO  ------------- Run sensors on module ****-api
+08:50:43.767 INFO  Load metrics repository
+08:50:43.823 INFO  Load metrics repository (done) | time=56ms
+08:50:45.718 INFO  Sensor JaCoCo XML Report Importer [jacoco]
+08:50:45.719 INFO  'sonar.coverage.jacoco.xmlReportPaths' is not defined. Using default locations: target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml,build/reports/jacoco/test/jacocoTestReport.xml
+08:50:45.720 INFO  No report imported, no coverage information will be imported by JaCoCo XML Report Importer
+08:50:45.720 INFO  Sensor JaCoCo XML Report Importer [jacoco] (done) | time=3ms
+08:50:45.720 INFO  Sensor TypeScript analysis [javascript]
+08:50:54.854 WARN  Node.js version 22 is not recommended, you might experience issues. Please use a recommended version of Node.js [16, 18]
+08:50:54.923 INFO  Found 1 tsconfig.json file(s): [/home/jenkins/agent/workspace/****_lab4_main/backend/tsconfig.json]
+08:50:54.924 INFO  Creating TypeScript program
+08:50:54.925 INFO  TypeScript configuration file /home/jenkins/agent/workspace/****_lab4_main/backend/tsconfig.json
+08:50:54.926 INFO  100 source files to be analyzed
+08:50:54.960 ERROR Error: Unknown compiler option 'resolvePackageJsonExports'.; Argument for '--target' option must be: 'es3', 'es5', 'es6', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020', 'es2021', 'es2022', 'esnext'.
+08:50:54.961 ERROR     at createProgramOptions (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/lib/services/program/program.js:106:15)
+08:50:54.961 ERROR     at createProgram (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/lib/services/program/program.js:132:28)
+08:50:54.961 ERROR     at default_1 (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/lib/routing/on-create-program.js:10:57)
+08:50:54.961 ERROR     at Layer.handle [as handle_request] (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/node_modules/express/lib/router/layer.js:95:5)
+08:50:54.961 ERROR     at next (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/node_modules/express/lib/router/route.js:144:13)
+08:50:54.961 ERROR     at Route.dispatch (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/node_modules/express/lib/router/route.js:114:3)
+08:50:54.961 ERROR     at Layer.handle [as handle_request] (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/node_modules/express/lib/router/layer.js:95:5)
+08:50:54.961 ERROR     at /home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/node_modules/express/lib/router/index.js:284:15
+08:50:54.961 ERROR     at Function.process_params (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/node_modules/express/lib/router/index.js:346:12)
+08:50:54.961 ERROR     at next (/home/jenkins/agent/workspace/****_lab4_main/backend/.scannerwork/.sonartmp/eslint-bridge-bundle/package/node_modules/express/lib/router/index.js:280:10)
+08:50:54.966 ERROR Failed to create program: Unknown compiler option 'resolvePackageJsonExports'.; Argument for '--target' option must be: 'es3', 'es5', 'es6', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020', 'es2021', 'es2022', 'esnext'.
+08:50:54.966 INFO  Creating TypeScript program (done) | time=42ms
+08:50:54.967 INFO  Skipped 100 file(s) because they were not part of any tsconfig.json (enable debug logs to see the full list)
+08:50:54.977 INFO  100/100 source files have been analyzed
+08:50:54.978 INFO  Hit the cache for 0 out of 0
+08:50:54.979 INFO  Miss the cache for 0 out of 0
+08:50:54.979 INFO  Sensor TypeScript analysis [javascript] (done) | time=9259ms
+08:50:54.980 INFO  Sensor CSS Rules [javascript]
+08:50:54.980 INFO  No CSS, PHP, HTML or VueJS files are found in the project. CSS analysis is skipped.
+08:50:54.980 INFO  Sensor CSS Rules [javascript] (done) | time=0ms
+08:50:54.980 INFO  Sensor JavaScript/TypeScript Coverage [javascript]
+08:50:54.980 INFO  Analysing [/home/jenkins/agent/workspace/****_lab4_main/backend/coverage/lcov.info]
+08:50:55.028 INFO  Sensor JavaScript/TypeScript Coverage [javascript] (done) | time=48ms
+08:50:55.028 INFO  Sensor C# Project Type Information [csharp]
+08:50:55.029 INFO  Sensor C# Project Type Information [csharp] (done) | time=1ms
+08:50:55.029 INFO  Sensor C# Analysis Log [csharp]
+08:50:55.062 INFO  Sensor C# Analysis Log [csharp] (done) | time=33ms
+08:50:55.063 INFO  Sensor C# Properties [csharp]
+08:50:55.063 INFO  Sensor C# Properties [csharp] (done) | time=0ms
+08:50:55.063 INFO  Sensor HTML [web]
+08:50:55.066 INFO  Sensor HTML [web] (done) | time=3ms
+08:50:55.066 INFO  Sensor TextAndSecretsSensor [text]
+08:50:55.081 INFO  100 source files to be analyzed
+08:50:55.206 INFO  100/100 source files have been analyzed
+08:50:55.206 INFO  Sensor TextAndSecretsSensor [text] (done) | time=140ms
+08:50:55.206 INFO  Sensor VB.NET Project Type Information [vbnet]
+08:50:55.207 INFO  Sensor VB.NET Project Type Information [vbnet] (done) | time=1ms
+08:50:55.207 INFO  Sensor VB.NET Analysis Log [vbnet]
+08:50:55.239 INFO  Sensor VB.NET Analysis Log [vbnet] (done) | time=32ms
+08:50:55.239 INFO  Sensor VB.NET Properties [vbnet]
+08:50:55.239 INFO  Sensor VB.NET Properties [vbnet] (done) | time=0ms
+08:50:55.239 INFO  Sensor IaC Docker Sensor [iac]
+08:50:55.245 INFO  0 source files to be analyzed
+08:50:55.317 INFO  0/0 source files have been analyzed
+08:50:55.317 INFO  Sensor IaC Docker Sensor [iac] (done) | time=78ms
+08:50:55.330 INFO  ------------- Run sensors on project
+08:50:55.429 INFO  Sensor Analysis Warnings import [csharp]
+08:50:55.430 INFO  Sensor Analysis Warnings import [csharp] (done) | time=1ms
+08:50:55.430 INFO  Sensor Zero Coverage Sensor
+08:50:55.431 INFO  Sensor Zero Coverage Sensor (done) | time=1ms
+08:50:55.457 INFO  CPD Executor Calculating CPD for 0 files
+08:50:55.457 INFO  CPD Executor CPD calculation finished (done) | time=0ms
+08:50:55.601 INFO  Analysis report generated in 135ms, dir size=271.6 kB
+08:50:55.691 INFO  Analysis report compressed in 90ms, zip size=108.8 kB
+08:50:55.811 INFO  Analysis report uploaded in 119ms
+08:50:55.812 INFO  ANALYSIS SUCCESSFUL, you can find the results at: http://sonarqube:9000/dashboard?id=****-api
+08:50:55.813 INFO  Note that you will be able to access the updated dashboard once the server has processed the submitted analysis report
+08:50:55.813 INFO  More about the report processing at http://sonarqube:9000/api/ce/task?id=AaDiD2hoGZa56CL8LIPa
+08:50:56.670 INFO  Analysis total time: 20.699 s
+08:50:56.676 INFO  EXECUTION SUCCESS
+08:50:56.677 INFO  Total time: 26.903s
+[Pipeline] }
+[Pipeline] // withSonarQubeEnv
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Quality Gate)
+[Pipeline] timeout
+Timeout set to expire in 5 min 0 sec
+[Pipeline] {
+[Pipeline] waitForQualityGate
+Checking status of SonarQube task 'AaDiD2hoGZa56CL8LIPa' on server 'SonarQube'
+SonarQube task 'AaDiD2hoGZa56CL8LIPa' status is 'IN_PROGRESS'
+SonarQube task 'AaDiD2hoGZa56CL8LIPa' status is 'SUCCESS'
+SonarQube task 'AaDiD2hoGZa56CL8LIPa' completed. Quality gate is 'OK'
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (E2E)
+[Pipeline] sh
++ cd backend
++ npm run build
+
+> backend@0.0.1 build
+> nest build
+
++ API_PID=587
++ trap 'kill $API_PID 2>/dev/null' EXIT
++ PORT=3000 node dist/src/main.js
++ seq 1 60
++ wget -q -O /dev/null http://localhost:3000/
+wget: can't connect to remote host: Connection refused
++ sleep 2
++ wget -q -O /dev/null http://localhost:3000/
+wget: can't connect to remote host: Connection refused
++ sleep 2
++ wget -q -O /dev/null http://localhost:3000/
++ break
++ cd /home/jenkins/agent/workspace/****_lab4_main/e2e
++ npm ci --prefer-offline '--fetch-retries=5'
+
+added 3 packages, and audited 4 packages in 2s
+
+found 0 vulnerabilities
++ BASE_URL=http://localhost:3000 npx playwright test
+
+Running 4 tests using 3 workers
+
+  ✓  1 tests/create-task.spec.ts:3:5 › POST /tasks creates a task (120ms)
+  ✓  2 tests/list-tasks.spec.ts:3:5 › GET /tasks lists tasks (125ms)
+  ✓  3 tests/mark-task-done.spec.ts:3:5 › PATCH /tasks/:id/done marks a task done (148ms)
+  ✓  4 tests/create-task.spec.ts:17:5 › POST /tasks rejects an empty title (25ms)
+
+  4 passed (1.2s)
++ kill 587
+Post stage
+[Pipeline] junit
+Recording test results
+[Checks API] No suitable checks publisher found.
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Image)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
++ /kaniko/executor --context dir:///home/jenkins/agent/workspace/****_lab4_main/backend --dockerfile /home/jenkins/agent/workspace/****_lab4_main/backend/Dockerfile --destination kind-registry:5000/****-api:02c0232 --insecure --skip-tls-verify
+[36mINFO[0m[0000] Resolved base name node:22-alpine to build   
+[36mINFO[0m[0000] Resolved base name node:22-alpine to production 
+[36mINFO[0m[0000] Using dockerignore file: /home/jenkins/agent/workspace/****_lab4_main/backend/.dockerignore 
+[36mINFO[0m[0000] Retrieving image manifest node:22-alpine     
+[36mINFO[0m[0000] Retrieving image node:22-alpine from registry index.docker.io 
+[36mINFO[0m[0003] Retrieving image manifest node:22-alpine     
+[36mINFO[0m[0003] Returning cached image manifest              
+[36mINFO[0m[0003] Built cross stage deps: map[0:[/app/dist]]   
+[36mINFO[0m[0003] Retrieving image manifest node:22-alpine     
+[36mINFO[0m[0003] Returning cached image manifest              
+[36mINFO[0m[0003] Executing 0 build triggers                   
+[36mINFO[0m[0003] Building stage 'node:22-alpine' [idx: '0', base-idx: '-1'] 
+[36mINFO[0m[0003] Unpacking rootfs as cmd COPY package*.json ./ requires it. 
+[36mINFO[0m[0041] WORKDIR /app                                 
+[36mINFO[0m[0041] Cmd: workdir                                 
+[36mINFO[0m[0041] Changed working directory to /app            
+[36mINFO[0m[0041] Creating directory /app with uid -1 and gid -1 
+[36mINFO[0m[0041] Taking snapshot of files...                  
+[36mINFO[0m[0041] Resolving srcs [package*.json]...            
+[36mINFO[0m[0041] COPY package*.json ./                        
+[36mINFO[0m[0041] Resolving srcs [package*.json]...            
+[36mINFO[0m[0042] Taking snapshot of files...                  
+[36mINFO[0m[0042] RUN npm ci                                   
+[36mINFO[0m[0042] Initializing snapshotter ...                 
+[36mINFO[0m[0042] Taking snapshot of full filesystem...        
+[36mINFO[0m[0042] Cmd: /bin/sh                                 
+[36mINFO[0m[0042] Args: [-c npm ci]                            
+[36mINFO[0m[0042] Running: [/bin/sh -c npm ci]                 
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 823 packages, and audited 824 packages in 38s
+
+178 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm notice
+npm notice New major version of npm available! 10.9.9 -> 12.1.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.1.0
+npm notice To update run: npm install -g npm@12.1.0
+npm notice
+[36mINFO[0m[0080] Taking snapshot of full filesystem...        
+[36mINFO[0m[0104] COPY . .                                     
+[36mINFO[0m[0106] Taking snapshot of files...                  
+[36mINFO[0m[0106] RUN npm run build                            
+[36mINFO[0m[0106] Cmd: /bin/sh                                 
+[36mINFO[0m[0106] Args: [-c npm run build]                     
+[36mINFO[0m[0106] Running: [/bin/sh -c npm run build]          
+
+> backend@0.0.1 build
+> nest build
+
+[36mINFO[0m[0114] Taking snapshot of full filesystem...        
+[36mINFO[0m[0134] Saving file app/dist for later use           
+[36mINFO[0m[0134] Deleting filesystem...                       
+[36mINFO[0m[0137] Retrieving image manifest node:22-alpine     
+[36mINFO[0m[0137] Returning cached image manifest              
+[36mINFO[0m[0137] Executing 0 build triggers                   
+[36mINFO[0m[0137] Building stage 'node:22-alpine' [idx: '1', base-idx: '-1'] 
+[36mINFO[0m[0137] Unpacking rootfs as cmd COPY package*.json ./ requires it. 
+[36mINFO[0m[0197] WORKDIR /app                                 
+[36mINFO[0m[0197] Cmd: workdir                                 
+[36mINFO[0m[0197] Changed working directory to /app            
+[36mINFO[0m[0197] Creating directory /app with uid -1 and gid -1 
+[36mINFO[0m[0197] Taking snapshot of files...                  
+[36mINFO[0m[0197] Resolving srcs [package*.json]...            
+[36mINFO[0m[0198] COPY package*.json ./                        
+[36mINFO[0m[0198] Resolving srcs [package*.json]...            
+[36mINFO[0m[0199] Taking snapshot of files...                  
+[36mINFO[0m[0199] RUN npm ci --omit=dev && npm cache clean --force 
+[36mINFO[0m[0199] Initializing snapshotter ...                 
+[36mINFO[0m[0199] Taking snapshot of full filesystem...        
+[36mINFO[0m[0199] Cmd: /bin/sh                                 
+[36mINFO[0m[0199] Args: [-c npm ci --omit=dev && npm cache clean --force] 
+[36mINFO[0m[0199] Running: [/bin/sh -c npm ci --omit=dev && npm cache clean --force] 
+
+added 227 packages, and audited 228 packages in 22s
+
+58 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm notice
+npm notice New major version of npm available! 10.9.9 -> 12.1.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.1.0
+npm notice To update run: npm install -g npm@12.1.0
+npm notice
+npm warn using --force Recommended protections disabled.
+[36mINFO[0m[0222] Taking snapshot of full filesystem...        
+[36mINFO[0m[0228] RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack            /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack 
+[36mINFO[0m[0228] Cmd: /bin/sh                                 
+[36mINFO[0m[0228] Args: [-c rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack            /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack] 
+[36mINFO[0m[0228] Running: [/bin/sh -c rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack            /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack] 
+[36mINFO[0m[0228] Taking snapshot of full filesystem...        
+[36mINFO[0m[0229] COPY --from=build /app/dist ./dist           
+[36mINFO[0m[0229] Taking snapshot of files...                  
+[36mINFO[0m[0230] RUN mkdir -p /app/uploads && chown -R node:node /app 
+[36mINFO[0m[0230] Cmd: /bin/sh                                 
+[36mINFO[0m[0230] Args: [-c mkdir -p /app/uploads && chown -R node:node /app] 
+[36mINFO[0m[0230] Running: [/bin/sh -c mkdir -p /app/uploads && chown -R node:node /app] 
+[36mINFO[0m[0230] Taking snapshot of full filesystem...        
+[36mINFO[0m[0235] USER node                                    
+[36mINFO[0m[0235] Cmd: USER                                    
+[36mINFO[0m[0235] EXPOSE 3000                                  
+[36mINFO[0m[0235] Cmd: EXPOSE                                  
+[36mINFO[0m[0235] Adding exposed port: 3000/tcp                
+[36mINFO[0m[0235] CMD ["node", "dist/src/main.js"]             
+[36mINFO[0m[0235] Pushing image to kind-registry:5000/****-api:02c0232 
+[36mINFO[0m[0237] Pushed kind-registry:5000/****-api@sha256:fbca6fead96326fafb7556c5ed84945e0207bb362af46dbf86f60e8dd1ce8770 
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Container Scan)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
++ trivy image --format sarif --output trivy.sarif kind-registry:5000/****-api:02c0232
+2026-09-27T08:55:26Z	INFO	[vuln] Vulnerability scanning is enabled
+2026-09-27T08:55:26Z	INFO	[secret] Secret scanning is enabled
+2026-09-27T08:55:26Z	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+2026-09-27T08:55:26Z	INFO	[secret] Please see https://trivy.dev/docs/v0.72/guide/scanner/secret#recommendation for faster secret detection
+2026-09-27T08:55:28Z	INFO	Detected OS	family="alpine" version="3.24.2"
+2026-09-27T08:55:28Z	WARN	This OS version is not on the EOL list	family="alpine" version="3.24"
+2026-09-27T08:55:28Z	INFO	[alpine] Detecting vulnerabilities...	os_version="3.24" repository="3.24" pkg_num=18
+2026-09-27T08:55:28Z	INFO	Number of language-specific files	num=1
+2026-09-27T08:55:28Z	INFO	[node-pkg] Detecting vulnerabilities...
+
+📣 [34mNotices:[0m
+  - Version 0.74.0 of Trivy is now available, current version is 0.72.0
+
+To suppress version checks, run Trivy scans with the --skip-version-check flag
+
+[Pipeline] sh
++ trivy image --skip-db-update --exit-code 1 --severity HIGH,CRITICAL kind-registry:5000/****-api:02c0232
+2026-09-27T08:55:28Z	INFO	[vuln] Vulnerability scanning is enabled
+2026-09-27T08:55:28Z	INFO	[secret] Secret scanning is enabled
+2026-09-27T08:55:28Z	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+2026-09-27T08:55:28Z	INFO	[secret] Please see https://trivy.dev/docs/v0.72/guide/scanner/secret#recommendation for faster secret detection
+2026-09-27T08:55:28Z	INFO	Detected OS	family="alpine" version="3.24.2"
+2026-09-27T08:55:28Z	WARN	This OS version is not on the EOL list	family="alpine" version="3.24"
+2026-09-27T08:55:28Z	INFO	[alpine] Detecting vulnerabilities...	os_version="3.24" repository="3.24" pkg_num=18
+2026-09-27T08:55:28Z	INFO	Number of language-specific files	num=1
+2026-09-27T08:55:28Z	INFO	[node-pkg] Detecting vulnerabilities...
+
+Report Summary
+
+┌──────────────────────────────────────────────────────────────────────────────────┬──────────┬─────────────────┬─────────┐
+│                                      Target                                      │   Type   │ Vulnerabilities │ Secrets │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ kind-registry:5000/****-api:02c0232 (alpine 3.24.2)                          │  alpine  │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/checksums/package.json                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/client-s3/package.json                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/core/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-env/package.json                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-http/package.json                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-ini/package.json                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-login/package.json                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-node/package.json                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-process/package.json               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-sso/package.json                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/credential-provider-web-identity/package.json          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/middleware-sdk-s3/package.json                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/nested-clients/package.json                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/s3-request-presigner/package.json                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/signature-v4-multi-region/package.json                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/token-providers/package.json                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/types/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws-sdk/xml-builder/package.json                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@aws/lambda-invoke-store/package.json                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@borewit/text-codec/package.json                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@cspotcode/source-map-support/node_modules/@jridgewell/trace-m- │ node-pkg │        0        │    -    │
+│ apping/package.json                                                              │          │                 │         │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@cspotcode/source-map-support/package.json                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@jridgewell/resolve-uri/package.json                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@jridgewell/sourcemap-codec/package.json                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@lukeed/csprng/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@nestjs/common/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@nestjs/config/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@nestjs/core/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@nestjs/jwt/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@nestjs/passport/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@nestjs/platform-express/package.json                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@nestjs/typeorm/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@smithy/core/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@smithy/credential-provider-imds/package.json                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@smithy/fetch-http-handler/package.json                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@smithy/node-http-handler/package.json                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@smithy/signature-v4/package.json                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@smithy/types/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@sqltools/formatter/package.json                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@tokenizer/inflate/package.json                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@tokenizer/token/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@tsconfig/node10/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@tsconfig/node12/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@tsconfig/node14/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@tsconfig/node16/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@types/jsonwebtoken/package.json                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@types/ms/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@types/node/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/@types/validator/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/accepts/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/acorn-walk/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/acorn/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/append-field/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/arg/package.json                                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/aws-ssl-profiles/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/bcrypt/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/body-parser/node_modules/content-type/package.json              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/body-parser/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/bowser/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/buffer-equal-constant-time/package.json                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/busboy/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/bytes/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/call-bind-apply-helpers/package.json                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/call-bound/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/class-transformer/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/class-validator/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/content-disposition/package.json                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/content-type/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/cookie-signature/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/cookie/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/cors/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/create-require/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/dayjs/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/debug/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/dedent/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/depd/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/diff/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/dotenv-expand/node_modules/dotenv/package.json                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/dotenv-expand/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/dotenv/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/dunder-proto/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/ecdsa-sig-formatter/package.json                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/ee-first/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/encodeurl/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/es-define-property/package.json                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/es-errors/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/es-object-atoms/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/escalade/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/escape-html/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/etag/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/express/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/fast-safe-stringify/package.json                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/fdir/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/file-type/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/finalhandler/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/forwarded/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/fresh/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/function-bind/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/generate-function/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/get-caller-file/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/get-east-asian-width/package.json                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/get-intrinsic/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/get-proto/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/gopd/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/has-symbols/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/hasown/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/http-errors/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/iconv-lite/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/ieee754/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/inherits/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/ipaddr.js/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/is-promise/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/is-property/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/iterare/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/jsonwebtoken/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/jwa/package.json                                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/jws/package.json                                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/libphonenumber-js/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/load-esm/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash.includes/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash.isboolean/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash.isinteger/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash.isnumber/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash.isplainobject/package.json                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash.isstring/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash.once/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lodash/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/long/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/lru.min/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/make-error/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/math-intrinsics/package.json                                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/media-typer/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/merge-descriptors/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/mime-db/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/mime-types/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/ms/package.json                                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/multer/node_modules/media-typer/package.json                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/multer/node_modules/mime-db/package.json                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/multer/node_modules/mime-types/package.json                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/multer/node_modules/type-is/package.json                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/multer/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/mysql2/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/named-placeholders/package.json                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/negotiator/node_modules/content-type/package.json               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/negotiator/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/node-addon-api/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/node-gyp-build/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/object-assign/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/object-inspect/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/on-finished/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/once/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/parseurl/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/passport-jwt/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/passport-local/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/passport-strategy/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/passport/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/path-to-regexp/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pause/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pg-cloudflare/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pg-connection-string/package.json                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pg-int8/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pg-pool/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pg-protocol/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pg-types/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pg/package.json                                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/pgpass/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/picomatch/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/postgres-array/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/postgres-bytea/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/postgres-date/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/postgres-interval/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/proxy-addr/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/qs/package.json                                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/range-parser/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/raw-body/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/reflect-metadata/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/router/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/rxjs/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/safe-buffer/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/safer-buffer/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/semver/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/send/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/serve-static/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/setprototypeof/package.json                                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/side-channel-list/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/side-channel-map/package.json                                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/side-channel-weakmap/package.json                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/side-channel/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/split2/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/sql-escaper/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/sql-highlight/package.json                                      │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/statuses/package.json                                           │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/streamsearch/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/strtok3/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/tinyglobby/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/toidentifier/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/token-types/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/ts-node/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/tslib/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/type-is/node_modules/content-type/package.json                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/type-is/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/ansi-regex/package.json                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/ansi-styles/package.json                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/ansis/package.json                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/cliui/node_modules/string-width/package.j- │ node-pkg │        0        │    -    │
+│ son                                                                              │          │                 │         │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/cliui/package.json                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/emoji-regex/package.json                   │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/string-width/package.json                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/strip-ansi/package.json                    │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/wrap-ansi/node_modules/string-width/packa- │ node-pkg │        0        │    -    │
+│ ge.json                                                                          │          │                 │         │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/wrap-ansi/package.json                     │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/yargs-parser/package.json                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/node_modules/yargs/package.json                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typeorm/package.json                                            │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/typescript/package.json                                         │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/uid/package.json                                                │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/uint8array-extras/package.json                                  │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/undici-types/package.json                                       │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/unpipe/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/utils-merge/package.json                                        │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/v8-compile-cache-lib/package.json                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/validator/package.json                                          │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/vary/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/wrappy/package.json                                             │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/xtend/package.json                                              │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/y18n/package.json                                               │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/node_modules/yn/package.json                                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ app/package.json                                                                 │ node-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ opt/yarn-v1.22.22/package.json                                                   │ node-pkg │        0        │    -    │
+└──────────────────────────────────────────────────────────────────────────────────┴──────────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+[Pipeline] }
+[Pipeline] // container
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Terraform Plan)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/infra/terraform
+[Pipeline] {
+[Pipeline] sh
++ terraform init '-input=false' -reconfigure '-backend-config=ci.s3.tfbackend'
+[0m[1mInitializing the backend...[0m
+[0m[32m
+Successfully configured the backend "s3"! Terraform will automatically
+use this backend unless the backend configuration changes.[0m
+
+[0m[1mInitializing provider plugins...[0m
+- Reusing previous version of hashicorp/aws from the dependency lock file
+- Installing hashicorp/aws v5.100.0...
+- Installed hashicorp/aws v5.100.0 (signed by HashiCorp)
+
+
+[0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ terraform plan '-input=false' -detailed-exitcode '-out=tfplan'
+[0m[1mdata.aws_vpc.default: Reading...[0m[0m
+[0m[1mdata.aws_iam_policy_document.ec2_assume: Reading...[0m[0m
+[0m[1mdata.aws_iam_policy_document.ec2_assume: Read complete after 0s [id=2851119427][0m
+[0m[1maws_iam_role.app: Refreshing state... [id=****-app-role][0m
+[0m[1mdata.aws_vpc.default: Read complete after 0s [id=vpc-295fa2d79fe6ac64a][0m
+[0m[1maws_security_group.app: Refreshing state... [id=sg-fbdabac3fa2a4cc41][0m
+[0m[1maws_iam_instance_profile.app: Refreshing state... [id=****-app-profile][0m
+[0m[1maws_instance.app: Refreshing state... [id=i-41fb6a3c8955ca4de][0m
+
+[0m[1m[32mNo changes.[0m[1m Your infrastructure matches the configuration.[0m
+
+[0mTerraform has compared your real infrastructure against your configuration
+and found no differences, so no changes are needed.
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
++ terraform show -no-color tfplan
++ grep -E '^ +# .* (will|must) be |^Plan:|^No changes' tfplan.txt
++ cat tfplan-summary.txt
+No changes. Your infrastructure matches the configuration.
++ chmod a+r tfplan tfplan.txt tfplan-summary.txt
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // container
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+Recording fingerprints
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Approval)
+Stage "Approval" skipped due to when conditional
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Terraform Apply)
+Stage "Terraform Apply" skipped due to when conditional
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Configure with Ansible)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/agent/workspace/****_lab4_main/infra/terraform
+[Pipeline] {
+[Pipeline] sh
++ terraform output -json
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] container
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY
+[Pipeline] {
+[Pipeline] sh
++ ansible-inventory -i infra/ansible/inventory/terraform.py --graph --vars
+@all:
+  |--@ungrouped:
+  |--@****_app:
+  |  |--i-41fb6a3c8955ca4de
+  |  |  |--{ansible_host = ****-target}
+  |  |  |--{ansible_user = ubuntu}
+  |  |  |--{instance_private_ip = 10.99.109.230}
+  |  |  |--{instance_public_ip = 54.214.152.8}
++ ansible-playbook -i infra/ansible/inventory/terraform.py --private-key **** -e app_image=localhost:5001/****-api:02c0232 -e docker_manage_service=false infra/ansible/playbook.yml
+
+PLAY [Configure the ****-api host] *****************************************
+
+TASK [Gathering Facts] *********************************************************
+[WARNING]: Host 'i-41fb6a3c8955ca4de' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+ok: [i-41fb6a3c8955ca4de]
+
+TASK [Install repository prerequisites] ****************************************
+ok: [i-41fb6a3c8955ca4de]
+
+TASK [Add NodeSource repository for Node.js 22] ********************************
+ok: [i-41fb6a3c8955ca4de]
+
+TASK [Install Node.js and Docker] **********************************************
+ok: [i-41fb6a3c8955ca4de]
+
+TASK [Enable and start Docker] *************************************************
+skipping: [i-41fb6a3c8955ca4de]
+
+TASK [Pull the ****-api image] *********************************************
+changed: [i-41fb6a3c8955ca4de]
+
+TASK [Read installed versions] *************************************************
+ok: [i-41fb6a3c8955ca4de] => (item=node --version)
+ok: [i-41fb6a3c8955ca4de] => (item=docker --version)
+ok: [i-41fb6a3c8955ca4de] => (item=docker image inspect --format '{{.Id}}' localhost:5001/****-api:02c0232)
+
+TASK [Show installed versions] *************************************************
+ok: [i-41fb6a3c8955ca4de] => {
+    "msg": [
+        "v22.23.3",
+        "Docker version 29.1.3, build 29.1.3-0ubuntu3~24.04.2",
+        "sha256:fbca6fead96326fafb7556c5ed84945e0207bb362af46dbf86f60e8dd1ce8770"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+i-41fb6a3c8955ca4de        : ok=7    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Pipeline Health Gate)
+[Pipeline] sh
++ node ci/pipeline-health.mjs ****/lab4/main
+Pipeline health for ****/lab4/main: 1/1 successful builds in the last 15d (window grows until it covers 20 builds) = 100.0%, minimum 90.0%
+Pipeline Health Gate passed
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy — Production)
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ wget -q -O /home/jenkins/agent/workspace/****_lab4_main/.tools/kubectl https://dl.k8s.io/release/v1.37.0/bin/linux/amd64/kubectl
++ chmod +x /home/jenkins/agent/workspace/****_lab4_main/.tools/kubectl
+[Pipeline] withCredentials
+Masking supported pattern matches of $KUBECONFIG
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/kubectl -n default get svc **** -o 'jsonpath={.spec.selector.color}'
+[Pipeline] echo
+Live: green -> deploying 02c0232 to blue
+[Pipeline] sh
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/kubectl -n default set image deployment/****-blue 'app=localhost:5001/****-api:02c0232'
+deployment.apps/****-blue image updated
+[Pipeline] sh
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/kubectl -n default rollout status deployment/****-blue '--timeout=120s'
+Waiting for deployment "****-blue" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "****-blue" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "****-blue" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "****-blue" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "****-blue" rollout to finish: 1 old replicas are pending termination...
+deployment "****-blue" successfully rolled out
+[Pipeline] sh
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/kubectl -n default delete pod smoke-8 --ignore-not-found
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/kubectl -n default run smoke-8 --rm -i '--restart=Never' '--image=curlimages/curl' -- curl -sf --retry 3 --retry-delay 2 http://****-blue:8080/health
+All commands and output from this session will be recorded in container logs, including credentials and sensitive information passed through the command prompt.
+If you don't see a command prompt, try pressing enter.
+pod "smoke-8" deleted from default namespace
+[Pipeline] sh
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/kubectl -n default patch svc **** -p '{"spec":{"selector":{"color":"blue"}}}'
+service/**** patched
+[Pipeline] sh
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/kubectl -n default delete pod verify-8 --ignore-not-found
++ /home/jenkins/agent/workspace/****_lab4_main/.tools/kubectl -n default run verify-8 --rm -i '--restart=Never' '--image=curlimages/curl' -- curl -sf --retry 3 --retry-delay 2 http://****:8080/health
+{"status":"ok","db":"up"}All commands and output from this session will be recorded in container logs, including credentials and sensitive information passed through the command prompt.
+If you don't see a command prompt, try pressing enter.
+warning: couldn't attach to pod/verify-8, falling back to streaming logs: unable to upgrade connection: container verify-8 not found in pod verify-8_default
+{"status":"ok","db":"up"}pod "verify-8" deleted from default namespace
+[Pipeline] echo
+Switched traffic from green to blue
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] emailext
+Sending email to: oookung75@gmail.com
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] }
+[Pipeline] // podTemplate
+[Pipeline] End of Pipeline
+
+Could not update commit status, please check if your scan credentials belong to a member of the organization or a collaborator of the repository and repo:status scope is selected
+
+
+GitHub has been notified of this commit’s build result
+
+Finished: SUCCESS
